@@ -22,7 +22,7 @@ func TestRunReopensOnlyGateClosedPullRequests(t *testing.T) {
 				gateClosed:  tt.gateClosed,
 				issue:       approvedIssue(),
 			}
-			result, err := Run(api, "flock-php", "flock", Event{Action: "edited", Number: 87, BodyEdited: true})
+			result, err := Execute(api, &fakeIssueService{api}, "flock-php", "flock", Event{Action: "edited", Number: 87, BodyEdited: true})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -38,7 +38,7 @@ func TestRunReopensOnlyGateClosedPullRequests(t *testing.T) {
 
 func TestRunClosesUnapprovedPullRequest(t *testing.T) {
 	api := &fakeService{pullRequest: pullRequest("open", "Fixes #73"), files: []*github.CommitFile{{Filename: new("internal/site.go")}}, issue: &github.Issue{State: new("open")}}
-	if _, err := Run(api, "flock-php", "flock", Event{Action: "synchronize", Number: 87}); err != nil {
+	if _, err := Execute(api, &fakeIssueService{api}, "flock-php", "flock", Event{Action: "synchronize", Number: 87}); err != nil {
 		t.Fatal(err)
 	}
 	if api.state != "closed" || !api.commented {
@@ -48,7 +48,7 @@ func TestRunClosesUnapprovedPullRequest(t *testing.T) {
 
 func TestRunDoesNotListFilesForApprovedIssue(t *testing.T) {
 	api := &fakeService{pullRequest: pullRequest("open", "Fixes #73"), issue: approvedIssue()}
-	result, err := Run(api, "flock-php", "flock", Event{Action: "opened", Number: 87})
+	result, err := Execute(api, &fakeIssueService{api}, "flock-php", "flock", Event{Action: "opened", Number: 87})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -65,7 +65,7 @@ func TestRunAllowsDocsOnlyPullRequestsWithoutAnApprovedIssue(t *testing.T) {
 		pullRequest: pullRequest("open", ""),
 		files:       []*github.CommitFile{{Filename: new("docs/contributing.md")}},
 	}
-	if _, err := Run(api, "flock-php", "flock", Event{Action: "opened", Number: 87}); err != nil {
+	if _, err := Execute(api, &fakeIssueService{api}, "flock-php", "flock", Event{Action: "opened", Number: 87}); err != nil {
 		t.Fatal(err)
 	}
 	if api.filesCalls != 1 {
@@ -80,7 +80,7 @@ func TestRunBypassesMaintainersWithoutCheckingIssuesOrFiles(t *testing.T) {
 	pr := pullRequest("open", "")
 	pr.AuthorAssociation = new("MEMBER")
 	api := &fakeService{pullRequest: pr}
-	if _, err := Run(api, "flock-php", "flock", Event{Action: "opened", Number: 87}); err != nil {
+	if _, err := Execute(api, &fakeIssueService{api}, "flock-php", "flock", Event{Action: "opened", Number: 87}); err != nil {
 		t.Fatal(err)
 	}
 	if api.issueCalls != 0 || api.filesCalls != 0 {
@@ -99,25 +99,28 @@ type fakeService struct {
 	issueCalls  int
 }
 
-func (f *fakeService) PullRequest(string, string, int) (*github.PullRequest, error) {
+func (f *fakeService) Get(string, string, int) (*github.PullRequest, error) {
 	return f.pullRequest, nil
 }
-func (f *fakeService) Files(string, string, int) ([]*github.CommitFile, error) {
+func (f *fakeService) ListFiles(string, string, int) ([]*github.CommitFile, error) {
 	f.filesCalls++
 	return f.files, nil
 }
-func (f *fakeService) Issue(string, string, int) (*github.Issue, error) {
-	f.issueCalls++
-	return f.issue, nil
-}
 func (f *fakeService) GateClosed(string, string, int) (bool, error) { return f.gateClosed, nil }
-func (f *fakeService) Comment(string, string, int, string) error {
+func (f *fakeService) CreateComment(string, string, int, string) error {
 	f.commented = true
 	return nil
 }
-func (f *fakeService) SetPullRequestState(_ string, _ string, _ int, state string) error {
+func (f *fakeService) SetState(_ string, _ string, _ int, state string) error {
 	f.state = state
 	return nil
+}
+
+type fakeIssueService struct{ api *fakeService }
+
+func (f *fakeIssueService) Get(string, string, int) (*github.Issue, error) {
+	f.api.issueCalls++
+	return f.api.issue, nil
 }
 
 func pullRequest(state, body string) *github.PullRequest {

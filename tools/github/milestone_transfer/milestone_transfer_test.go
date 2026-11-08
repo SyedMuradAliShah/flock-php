@@ -3,7 +3,7 @@ package milestone_transfer
 import (
 	"testing"
 
-	"flock/tools/github/github_service"
+	"flock/tools/github/github_pr"
 	"flock/tools/github/issue_reference"
 	"github.com/google/go-github/v93/github"
 )
@@ -12,12 +12,12 @@ func TestRunUsesFirstUserLinkedIssueWithAMilestone(t *testing.T) {
 	milestone := 3
 	api := &fakeService{
 		pullRequest: pullRequest("open"),
-		issues: []github_service.LinkedIssue{
+		issues: []github_pr.LinkedIssue{
 			{Number: 72, MilestoneNumber: &milestone},
 			{Number: 73, MilestoneNumber: &milestone},
 		},
 	}
-	if err := Run(api, "flock-php", "flock", 87, issue_reference.Reference{Repository: "flock", Number: 73}); err != nil {
+	if err := Execute(api, "flock-php", "flock", 87, issue_reference.Reference{Repository: "flock", Number: 73}); err != nil {
 		t.Fatal(err)
 	}
 	if api.issueNumber != 73 {
@@ -26,8 +26,8 @@ func TestRunUsesFirstUserLinkedIssueWithAMilestone(t *testing.T) {
 }
 
 func TestRunDoesNotTransferWithoutAMilestonedUserLinkedIssue(t *testing.T) {
-	api := &fakeService{pullRequest: pullRequest("open"), issues: []github_service.LinkedIssue{{Number: 73}}}
-	if err := Run(api, "flock-php", "flock", 87, issue_reference.Reference{Repository: "flock", Number: 73}); err != nil {
+	api := &fakeService{pullRequest: pullRequest("open"), issues: []github_pr.LinkedIssue{{Number: 73}}}
+	if err := Execute(api, "flock-php", "flock", 87, issue_reference.Reference{Repository: "flock", Number: 73}); err != nil {
 		t.Fatal(err)
 	}
 	if api.issueNumber != 0 {
@@ -37,7 +37,7 @@ func TestRunDoesNotTransferWithoutAMilestonedUserLinkedIssue(t *testing.T) {
 
 func TestRunSkipsClosedPullRequests(t *testing.T) {
 	api := &fakeService{pullRequest: pullRequest("closed")}
-	if err := Run(api, "flock-php", "flock", 87, issue_reference.Reference{Repository: "flock", Number: 73}); err != nil {
+	if err := Execute(api, "flock-php", "flock", 87, issue_reference.Reference{Repository: "flock", Number: 73}); err != nil {
 		t.Fatal(err)
 	}
 	if api.issueNumber != 0 {
@@ -47,17 +47,17 @@ func TestRunSkipsClosedPullRequests(t *testing.T) {
 
 type fakeService struct {
 	pullRequest *github.PullRequest
-	issues      []github_service.LinkedIssue
+	issues      []github_pr.LinkedIssue
 	issueNumber int
 }
 
-func (f *fakeService) PullRequest(string, string, int) (*github.PullRequest, error) {
+func (f *fakeService) Get(string, string, int) (*github.PullRequest, error) {
 	return f.pullRequest, nil
 }
-func (f *fakeService) LinkedIssues(string, string, int) ([]github_service.LinkedIssue, error) {
+func (f *fakeService) ListLinkedIssues(string, string, int) ([]github_pr.LinkedIssue, error) {
 	return f.issues, nil
 }
-func (f *fakeService) TransferMilestone(_ string, _ string, _ int, issueNumber int) (bool, error) {
+func (f *fakeService) TransferIssueMilestone(_ string, _ string, _ int, issueNumber int) (bool, error) {
 	f.issueNumber = issueNumber
 	return true, nil
 }

@@ -3,11 +3,11 @@ package issue_assignment
 
 import "github.com/google/go-github/v93/github"
 
-type Service interface {
+type HelpWantedRemover interface {
 	RemoveHelpWanted(owner, repository string, issue *github.Issue) error
 }
 
-func Run(api Service, owner, repository string, issue *github.Issue) error {
+func Execute(api HelpWantedRemover, owner, repository string, issue *github.Issue) error {
 	if len(issue.Assignees) == 0 {
 		return nil
 	}

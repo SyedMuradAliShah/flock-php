@@ -48,7 +48,7 @@ func TestRunIssueEventRoutesActions(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			api := &issueEventFakeService{}
-			if err := runIssueEvent(api, "flock-php", "flock", []byte(tt.data)); err != nil {
+			if err := runIssueEvent(api, api, "flock-php", "flock", []byte(tt.data)); err != nil {
 				t.Fatal(err)
 			}
 			if api.triaged != tt.wantTriage {
@@ -66,7 +66,7 @@ type issueEventFakeService struct {
 	removed bool
 }
 
-func (f *issueEventFakeService) Permission(string, string, string) (string, error) {
+func (f *issueEventFakeService) GetUserPermission(string, string, string) (string, error) {
 	return "read", nil
 }
 

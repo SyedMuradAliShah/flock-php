@@ -6,20 +6,23 @@ import (
 	"strings"
 	"time"
 
-	"flock/tools/github/github_service"
+	"flock/tools/github/github_pr"
 	"flock/tools/github/issue_reference"
 	"github.com/google/go-github/v93/github"
 )
 
 const openToAnyone = "help wanted"
 
-type Service interface {
-	PullRequest(owner, repository string, number int) (*github.PullRequest, error)
-	Files(owner, repository string, number int) ([]*github.CommitFile, error)
-	Issue(owner, repository string, number int) (*github.Issue, error)
+type PullRequestGateService interface {
+	Get(owner, repository string, number int) (*github.PullRequest, error)
+	ListFiles(owner, repository string, number int) ([]*github.CommitFile, error)
 	GateClosed(owner, repository string, number int) (bool, error)
-	Comment(owner, repository string, number int, body string) error
-	SetPullRequestState(owner, repository string, number int, state string) error
+	CreateComment(owner, repository string, number int, body string) error
+	SetState(owner, repository string, number int, state string) error
+}
+
+type IssueReader interface {
+	Get(owner, repository string, number int) (*github.Issue, error)
 }
 
 type Event struct {
@@ -41,9 +44,9 @@ const (
 	closeUnapproved action = "close-unapproved"
 )
 
-func Run(api Service, owner, repository string, event Event) (Result, error) {
+func Execute(pullRequests PullRequestGateService, issues IssueReader, owner, repository string, event Event) (Result, error) {
 	for attempt := 0; ; attempt++ {
-		pr, err := api.PullRequest(owner, repository, event.Number)
+		pr, err := pullRequests.Get(owner, repository, event.Number)
 		if err != nil {
 			return Result{}, err
 		}
@@ -54,15 +57,15 @@ func Run(api Service, owner, repository string, event Event) (Result, error) {
 			if !event.BodyEdited || pr.GetMerged() || pr.GetBase().GetRef() != "main" {
 				return Result{}, nil
 			}
-			closedByGate, err := api.GateClosed(owner, repository, pr.GetNumber())
+			closedByGate, err := pullRequests.GateClosed(owner, repository, pr.GetNumber())
 			if err != nil || !closedByGate {
 				return Result{}, err
 			}
-			if issue, approved := firstApprovedIssue(api, owner, pr); approved {
-				if err := api.SetPullRequestState(owner, repository, pr.GetNumber(), "open"); err != nil {
+			if issue, approved := firstApprovedIssue(issues, owner, pr); approved {
+				if err := pullRequests.SetState(owner, repository, pr.GetNumber(), "open"); err != nil {
 					return Result{}, err
 				}
-				if err := api.Comment(owner, repository, pr.GetNumber(), fmt.Sprintf("Thanks, @%s! This pull request references approved issue %s, so it has been reopened.", pr.GetUser().GetLogin(), issue)); err != nil {
+				if err := pullRequests.CreateComment(owner, repository, pr.GetNumber(), fmt.Sprintf("Thanks, @%s! This pull request references approved issue %s, so it has been reopened.", pr.GetUser().GetLogin(), issue)); err != nil {
 					return Result{}, err
 				}
 				return approvedResult(issue), nil
@@ -73,12 +76,12 @@ func Run(api Service, owner, repository string, event Event) (Result, error) {
 			return Result{}, nil
 		}
 		if pr.GetBase().GetRef() != "main" {
-			return Result{}, closePullRequest(api, owner, repository, pr, closeWrongBase)
+			return Result{}, closePullRequest(pullRequests, owner, repository, pr, closeWrongBase)
 		}
-		if issue, approved := firstApprovedIssue(api, owner, pr); approved {
+		if issue, approved := firstApprovedIssue(issues, owner, pr); approved {
 			return approvedResult(issue), nil
 		}
-		files, err := api.Files(owner, repository, pr.GetNumber())
+		files, err := pullRequests.ListFiles(owner, repository, pr.GetNumber())
 		if err != nil {
 			return Result{}, err
 		}
@@ -90,7 +93,7 @@ func Run(api Service, owner, repository string, event Event) (Result, error) {
 			time.Sleep(3 * time.Second)
 			continue
 		}
-		return Result{}, closePullRequest(api, owner, repository, pr, decision)
+		return Result{}, closePullRequest(pullRequests, owner, repository, pr, decision)
 	}
 }
 
@@ -105,9 +108,9 @@ func evaluate(files []*github.CommitFile) action {
 	return closeUnapproved
 }
 
-func firstApprovedIssue(api Service, owner string, pr *github.PullRequest) (issue_reference.Reference, bool) {
+func firstApprovedIssue(issues IssueReader, owner string, pr *github.PullRequest) (issue_reference.Reference, bool) {
 	for _, reference := range issue_reference.Parse(pr.GetBody(), "flock") {
-		issue, err := api.Issue(owner, reference.Repository, reference.Number)
+		issue, err := issues.Get(owner, reference.Repository, reference.Number)
 		if err == nil && isApproved(issue, pr.GetUser().GetLogin()) {
 			return reference, true
 		}
@@ -115,7 +118,7 @@ func firstApprovedIssue(api Service, owner string, pr *github.PullRequest) (issu
 	return issue_reference.Reference{}, false
 }
 
-func closePullRequest(api Service, owner, repository string, pr *github.PullRequest, decision action) error {
+func closePullRequest(pullRequests PullRequestGateService, owner, repository string, pr *github.PullRequest, decision action) error {
 	var reason, nextStep string
 	switch decision {
 	case closeWrongBase:
@@ -127,11 +130,11 @@ func closePullRequest(api Service, owner, repository string, pr *github.PullRequ
 	default:
 		return fmt.Errorf("cannot close a pull request for %q", decision)
 	}
-	comment := fmt.Sprintf("Thanks for the PR, @%s! %s %s See [CONTRIBUTING.md](https://github.com/%s/%s/blob/main/CONTRIBUTING.md).\n\n%s", pr.GetUser().GetLogin(), reason, nextStep, owner, repository, github_service.GateMarker)
-	if err := api.Comment(owner, repository, pr.GetNumber(), comment); err != nil {
+	comment := fmt.Sprintf("Thanks for the PR, @%s! %s %s See [CONTRIBUTING.md](https://github.com/%s/%s/blob/main/CONTRIBUTING.md).\n\n%s", pr.GetUser().GetLogin(), reason, nextStep, owner, repository, github_pr.GateMarker)
+	if err := pullRequests.CreateComment(owner, repository, pr.GetNumber(), comment); err != nil {
 		return err
 	}
-	return api.SetPullRequestState(owner, repository, pr.GetNumber(), "closed")
+	return pullRequests.SetState(owner, repository, pr.GetNumber(), "closed")
 }
 
 func bypassesGate(user *github.User, authorAssociation string) bool {

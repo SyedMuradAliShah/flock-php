@@ -16,11 +16,17 @@ var queueRef = regexp.MustCompile(`/pr-(\d+)-[0-9a-f]+$`)
 // ErrNotAllowed means the pull request was queued by someone who can't merge.
 var ErrNotAllowed = errors.New("queued by someone without the admin or maintain role")
 
-type Service interface {
-	MergeQueueEnqueuer(owner, repository string, number int) (string, error)
-	RoleName(owner, repository, username string) (string, error)
-	Comment(owner, repository string, number int, body string) error
-	CancelMergeGroupRuns(owner, repository, headSHA string, except int64) error
+type MergeQueuePullRequestService interface {
+	GetMergeQueueEnqueuer(owner, repository string, number int) (string, error)
+	CreateComment(owner, repository string, number int, body string) error
+}
+
+type RepositoryRoleReader interface {
+	GetUserRole(owner, repository, username string) (string, error)
+}
+
+type MergeGroupRunCanceler interface {
+	CancelOtherRuns(owner, repository, headSHA string, except int64) error
 }
 
 type Event struct {
@@ -29,16 +35,16 @@ type Event struct {
 	RunID   int64
 }
 
-func Run(api Service, owner, repository string, event Event) error {
+func Execute(pullRequests MergeQueuePullRequestService, repositories RepositoryRoleReader, mergeGroups MergeGroupRunCanceler, owner, repository string, event Event) error {
 	number, err := PullRequestNumber(event.HeadRef)
 	if err != nil {
 		return err
 	}
-	enqueuer, err := api.MergeQueueEnqueuer(owner, repository, number)
+	enqueuer, err := pullRequests.GetMergeQueueEnqueuer(owner, repository, number)
 	if err != nil {
 		return err
 	}
-	role, err := api.RoleName(owner, repository, enqueuer)
+	role, err := repositories.GetUserRole(owner, repository, enqueuer)
 	if err != nil {
 		return err
 	}
@@ -47,10 +53,10 @@ func Run(api Service, owner, repository string, event Event) error {
 	}
 
 	body := fmt.Sprintf("Only a repository admin or maintainer can merge, so this was taken out of the merge queue (queued by @%s). A maintainer will merge it.", enqueuer)
-	if err := api.Comment(owner, repository, number, body); err != nil {
+	if err := pullRequests.CreateComment(owner, repository, number, body); err != nil {
 		return err
 	}
-	if err := api.CancelMergeGroupRuns(owner, repository, event.HeadSHA, event.RunID); err != nil {
+	if err := mergeGroups.CancelOtherRuns(owner, repository, event.HeadSHA, event.RunID); err != nil {
 		return err
 	}
 	return fmt.Errorf("%w: @%s has the %q role", ErrNotAllowed, enqueuer, role)

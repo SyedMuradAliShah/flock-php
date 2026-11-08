@@ -1,12 +1,9 @@
-// Package github_service implements the GitHub operations used by the workflows.
-package github_service
+// Package github_pr implements GitHub pull request operations used by workflows.
+package github_pr
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"net/http"
-	"net/url"
 	"strings"
 	"time"
 
@@ -14,8 +11,6 @@ import (
 )
 
 const GateMarker = "<!-- pr-gate:closed -->"
-
-const HelpWanted = "help wanted"
 
 type Service struct {
 	client *github.Client
@@ -26,50 +21,16 @@ type LinkedIssue struct {
 	MilestoneNumber *int
 }
 
-func New(baseURL, token string) (*Service, error) {
-	parsed, err := url.Parse(baseURL)
-	if err != nil {
-		return nil, err
-	}
-	if !strings.HasSuffix(parsed.Path, "/") {
-		parsed.Path += "/"
-	}
-	client, err := github.NewClient(
-		github.WithAuthToken(token),
-		github.WithURLs(new(parsed.String()), nil),
-	)
-	if err != nil {
-		return nil, err
-	}
-	return &Service{client: client}, nil
+func New(client *github.Client) *Service {
+	return &Service{client: client}
 }
 
-func (s *Service) PullRequest(owner, repository string, number int) (*github.PullRequest, error) {
+func (s *Service) Get(owner, repository string, number int) (*github.PullRequest, error) {
 	pullRequest, _, err := s.client.PullRequests.Get(context.Background(), owner, repository, number)
 	return pullRequest, err
 }
 
-func (s *Service) Permission(owner, repository, username string) (string, error) {
-	permission, _, err := s.client.Repositories.GetPermissionLevel(context.Background(), owner, repository, username)
-	if err != nil {
-		return "", err
-	}
-	return permission.GetPermission(), nil
-}
-
-// RoleName returns the user's effective role on the repository, including "maintain", which the
-// legacy permission field reports as "write".
-func (s *Service) RoleName(owner, repository, username string) (string, error) {
-	permission, _, err := s.client.Repositories.GetPermissionLevel(context.Background(), owner, repository, username)
-	if err != nil {
-		return "", err
-	}
-	return permission.GetRoleName(), nil
-}
-
-// MergeQueueEnqueuer returns who added the pull request to the merge queue. With auto-merge,
-// that's whoever enabled it.
-func (s *Service) MergeQueueEnqueuer(owner, repository string, number int) (string, error) {
+func (s *Service) GetMergeQueueEnqueuer(owner, repository string, number int) (string, error) {
 	request, err := s.client.NewRequest(context.Background(), "POST", "graphql", map[string]any{
 		"query": `query($owner: String!, $repository: String!, $pullRequest: Int!) {
   repository(owner: $owner, name: $repository) {
@@ -108,29 +69,7 @@ func (s *Service) MergeQueueEnqueuer(owner, repository string, number int) (stri
 	return entry.Enqueuer.Login, nil
 }
 
-// CancelMergeGroupRuns cancels the other unfinished runs for a merge group commit.
-func (s *Service) CancelMergeGroupRuns(owner, repository, headSHA string, except int64) error {
-	runs, _, err := s.client.Actions.ListRepositoryWorkflowRuns(context.Background(), owner, repository, &github.ListWorkflowRunsOptions{
-		Event:       "merge_group",
-		HeadSHA:     headSHA,
-		ListOptions: github.ListOptions{PerPage: 100},
-	})
-	if err != nil {
-		return err
-	}
-	for _, run := range runs.WorkflowRuns {
-		if run.GetID() == except || run.GetStatus() == "completed" {
-			continue
-		}
-		_, err := s.client.Actions.CancelWorkflowRunByID(context.Background(), owner, repository, run.GetID())
-		if _, accepted := errors.AsType[*github.AcceptedError](err); err != nil && !accepted {
-			return fmt.Errorf("cancel run %d: %w", run.GetID(), err)
-		}
-	}
-	return nil
-}
-
-func (s *Service) Files(owner, repository string, number int) ([]*github.CommitFile, error) {
+func (s *Service) ListFiles(owner, repository string, number int) ([]*github.CommitFile, error) {
 	var files []*github.CommitFile
 	options := &github.ListOptions{PerPage: 100}
 	for {
@@ -146,12 +85,7 @@ func (s *Service) Files(owner, repository string, number int) ([]*github.CommitF
 	}
 }
 
-func (s *Service) Issue(owner, repository string, number int) (*github.Issue, error) {
-	issue, _, err := s.client.Issues.Get(context.Background(), owner, repository, number)
-	return issue, err
-}
-
-func (s *Service) LinkedIssues(owner, repository string, pullRequestNumber int) ([]LinkedIssue, error) {
+func (s *Service) ListLinkedIssues(owner, repository string, pullRequestNumber int) ([]LinkedIssue, error) {
 	request, err := s.client.NewRequest(context.Background(), "POST", "graphql", map[string]any{
 		"query": `query($owner: String!, $repository: String!, $pullRequest: Int!) {
   repository(owner: $owner, name: $repository) {
@@ -251,67 +185,18 @@ func (s *Service) GateClosed(owner, repository string, number int) (bool, error)
 		!latestMarker.After(latestTransition.GetCreatedAt().Time), nil
 }
 
-func (s *Service) Comment(owner, repository string, number int, body string) error {
+func (s *Service) CreateComment(owner, repository string, number int, body string) error {
 	_, _, err := s.client.Issues.CreateComment(context.Background(), owner, repository, number, github.IssueCommentRequest{Body: body})
 	return err
 }
 
-func (s *Service) SetPullRequestState(owner, repository string, number int, state string) error {
+func (s *Service) SetState(owner, repository string, number int, state string) error {
 	_, _, err := s.client.PullRequests.Edit(context.Background(), owner, repository, number, &github.PullRequest{State: new(state)})
 	return err
 }
 
-func (s *Service) AddLabel(owner, repository string, number int, label string) error {
-	_, _, err := s.client.Issues.AddLabelsToIssue(context.Background(), owner, repository, number, []string{label})
-	return err
-}
-
-func (s *Service) RemoveLabel(owner, repository string, number int, label string) error {
-	_, err := s.client.Issues.RemoveLabelForIssue(context.Background(), owner, repository, number, label)
-	return err
-}
-
-func (s *Service) RemoveHelpWanted(owner, repository string, issue *github.Issue) error {
-	if !HasHelpWanted(issue) {
-		return nil
-	}
-	err := s.RemoveLabel(owner, repository, issue.GetNumber(), HelpWanted)
-	var response *github.ErrorResponse
-	if errors.As(err, &response) && response.Response != nil && response.Response.StatusCode == http.StatusNotFound {
-		return nil
-	}
-	return err
-}
-
-func (s *Service) AddAssignee(owner, repository string, number int, username string) error {
-	_, _, err := s.client.Issues.AddAssignees(context.Background(), owner, repository, number, []string{username})
-	return err
-}
-
-func HasHelpWanted(issue *github.Issue) bool {
-	return HasLabel(issue, HelpWanted)
-}
-
-func HasLabel(issue *github.Issue, name string) bool {
-	for _, label := range issue.Labels {
-		if label.GetName() == name {
-			return true
-		}
-	}
-	return false
-}
-
-func HasAssignee(issue *github.Issue, username string) bool {
-	for _, assignee := range issue.Assignees {
-		if assignee.GetLogin() == username {
-			return true
-		}
-	}
-	return false
-}
-
-func (s *Service) TransferMilestone(owner, repository string, pullRequestNumber, issueNumber int) (bool, error) {
-	issue, err := s.Issue(owner, repository, issueNumber)
+func (s *Service) TransferIssueMilestone(owner, repository string, pullRequestNumber, issueNumber int) (bool, error) {
+	issue, _, err := s.client.Issues.Get(context.Background(), owner, repository, issueNumber)
 	if err != nil {
 		return false, err
 	}

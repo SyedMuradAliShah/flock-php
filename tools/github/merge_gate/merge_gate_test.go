@@ -11,7 +11,7 @@ func TestRunAllowsAdminsAndMaintainers(t *testing.T) {
 	for _, role := range []string{"admin", "maintain"} {
 		t.Run(role, func(t *testing.T) {
 			api := &fakeService{role: role}
-			if err := Run(api, "flock-php", "flock", Event{HeadRef: ref, HeadSHA: "abc", RunID: 7}); err != nil {
+			if err := Execute(api, api, api, "flock-php", "flock", Event{HeadRef: ref, HeadSHA: "abc", RunID: 7}); err != nil {
 				t.Fatal(err)
 			}
 			if api.commented || api.cancelled {
@@ -25,7 +25,7 @@ func TestRunRejectsOtherRoles(t *testing.T) {
 	for _, role := range []string{"write", "triage", "read"} {
 		t.Run(role, func(t *testing.T) {
 			api := &fakeService{role: role}
-			err := Run(api, "flock-php", "flock", Event{HeadRef: ref, HeadSHA: "abc", RunID: 7})
+			err := Execute(api, api, api, "flock-php", "flock", Event{HeadRef: ref, HeadSHA: "abc", RunID: 7})
 			if !errors.Is(err, ErrNotAllowed) {
 				t.Fatalf("err = %v, want ErrNotAllowed", err)
 			}
@@ -58,13 +58,15 @@ type fakeService struct {
 	cancelExcept int64
 }
 
-func (f *fakeService) MergeQueueEnqueuer(string, string, int) (string, error) { return "someone", nil }
-func (f *fakeService) RoleName(string, string, string) (string, error)        { return f.role, nil }
-func (f *fakeService) Comment(_ string, _ string, number int, _ string) error {
+func (f *fakeService) GetMergeQueueEnqueuer(string, string, int) (string, error) {
+	return "someone", nil
+}
+func (f *fakeService) GetUserRole(string, string, string) (string, error) { return f.role, nil }
+func (f *fakeService) CreateComment(_ string, _ string, number int, _ string) error {
 	f.commented, f.commentedOn = true, number
 	return nil
 }
-func (f *fakeService) CancelMergeGroupRuns(_ string, _ string, sha string, except int64) error {
+func (f *fakeService) CancelOtherRuns(_ string, _ string, sha string, except int64) error {
 	f.cancelled, f.cancelSHA, f.cancelExcept = true, sha, except
 	return nil
 }
