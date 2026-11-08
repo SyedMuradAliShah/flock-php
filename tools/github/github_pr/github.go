@@ -3,10 +3,12 @@ package github_pr
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 
+	"flock/tools/github/github_issue"
 	"github.com/google/go-github/v93/github"
 )
 
@@ -21,13 +23,42 @@ type LinkedIssue struct {
 	MilestoneNumber *int
 }
 
+// PullRequest is the GitHub pull request data used by workflows.
+type PullRequest struct {
+	Number            int
+	State             string
+	Merged            bool
+	Body              string
+	BaseRef           string
+	Author            github_issue.User
+	AuthorAssociation string
+}
+
+// File is a changed pull request file.
+type File struct {
+	Filename         string
+	PreviousFilename string
+}
+
+// Event is a pull request webhook event.
+type Event struct {
+	Action     string
+	Number     int
+	Author     string
+	BodyEdited bool
+	BaseEdited bool
+}
+
 func New(client *github.Client) *Service {
 	return &Service{client: client}
 }
 
-func (s *Service) Get(owner, repository string, number int) (*github.PullRequest, error) {
+func (s *Service) Get(owner, repository string, number int) (*PullRequest, error) {
 	pullRequest, _, err := s.client.PullRequests.Get(context.Background(), owner, repository, number)
-	return pullRequest, err
+	if err != nil {
+		return nil, err
+	}
+	return pullRequestFromGitHub(pullRequest), nil
 }
 
 func (s *Service) GetMergeQueueEnqueuer(owner, repository string, number int) (string, error) {
@@ -69,19 +100,53 @@ func (s *Service) GetMergeQueueEnqueuer(owner, repository string, number int) (s
 	return entry.Enqueuer.Login, nil
 }
 
-func (s *Service) ListFiles(owner, repository string, number int) ([]*github.CommitFile, error) {
-	var files []*github.CommitFile
+func (s *Service) ListFiles(owner, repository string, number int) ([]File, error) {
+	var files []File
 	options := &github.ListOptions{PerPage: 100}
 	for {
 		items, response, err := s.client.PullRequests.ListFiles(context.Background(), owner, repository, number, options)
 		if err != nil {
 			return nil, err
 		}
-		files = append(files, items...)
+		for _, item := range items {
+			files = append(files, File{Filename: item.GetFilename(), PreviousFilename: item.GetPreviousFilename()})
+		}
 		if response.NextPage == 0 {
 			return files, nil
 		}
 		options.Page = response.NextPage
+	}
+}
+
+// ParseEvent parses a pull request webhook payload into owned workflow data.
+func ParseEvent(data []byte) (Event, error) {
+	var event github.PullRequestEvent
+	if err := json.Unmarshal(data, &event); err != nil {
+		return Event{}, err
+	}
+	changes := event.GetChanges()
+	pullRequest := event.GetPullRequest()
+	return Event{
+		Action:     event.GetAction(),
+		Number:     pullRequest.GetNumber(),
+		Author:     pullRequest.GetUser().GetLogin(),
+		BodyEdited: changes != nil && changes.Body != nil,
+		BaseEdited: changes != nil && changes.Base != nil,
+	}, nil
+}
+
+func pullRequestFromGitHub(source *github.PullRequest) *PullRequest {
+	if source == nil {
+		return nil
+	}
+	return &PullRequest{
+		Number:            source.GetNumber(),
+		State:             source.GetState(),
+		Merged:            source.GetMerged(),
+		Body:              source.GetBody(),
+		BaseRef:           source.GetBase().GetRef(),
+		Author:            github_issue.User{Login: source.GetUser().GetLogin(), Type: source.GetUser().GetType()},
+		AuthorAssociation: source.GetAuthorAssociation(),
 	}
 }
 

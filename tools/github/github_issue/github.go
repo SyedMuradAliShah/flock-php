@@ -3,6 +3,7 @@ package github_issue
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"net/http"
 
@@ -10,6 +11,32 @@ import (
 )
 
 const HelpWanted = "help wanted"
+
+// User is the GitHub user data used by issue workflows.
+type User struct {
+	Login string
+	Type  string
+}
+
+// Label is an issue label.
+type Label struct{ Name string }
+
+// Issue is the GitHub issue data used by workflows.
+type Issue struct {
+	Number            int
+	State             string
+	IsPullRequest     bool
+	User              User
+	AuthorAssociation string
+	Assignees         []User
+	Labels            []Label
+}
+
+// Event is an issue webhook event.
+type Event struct {
+	Action string
+	Issue  Issue
+}
 
 type Service struct {
 	client *github.Client
@@ -19,9 +46,12 @@ func New(client *github.Client) *Service {
 	return &Service{client: client}
 }
 
-func (s *Service) Get(owner, repository string, number int) (*github.Issue, error) {
+func (s *Service) Get(owner, repository string, number int) (*Issue, error) {
 	issue, _, err := s.client.Issues.Get(context.Background(), owner, repository, number)
-	return issue, err
+	if err != nil {
+		return nil, err
+	}
+	return issueFromGitHub(issue), nil
 }
 
 func (s *Service) AddLabel(owner, repository string, number int, label string) error {
@@ -34,11 +64,11 @@ func (s *Service) RemoveLabel(owner, repository string, number int, label string
 	return err
 }
 
-func (s *Service) RemoveHelpWanted(owner, repository string, issue *github.Issue) error {
+func (s *Service) RemoveHelpWanted(owner, repository string, issue *Issue) error {
 	if !HasHelpWanted(issue) {
 		return nil
 	}
-	err := s.RemoveLabel(owner, repository, issue.GetNumber(), HelpWanted)
+	err := s.RemoveLabel(owner, repository, issue.Number, HelpWanted)
 	var response *github.ErrorResponse
 	if errors.As(err, &response) && response.Response != nil && response.Response.StatusCode == http.StatusNotFound {
 		return nil
@@ -51,24 +81,81 @@ func (s *Service) AddAssignee(owner, repository string, number int, username str
 	return err
 }
 
-func HasHelpWanted(issue *github.Issue) bool {
+func HasHelpWanted(issue *Issue) bool {
 	return HasLabel(issue, HelpWanted)
 }
 
-func HasLabel(issue *github.Issue, name string) bool {
+func HasLabel(issue *Issue, name string) bool {
+	if issue == nil {
+		return false
+	}
 	for _, label := range issue.Labels {
-		if label.GetName() == name {
+		if label.Name == name {
 			return true
 		}
 	}
 	return false
 }
 
-func HasAssignee(issue *github.Issue, username string) bool {
+func HasAssignee(issue *Issue, username string) bool {
+	if issue == nil {
+		return false
+	}
 	for _, assignee := range issue.Assignees {
-		if assignee.GetLogin() == username {
+		if assignee.Login == username {
 			return true
 		}
 	}
 	return false
+}
+
+// ParseEvent parses an issue webhook payload into owned workflow data.
+func ParseEvent(data []byte) (Event, error) {
+	var event github.IssuesEvent
+	if err := json.Unmarshal(data, &event); err != nil {
+		return Event{}, err
+	}
+	issue := issueFromGitHub(event.GetIssue())
+	if issue == nil {
+		return Event{Action: event.GetAction()}, nil
+	}
+	return Event{Action: event.GetAction(), Issue: *issue}, nil
+}
+
+func issueFromGitHub(source *github.Issue) *Issue {
+	if source == nil {
+		return nil
+	}
+	return &Issue{
+		Number:            source.GetNumber(),
+		State:             source.GetState(),
+		IsPullRequest:     source.IsPullRequest(),
+		User:              userFromGitHub(source.GetUser()),
+		AuthorAssociation: source.GetAuthorAssociation(),
+		Assignees:         usersFromGitHub(source.Assignees),
+		Labels:            labelsFromGitHub(source.Labels),
+	}
+}
+
+func userFromGitHub(source *github.User) User {
+	if source == nil {
+		return User{}
+	}
+	return User{Login: source.GetLogin(), Type: source.GetType()}
+}
+
+func usersFromGitHub(sources []*github.User) []User {
+	users := make([]User, 0, len(sources))
+	for _, source := range sources {
+		users = append(users, userFromGitHub(source))
+	}
+	return users
+}
+
+func labelsFromGitHub(sources []*github.Label) []Label {
+	labels := make([]Label, 0, len(sources))
+	for _, source := range sources {
+		labels = append(labels, Label{Name: source.GetName()})
+	}
+	return labels
 }

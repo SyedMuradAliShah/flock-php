@@ -71,3 +71,107 @@ func TestServiceListsDevelopmentLinkedIssues(t *testing.T) {
 		t.Fatalf("ListLinkedIssues() = %+v", issues)
 	}
 }
+
+func TestServiceGetsPullRequestsFilesAndUpdates(t *testing.T) {
+	var server *httptest.Server
+	server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method + " " + r.URL.Path {
+		case "GET /repos/flock-php/flock/pulls/87":
+			_, _ = io.WriteString(w, `{"number":87,"state":"open"}`)
+		case "GET /repos/flock-php/flock/pulls/87/files":
+			if r.URL.Query().Get("page") == "2" {
+				_, _ = io.WriteString(w, `[{"filename":"second.go"}]`)
+				return
+			}
+			w.Header().Set("Link", "<"+server.URL+"/repos/flock-php/flock/pulls/87/files?page=2>; rel=\"next\"")
+			_, _ = io.WriteString(w, `[{"filename":"first.go"}]`)
+		case "POST /repos/flock-php/flock/issues/87/comments", "PATCH /repos/flock-php/flock/pulls/87":
+			_, _ = io.WriteString(w, `{}`)
+		default:
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+	defer server.Close()
+	client, err := github_client.New(server.URL, "token")
+	if err != nil {
+		t.Fatal(err)
+	}
+	service := New(client)
+	pullRequest, err := service.Get("flock-php", "flock", 87)
+	if err != nil || pullRequest.Number != 87 {
+		t.Fatalf("Get() = %+v, %v", pullRequest, err)
+	}
+	files, err := service.ListFiles("flock-php", "flock", 87)
+	if err != nil || len(files) != 2 {
+		t.Fatalf("ListFiles() = %v, %v", files, err)
+	}
+	if err := service.CreateComment("flock-php", "flock", 87, "message"); err != nil {
+		t.Fatal(err)
+	}
+	if err := service.SetState("flock-php", "flock", 87, "closed"); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestServiceGetsMergeQueueEnqueuer(t *testing.T) {
+	for _, tt := range []struct {
+		name string
+		body string
+		want string
+		fail bool
+	}{
+		{name: "enqueued", body: `{"data":{"repository":{"pullRequest":{"mergeQueueEntry":{"enqueuer":{"login":"maintainer"}}}}}}`, want: "maintainer"},
+		{name: "not enqueued", body: `{"data":{"repository":{"pullRequest":{"mergeQueueEntry":null}}}}`, fail: true},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				_, _ = io.WriteString(w, tt.body)
+			}))
+			defer server.Close()
+			client, err := github_client.New(server.URL, "token")
+			if err != nil {
+				t.Fatal(err)
+			}
+			got, err := New(client).GetMergeQueueEnqueuer("flock-php", "flock", 87)
+			if tt.fail && err == nil {
+				t.Fatal("GetMergeQueueEnqueuer() returned nil error")
+			}
+			if !tt.fail && (err != nil || got != tt.want) {
+				t.Fatalf("GetMergeQueueEnqueuer() = %q, %v", got, err)
+			}
+		})
+	}
+}
+
+func TestServiceDetectsGateClosedPullRequests(t *testing.T) {
+	for _, tt := range []struct {
+		name     string
+		comments string
+		want     bool
+	}{
+		{name: "gate closed", comments: `[{"user":{"login":"github-actions[bot]"},"body":"<!-- pr-gate:closed -->","created_at":"2026-01-01T00:00:00Z"}]`, want: true},
+		{name: "no marker", comments: `[]`},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				switch r.URL.Path {
+				case "/repos/flock-php/flock/issues/87/comments":
+					_, _ = io.WriteString(w, tt.comments)
+				case "/repos/flock-php/flock/issues/87/events":
+					_, _ = io.WriteString(w, `[{"event":"closed","actor":{"login":"github-actions[bot]"},"created_at":"2026-01-01T00:00:00Z"}]`)
+				default:
+					w.WriteHeader(http.StatusNotFound)
+				}
+			}))
+			defer server.Close()
+			client, err := github_client.New(server.URL, "token")
+			if err != nil {
+				t.Fatal(err)
+			}
+			got, err := New(client).GateClosed("flock-php", "flock", 87)
+			if err != nil || got != tt.want {
+				t.Fatalf("GateClosed() = %t, %v", got, err)
+			}
+		})
+	}
+}

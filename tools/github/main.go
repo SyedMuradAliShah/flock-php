@@ -2,13 +2,10 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
 	"strconv"
-
-	"github.com/google/go-github/v93/github"
 
 	"flock/tools/github/github_client"
 	"flock/tools/github/github_issue"
@@ -69,11 +66,13 @@ type pullRequestEventIssueService interface {
 }
 
 func runPullRequestEvent(pullRequests pullRequestEventPullRequestService, issues pullRequestEventIssueService, owner, repository string, data []byte) error {
-	var event github.PullRequestEvent
-	if err := json.Unmarshal(data, &event); err != nil {
+	event, err := github_pr.ParseEvent(data)
+	if err != nil {
 		return err
 	}
-	result, err := pr_gate.Execute(pullRequests, issues, owner, repository, pullRequestGateEvent(&event))
+	result, err := pr_gate.Execute(pullRequests, issues, owner, repository, pr_gate.Event{
+		Action: event.Action, Number: event.Number, BodyEdited: event.BodyEdited, BaseEdited: event.BaseEdited,
+	})
 	if err != nil {
 		return err
 	}
@@ -81,21 +80,11 @@ func runPullRequestEvent(pullRequests pullRequestEventPullRequestService, issues
 		return nil
 	}
 	if result.ApprovedIssue.Repository == repository {
-		if err := pr_assignment.Execute(issues, owner, *result.ApprovedIssue, event.GetPullRequest().GetUser().GetLogin()); err != nil {
+		if err := pr_assignment.Execute(issues, owner, *result.ApprovedIssue, event.Author); err != nil {
 			return err
 		}
 	}
-	return milestone_transfer.Execute(pullRequests, owner, repository, event.GetPullRequest().GetNumber(), *result.ApprovedIssue)
-}
-
-func pullRequestGateEvent(event *github.PullRequestEvent) pr_gate.Event {
-	changes := event.GetChanges()
-	return pr_gate.Event{
-		Action:     event.GetAction(),
-		Number:     event.GetPullRequest().GetNumber(),
-		BodyEdited: changes != nil && changes.Body != nil,
-		BaseEdited: changes != nil && changes.Base != nil,
-	}
+	return milestone_transfer.Execute(pullRequests, owner, repository, event.Number, *result.ApprovedIssue)
 }
 
 type issueEventIssueService interface {
@@ -104,29 +93,29 @@ type issueEventIssueService interface {
 }
 
 func runIssueEvent(issues issueEventIssueService, repositories issue_triage.UserPermissionReader, owner, repository string, data []byte) error {
-	var event github.IssuesEvent
-	if err := json.Unmarshal(data, &event); err != nil {
+	event, err := github_issue.ParseEvent(data)
+	if err != nil {
 		return err
 	}
-	switch event.GetAction() {
+	switch event.Action {
 	case "opened":
-		return issue_triage.Execute(issues, repositories, owner, repository, event.GetIssue())
+		return issue_triage.Execute(issues, repositories, owner, repository, &event.Issue)
 	case "assigned":
-		return issue_assignment.Execute(issues, owner, repository, event.GetIssue())
+		return issue_assignment.Execute(issues, owner, repository, &event.Issue)
 	default:
 		return nil
 	}
 }
 
 func runMergeGroupEvent(pullRequests merge_gate.MergeQueuePullRequestService, repositories merge_gate.RepositoryRoleReader, mergeGroups merge_gate.MergeGroupRunCanceler, owner, repository string, data []byte) error {
-	var event github.MergeGroupEvent
-	if err := json.Unmarshal(data, &event); err != nil {
+	event, err := github_merge_group.ParseEvent(data)
+	if err != nil {
 		return err
 	}
 	runID, _ := strconv.ParseInt(os.Getenv("GITHUB_RUN_ID"), 10, 64)
 	return merge_gate.Execute(pullRequests, repositories, mergeGroups, owner, repository, merge_gate.Event{
-		HeadRef: event.GetMergeGroup().GetHeadRef(),
-		HeadSHA: event.GetMergeGroup().GetHeadSHA(),
+		HeadRef: event.HeadRef,
+		HeadSHA: event.HeadSHA,
 		RunID:   runID,
 	})
 }

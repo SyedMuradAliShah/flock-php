@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"flock/tools/github/github_client"
-	"github.com/google/go-github/v93/github"
 )
 
 func TestServiceAssignsUserAndRemovesLabel(t *testing.T) {
@@ -36,7 +35,7 @@ func TestServiceAssignsUserAndRemovesLabel(t *testing.T) {
 	if err := service.AddAssignee("flock-php", "flock", 73, "contributor"); err != nil {
 		t.Fatal(err)
 	}
-	issue := &github.Issue{Number: new(73), Labels: []*github.Label{{Name: HelpWanted}}}
+	issue := &Issue{Number: 73, Labels: []Label{{Name: HelpWanted}}}
 	if err := service.RemoveHelpWanted("flock-php", "flock", issue); err != nil {
 		t.Fatal(err)
 	}
@@ -64,16 +63,71 @@ func TestServiceIgnoresMissingHelpWantedLabel(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	issue := &github.Issue{Number: new(73), Labels: []*github.Label{{Name: HelpWanted}}}
+	issue := &Issue{Number: 73, Labels: []Label{{Name: HelpWanted}}}
 	if err := New(client).RemoveHelpWanted("flock-php", "flock", issue); err != nil {
 		t.Fatalf("RemoveHelpWanted() = %v, want nil", err)
 	}
 }
 
+func TestServiceGetsIssueAndAddsLabel(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method + " " + r.URL.Path {
+		case "GET /repos/flock-php/flock/issues/73":
+			_, _ = io.WriteString(w, `{"number":73}`)
+		case "POST /repos/flock-php/flock/issues/73/labels":
+			_, _ = io.WriteString(w, `[]`)
+		default:
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+	defer server.Close()
+	client, err := github_client.New(server.URL, "token")
+	if err != nil {
+		t.Fatal(err)
+	}
+	service := New(client)
+	issue, err := service.Get("flock-php", "flock", 73)
+	if err != nil || issue.Number != 73 {
+		t.Fatalf("Get() = %+v, %v", issue, err)
+	}
+	if err := service.AddLabel("flock-php", "flock", 73, "needs triage"); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestServicePropagatesIssueErrors(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	defer server.Close()
+	client, err := github_client.New(server.URL, "token")
+	if err != nil {
+		t.Fatal(err)
+	}
+	service := New(client)
+	if _, err := service.Get("flock-php", "flock", 73); err == nil {
+		t.Fatal("Get() returned nil error")
+	}
+	if err := service.AddLabel("flock-php", "flock", 73, "needs triage"); err == nil {
+		t.Fatal("AddLabel() returned nil error")
+	}
+	issue := &Issue{Number: 73, Labels: []Label{{Name: HelpWanted}}}
+	if err := service.RemoveHelpWanted("flock-php", "flock", issue); err == nil {
+		t.Fatal("RemoveHelpWanted() returned nil error")
+	}
+}
+
+func TestRemoveHelpWantedSkipsIssuesWithoutTheLabel(t *testing.T) {
+	service := New(nil)
+	if err := service.RemoveHelpWanted("flock-php", "flock", &Issue{Number: 73}); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestIssueHelpers(t *testing.T) {
-	issue := &github.Issue{
-		Assignees: []*github.User{{Login: new("contributor")}},
-		Labels:    []*github.Label{{Name: HelpWanted}, {Name: "bug"}},
+	issue := &Issue{
+		Assignees: []User{{Login: "contributor"}},
+		Labels:    []Label{{Name: HelpWanted}, {Name: "bug"}},
 	}
 	if !HasHelpWanted(issue) {
 		t.Fatal("HasHelpWanted() = false")

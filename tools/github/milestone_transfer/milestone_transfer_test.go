@@ -5,7 +5,6 @@ import (
 
 	"flock/tools/github/github_pr"
 	"flock/tools/github/issue_reference"
-	"github.com/google/go-github/v93/github"
 )
 
 func TestRunUsesFirstUserLinkedIssueWithAMilestone(t *testing.T) {
@@ -46,12 +45,12 @@ func TestRunSkipsClosedPullRequests(t *testing.T) {
 }
 
 type fakeService struct {
-	pullRequest *github.PullRequest
+	pullRequest *github_pr.PullRequest
 	issues      []github_pr.LinkedIssue
 	issueNumber int
 }
 
-func (f *fakeService) Get(string, string, int) (*github.PullRequest, error) {
+func (f *fakeService) Get(string, string, int) (*github_pr.PullRequest, error) {
 	return f.pullRequest, nil
 }
 func (f *fakeService) ListLinkedIssues(string, string, int) ([]github_pr.LinkedIssue, error) {
@@ -62,6 +61,6 @@ func (f *fakeService) TransferIssueMilestone(_ string, _ string, _ int, issueNum
 	return true, nil
 }
 
-func pullRequest(state string) *github.PullRequest {
-	return &github.PullRequest{State: new(state)}
+func pullRequest(state string) *github_pr.PullRequest {
+	return &github_pr.PullRequest{State: state}
 }

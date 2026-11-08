@@ -14,3 +14,9 @@ func TestParsePreservesBodyOrder(t *testing.T) {
 		}
 	}
 }
+
+func TestReferenceString(t *testing.T) {
+	if got := (Reference{Repository: "flock", Number: 73}).String(); got != "flock#73" {
+		t.Fatalf("String() = %q", got)
+	}
+}

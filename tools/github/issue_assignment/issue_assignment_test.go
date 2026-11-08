@@ -4,15 +4,14 @@ import (
 	"testing"
 
 	"flock/tools/github/github_issue"
-	"github.com/google/go-github/v93/github"
 )
 
 func TestRunRemovesHelpWantedFromAssignedIssue(t *testing.T) {
 	api := &fakeService{}
-	issue := &github.Issue{
-		Number:    new(73),
-		Assignees: []*github.User{{Login: new("contributor")}},
-		Labels:    []*github.Label{{Name: github_issue.HelpWanted}},
+	issue := &github_issue.Issue{
+		Number:    73,
+		Assignees: []github_issue.User{{Login: "contributor"}},
+		Labels:    []github_issue.Label{{Name: github_issue.HelpWanted}},
 	}
 
 	if err := Execute(api, "flock-php", "flock", issue); err != nil {
@@ -24,9 +23,9 @@ func TestRunRemovesHelpWantedFromAssignedIssue(t *testing.T) {
 }
 
 func TestRunSkipsUnassignedIssuesAndMissingLabels(t *testing.T) {
-	for _, issue := range []*github.Issue{
-		{Number: new(73), Labels: []*github.Label{{Name: github_issue.HelpWanted}}},
-		{Number: new(73), Assignees: []*github.User{{Login: new("contributor")}}},
+	for _, issue := range []*github_issue.Issue{
+		{Number: 73, Labels: []github_issue.Label{{Name: github_issue.HelpWanted}}},
+		{Number: 73, Assignees: []github_issue.User{{Login: "contributor"}}},
 	} {
 		api := &fakeService{}
 		if err := Execute(api, "flock-php", "flock", issue); err != nil {
@@ -40,7 +39,7 @@ func TestRunSkipsUnassignedIssuesAndMissingLabels(t *testing.T) {
 
 type fakeService struct{ removed bool }
 
-func (f *fakeService) RemoveHelpWanted(_ string, _ string, issue *github.Issue) error {
+func (f *fakeService) RemoveHelpWanted(_ string, _ string, issue *github_issue.Issue) error {
 	if github_issue.HasHelpWanted(issue) {
 		f.removed = true
 	}
