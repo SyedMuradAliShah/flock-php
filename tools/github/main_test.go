@@ -189,8 +189,8 @@ func TestRunPullRequestEventClosesIssueClaimedByAnotherContributor(t *testing.T)
 func TestRunPullRequestEventReevaluatesWhenIssueApprovalIsWithdrawn(t *testing.T) {
 	calls := []string{}
 	pullRequests := &pullRequestEventFake{pullRequest: &github_pr.PullRequest{
-		Number: 87, State: "open", BaseRef: "main", Body: "Fixes #73", Author: github_issue.User{Login: "contributor", Type: "User"},
-	}, files: []github_pr.File{{Filename: "tools/github/main.go"}}, calls: &calls}
+		Number: 87, State: "closed", BaseRef: "main", Body: "Fixes #73", Author: github_issue.User{Login: "contributor", Type: "User"},
+	}, gateClosed: true, files: []github_pr.File{{Filename: "tools/github/main.go"}}, calls: &calls}
 	issues := &pullRequestIssueFake{
 		issueReads: []*github_issue.Issue{
 			{Number: 73, State: "open", Labels: []github_issue.Label{{Name: "help wanted"}}},
@@ -199,18 +199,74 @@ func TestRunPullRequestEventReevaluatesWhenIssueApprovalIsWithdrawn(t *testing.T
 		},
 		calls: &calls,
 	}
-	if err := runPullRequestEvent(pullRequests, issues, issues, "flock-php", "flock", []byte(`{"action":"synchronize","pull_request":{"number":87,"user":{"login":"contributor"}}}`)); err != nil {
+	if err := runPullRequestEvent(pullRequests, issues, issues, "flock-php", "flock", []byte(`{"action":"edited","changes":{"body":{}},"pull_request":{"number":87,"user":{"login":"contributor"}}}`)); err != nil {
 		t.Fatal(err)
 	}
 	if !strings.Contains(pullRequests.comment, "Flock takes pull requests only for issues a maintainer has approved") {
 		t.Fatalf("re-evaluation comment = %q", pullRequests.comment)
 	}
-	want := []string{"pr:get", "issue:get", "issue:get", "pr:get", "issue:get", "pr:list-files", "pr:create-comment", "pr:set-state"}
+	want := []string{"pr:get", "pr:gate-closed", "issue:get", "pr:set-state", "pr:create-comment", "issue:get", "pr:get", "issue:get", "pr:list-files", "pr:create-comment", "pr:set-state"}
 	if !reflect.DeepEqual(calls, want) {
 		t.Fatalf("calls = %v, want %v", calls, want)
 	}
 	if issues.assignee != "" || issues.removed {
 		t.Fatalf("withdrawn approval had claim side effects: assignee = %q, removed = %t", issues.assignee, issues.removed)
+	}
+}
+
+func TestRunPullRequestEventProcessesReplacementApprovedIssue(t *testing.T) {
+	calls := []string{}
+	milestone := 4
+	pullRequests := &pullRequestEventFake{pullRequest: &github_pr.PullRequest{
+		Number: 87, State: "open", BaseRef: "main", Body: "Fixes #73\nFixes #74", Author: github_issue.User{Login: "contributor", Type: "User"},
+	}, linkedIssues: []github_pr.LinkedIssue{{Number: 74, MilestoneNumber: &milestone}}, calls: &calls}
+	issues := &pullRequestIssueFake{
+		issue: &github_issue.Issue{Number: 73, State: "open", Labels: []github_issue.Label{{Name: "help wanted"}}},
+		issueReads: []*github_issue.Issue{
+			{Number: 73, State: "open", Labels: []github_issue.Label{{Name: "help wanted"}}},
+			{Number: 73, State: "closed", Labels: []github_issue.Label{{Name: "help wanted"}}},
+			{Number: 73, State: "closed", Labels: []github_issue.Label{{Name: "help wanted"}}},
+			{Number: 74, State: "open", Labels: []github_issue.Label{{Name: "help wanted"}}},
+			{Number: 74, State: "open", Labels: []github_issue.Label{{Name: "help wanted"}}},
+		},
+		calls: &calls,
+	}
+	if err := runPullRequestEvent(pullRequests, issues, issues, "flock-php", "flock", []byte(`{"action":"opened","pull_request":{"number":87,"user":{"login":"contributor"}}}`)); err != nil {
+		t.Fatal(err)
+	}
+	want := []string{
+		"pr:get", "issue:get", "issue:get", "pr:get", "issue:get", "issue:get",
+		"issue:get", "issue:assign", "repository:role", "issue:remove-help-wanted",
+		"pr:get", "pr:list-linked-issues", "pr:transfer-milestone",
+	}
+	if !reflect.DeepEqual(calls, want) {
+		t.Fatalf("calls = %v, want %v", calls, want)
+	}
+	if issues.assignedIssue != 74 || pullRequests.transferredIssue != 74 {
+		t.Fatalf("assigned issue = %d, transferred issue = %d; want 74 for both", issues.assignedIssue, pullRequests.transferredIssue)
+	}
+}
+
+func TestRunPullRequestEventBoundsApprovalRetries(t *testing.T) {
+	calls := []string{}
+	pullRequests := &pullRequestEventFake{pullRequest: &github_pr.PullRequest{
+		Number: 87, State: "open", BaseRef: "main", Body: "Fixes #73", Author: github_issue.User{Login: "contributor", Type: "User"},
+	}, calls: &calls}
+	approved := &github_issue.Issue{Number: 73, State: "open", Labels: []github_issue.Label{{Name: "help wanted"}}}
+	withdrawn := &github_issue.Issue{Number: 73, State: "closed", Labels: []github_issue.Label{{Name: "help wanted"}}}
+	issues := &pullRequestIssueFake{
+		issue: approved,
+		issueReads: []*github_issue.Issue{
+			approved, withdrawn, approved, withdrawn, approved, withdrawn, approved, withdrawn,
+		},
+		calls: &calls,
+	}
+	err := runPullRequestEvent(pullRequests, issues, issues, "flock-php", "flock", []byte(`{"action":"opened","pull_request":{"number":87,"user":{"login":"contributor"}}}`))
+	if err == nil || !strings.Contains(err.Error(), "issue approval changed repeatedly") {
+		t.Fatalf("runPullRequestEvent() error = %v, want bounded-retry error", err)
+	}
+	if got := strings.Count(strings.Join(calls, ","), "issue:get"); got != 8 {
+		t.Fatalf("issue reads = %d, want 8", got)
 	}
 }
 
@@ -308,12 +364,14 @@ func (f *issueEventFakeService) RemoveHelpWanted(string, string, *github_issue.I
 }
 
 type pullRequestEventFake struct {
-	pullRequest  *github_pr.PullRequest
-	linkedIssues []github_pr.LinkedIssue
-	files        []github_pr.File
-	calls        *[]string
-	getErr       error
-	comment      string
+	pullRequest      *github_pr.PullRequest
+	linkedIssues     []github_pr.LinkedIssue
+	files            []github_pr.File
+	calls            *[]string
+	getErr           error
+	comment          string
+	gateClosed       bool
+	transferredIssue int
 }
 
 func (f *pullRequestEventFake) Get(string, string, int) (*github_pr.PullRequest, error) {
@@ -326,23 +384,25 @@ func (f *pullRequestEventFake) ListFiles(string, string, int) ([]github_pr.File,
 }
 func (f *pullRequestEventFake) GateClosed(string, string, int) (bool, error) {
 	f.record("pr:gate-closed")
-	return false, nil
+	return f.gateClosed, nil
 }
 func (f *pullRequestEventFake) CreateComment(_ string, _ string, _ int, comment string) error {
 	f.record("pr:create-comment")
 	f.comment = comment
 	return nil
 }
-func (f *pullRequestEventFake) SetState(string, string, int, string) error {
+func (f *pullRequestEventFake) SetState(_, _ string, _ int, state string) error {
 	f.record("pr:set-state")
+	f.pullRequest.State = state
 	return nil
 }
 func (f *pullRequestEventFake) ListLinkedIssues(string, string, int) ([]github_pr.LinkedIssue, error) {
 	f.record("pr:list-linked-issues")
 	return f.linkedIssues, nil
 }
-func (f *pullRequestEventFake) TransferIssueMilestone(string, string, int, int) (bool, error) {
+func (f *pullRequestEventFake) TransferIssueMilestone(_, _ string, _ int, issueNumber int) (bool, error) {
 	f.record("pr:transfer-milestone")
+	f.transferredIssue = issueNumber
 	return false, nil
 }
 func (f *pullRequestEventFake) record(call string) {
@@ -352,14 +412,15 @@ func (f *pullRequestEventFake) record(call string) {
 }
 
 type pullRequestIssueFake struct {
-	issue      *github_issue.Issue
-	issueReads []*github_issue.Issue
-	readIndex  int
-	assignee   string
-	removed    bool
-	calls      *[]string
-	assignErr  error
-	role       string
+	issue         *github_issue.Issue
+	issueReads    []*github_issue.Issue
+	readIndex     int
+	assignee      string
+	assignedIssue int
+	removed       bool
+	calls         *[]string
+	assignErr     error
+	role          string
 }
 
 func (f *pullRequestIssueFake) Get(string, string, int) (*github_issue.Issue, error) {
@@ -373,9 +434,10 @@ func (f *pullRequestIssueFake) Get(string, string, int) (*github_issue.Issue, er
 	}
 	return f.issue, nil
 }
-func (f *pullRequestIssueFake) AddAssignee(_ string, _ string, _ int, username string) (*github_issue.Issue, error) {
+func (f *pullRequestIssueFake) AddAssignee(_ string, _ string, number int, username string) (*github_issue.Issue, error) {
 	f.record("issue:assign")
 	f.assignee = username
+	f.assignedIssue = number
 	return &github_issue.Issue{Assignees: append(f.issue.Assignees, github_issue.User{Login: username}), Labels: f.issue.Labels}, f.assignErr
 }
 func (f *pullRequestIssueFake) RemoveAssignee(_ string, _ string, _ int, username string) error {

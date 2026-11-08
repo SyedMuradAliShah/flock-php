@@ -8,6 +8,10 @@
 # Keep Settings > General > Pull requests at "All users"; this workflow does the gating.
 name: PR gate
 
+concurrency:
+  group: contribution-pr-gate-${{ github.repository }}
+  queue: max
+
 on:
   # pull_request_target, so the token can comment on and close PRs from forks. It never checks
   # out or runs the PR's code.

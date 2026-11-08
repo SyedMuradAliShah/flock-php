@@ -65,6 +65,8 @@ type pullRequestEventIssueService interface {
 	pr_gate.IssueReader
 }
 
+const maxApprovalRetries = 3
+
 func runPullRequestEvent(pullRequests pullRequestEventPullRequestService, issues pullRequestEventIssueService, repositories pr_assignment.UserRoleReader, owner, repository string, data []byte) error {
 	event, err := github_pr.ParseEvent(data)
 	if err != nil {
@@ -76,25 +78,33 @@ func runPullRequestEvent(pullRequests pullRequestEventPullRequestService, issues
 	if err != nil {
 		return err
 	}
-	if result.ApprovedIssue == nil {
-		return nil
+	for retries := 0; result.ApprovedIssue != nil; {
+		approvedIssue := *result.ApprovedIssue
+		if approvedIssue.Repository == repository {
+			assignment, err := pr_assignment.Execute(issues, repositories, owner, approvedIssue, event.Author)
+			if err != nil {
+				return err
+			}
+			if assignment.ApprovalWithdrawn {
+				if retries == maxApprovalRetries {
+					return fmt.Errorf("issue approval changed repeatedly while processing pull request #%d", event.Number)
+				}
+				retries++
+				result, err = pr_gate.Execute(pullRequests, issues, owner, repository, pr_gate.Event{
+					Action: "synchronize", Number: event.Number,
+				})
+				if err != nil {
+					return err
+				}
+				continue
+			}
+			if assignment.ClaimedBy != "" {
+				return pr_gate.CloseClaimedIssue(pullRequests, owner, repository, event.Number, approvedIssue, assignment.ClaimedBy)
+			}
+		}
+		return milestone_transfer.Execute(pullRequests, owner, repository, event.Number, approvedIssue)
 	}
-	if result.ApprovedIssue.Repository == repository {
-		assignment, err := pr_assignment.Execute(issues, repositories, owner, *result.ApprovedIssue, event.Author)
-		if err != nil {
-			return err
-		}
-		if assignment.ApprovalWithdrawn {
-			_, err := pr_gate.Execute(pullRequests, issues, owner, repository, pr_gate.Event{
-				Action: event.Action, Number: event.Number, BodyEdited: event.BodyEdited, BaseEdited: event.BaseEdited,
-			})
-			return err
-		}
-		if assignment.ClaimedBy != "" {
-			return pr_gate.CloseClaimedIssue(pullRequests, owner, repository, event.Number, *result.ApprovedIssue, assignment.ClaimedBy)
-		}
-	}
-	return milestone_transfer.Execute(pullRequests, owner, repository, event.Number, *result.ApprovedIssue)
+	return nil
 }
 
 type issueEventIssueService interface {
