@@ -17,6 +17,8 @@ func TestServiceAssignsUserAndRemovesLabel(t *testing.T) {
 		requests = append(requests, r.Method+" "+r.URL.EscapedPath()+" "+string(body))
 		switch r.Method + " " + r.URL.EscapedPath() {
 		case "POST /repos/flock-php/flock/issues/73/assignees":
+			_, _ = io.WriteString(w, `{"number":73,"assignees":[{"login":"contributor"}]}`)
+		case "DELETE /repos/flock-php/flock/issues/73/assignees":
 			_, _ = io.WriteString(w, `{}`)
 		case "DELETE /repos/flock-php/flock/issues/73/labels/help%20wanted":
 			_, _ = io.WriteString(w, `{}`)
@@ -32,7 +34,11 @@ func TestServiceAssignsUserAndRemovesLabel(t *testing.T) {
 		t.Fatal(err)
 	}
 	service := New(client)
-	if err := service.AddAssignee("flock-php", "flock", 73, "contributor"); err != nil {
+	assigned, err := service.AddAssignee("flock-php", "flock", 73, "contributor")
+	if err != nil || !HasAssignee(assigned, "contributor") {
+		t.Fatalf("AddAssignee() = %+v, %v", assigned, err)
+	}
+	if err := service.RemoveAssignee("flock-php", "flock", 73, "contributor"); err != nil {
 		t.Fatal(err)
 	}
 	issue := &Issue{Number: 73, Labels: []Label{{Name: HelpWanted}}}
@@ -42,6 +48,7 @@ func TestServiceAssignsUserAndRemovesLabel(t *testing.T) {
 
 	got := strings.Join(requests, "\n")
 	if !strings.Contains(got, `POST /repos/flock-php/flock/issues/73/assignees {"assignees":["contributor"]}`) ||
+		!strings.Contains(got, `DELETE /repos/flock-php/flock/issues/73/assignees {"assignees":["contributor"]}`) ||
 		!strings.Contains(got, "DELETE /repos/flock-php/flock/issues/73/labels/help%20wanted ") {
 		t.Fatalf("requests = %s", got)
 	}

@@ -104,6 +104,19 @@ func approvedResult(issue issue_reference.Reference) Result {
 	return Result{ApprovedIssue: &issue}
 }
 
+// CloseClaimedIssue closes a pull request whose approved issue was claimed after the gate read it.
+func CloseClaimedIssue(pullRequests PullRequestGateService, owner, repository string, number int, issue issue_reference.Reference, claimant string) error {
+	pullRequest, err := pullRequests.Get(owner, repository, number)
+	if err != nil || pullRequest == nil || pullRequest.State != "open" {
+		return err
+	}
+	comment := fmt.Sprintf("Thanks for the PR, @%s! Issue %s has already been claimed by @%s, so this pull request is closed. Please check other issues labeled `help wanted`.\n\n%s", pullRequest.Author.Login, issue, claimant, github_pr.GateMarker)
+	if err := pullRequests.CreateComment(owner, repository, number, comment); err != nil {
+		return err
+	}
+	return pullRequests.SetState(owner, repository, number, "closed")
+}
+
 func evaluate(files []github_pr.File) action {
 	if docsOnly(files) {
 		return allow

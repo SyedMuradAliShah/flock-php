@@ -76,8 +76,16 @@ func (s *Service) RemoveHelpWanted(owner, repository string, issue *Issue) error
 	return err
 }
 
-func (s *Service) AddAssignee(owner, repository string, number int, username string) error {
-	_, _, err := s.client.Issues.AddAssignees(context.Background(), owner, repository, number, []string{username})
+func (s *Service) AddAssignee(owner, repository string, number int, username string) (*Issue, error) {
+	issue, _, err := s.client.Issues.AddAssignees(context.Background(), owner, repository, number, []string{username})
+	if err != nil {
+		return nil, err
+	}
+	return issueFromGitHub(issue), nil
+}
+
+func (s *Service) RemoveAssignee(owner, repository string, number int, username string) error {
+	_, _, err := s.client.Issues.RemoveAssignees(context.Background(), owner, repository, number, []string{username})
 	return err
 }
 

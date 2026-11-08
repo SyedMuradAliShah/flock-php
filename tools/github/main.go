@@ -44,7 +44,7 @@ func main() {
 
 	switch os.Args[1] {
 	case "pr":
-		err = runPullRequestEvent(github_pr.New(client), github_issue.New(client), owner, repo, event)
+		err = runPullRequestEvent(github_pr.New(client), github_issue.New(client), github_repository.New(client), owner, repo, event)
 	case "issue":
 		err = runIssueEvent(github_issue.New(client), github_repository.New(client), owner, repo, event)
 	case "merge":
@@ -65,7 +65,7 @@ type pullRequestEventIssueService interface {
 	pr_gate.IssueReader
 }
 
-func runPullRequestEvent(pullRequests pullRequestEventPullRequestService, issues pullRequestEventIssueService, owner, repository string, data []byte) error {
+func runPullRequestEvent(pullRequests pullRequestEventPullRequestService, issues pullRequestEventIssueService, repositories pr_assignment.UserRoleReader, owner, repository string, data []byte) error {
 	event, err := github_pr.ParseEvent(data)
 	if err != nil {
 		return err
@@ -80,8 +80,12 @@ func runPullRequestEvent(pullRequests pullRequestEventPullRequestService, issues
 		return nil
 	}
 	if result.ApprovedIssue.Repository == repository {
-		if err := pr_assignment.Execute(issues, owner, *result.ApprovedIssue, event.Author); err != nil {
+		assignment, err := pr_assignment.Execute(issues, repositories, owner, *result.ApprovedIssue, event.Author)
+		if err != nil {
 			return err
+		}
+		if assignment.ClaimedBy != "" {
+			return pr_gate.CloseClaimedIssue(pullRequests, owner, repository, event.Number, *result.ApprovedIssue, assignment.ClaimedBy)
 		}
 	}
 	return milestone_transfer.Execute(pullRequests, owner, repository, event.Number, *result.ApprovedIssue)
