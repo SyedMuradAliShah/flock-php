@@ -46,6 +46,20 @@ func TestRunSkipsAlreadyClaimedIssuesAndMissingLabels(t *testing.T) {
 	}
 }
 
+func TestRunRemovesHelpWantedWhenTheAuthorIsAlreadyAssigned(t *testing.T) {
+	api := &fakeService{issue: &github_issue.Issue{
+		Number:    73,
+		Assignees: []github_issue.User{{Login: "contributor"}},
+		Labels:    []github_issue.Label{{Name: github_issue.HelpWanted}},
+	}}
+	if err := Execute(api, "flock-php", issue_reference.Reference{Repository: "flock", Number: 73}, "contributor"); err != nil {
+		t.Fatal(err)
+	}
+	if api.assignee != "" || !api.removed {
+		t.Fatalf("assignee = %q, removed = %t", api.assignee, api.removed)
+	}
+}
+
 type fakeService struct {
 	issue     *github_issue.Issue
 	assignee  string

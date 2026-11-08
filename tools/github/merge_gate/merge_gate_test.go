@@ -2,6 +2,7 @@ package merge_gate
 
 import (
 	"errors"
+	"reflect"
 	"testing"
 )
 
@@ -35,6 +36,33 @@ func TestRunRejectsOtherRoles(t *testing.T) {
 			if !api.cancelled || api.cancelSHA != "abc" || api.cancelExcept != 7 {
 				t.Fatalf("cancel = %t sha=%q except=%d", api.cancelled, api.cancelSHA, api.cancelExcept)
 			}
+			want := []string{"pull-request:enqueuer", "repository:role", "pull-request:comment", "merge-group:cancel"}
+			if !reflect.DeepEqual(api.calls, want) {
+				t.Fatalf("calls = %v, want %v", api.calls, want)
+			}
+		})
+	}
+}
+
+func TestRunStopsOnServiceErrors(t *testing.T) {
+	tests := []struct {
+		name string
+		api  *fakeService
+		want []string
+	}{
+		{name: "enqueuer", api: &fakeService{enqueuerErr: errors.New("enqueuer")}, want: []string{"pull-request:enqueuer"}},
+		{name: "role", api: &fakeService{roleErr: errors.New("role")}, want: []string{"pull-request:enqueuer", "repository:role"}},
+		{name: "comment", api: &fakeService{commentErr: errors.New("comment")}, want: []string{"pull-request:enqueuer", "repository:role", "pull-request:comment"}},
+		{name: "cancel", api: &fakeService{cancelErr: errors.New("cancel")}, want: []string{"pull-request:enqueuer", "repository:role", "pull-request:comment", "merge-group:cancel"}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := Execute(tt.api, tt.api, tt.api, "flock-php", "flock", Event{HeadRef: ref, HeadSHA: "abc", RunID: 7}); err == nil {
+				t.Fatal("Execute() returned nil error")
+			}
+			if !reflect.DeepEqual(tt.api.calls, tt.want) {
+				t.Fatalf("calls = %v, want %v", tt.api.calls, tt.want)
+			}
 		})
 	}
 }
@@ -56,17 +84,28 @@ type fakeService struct {
 	cancelled    bool
 	cancelSHA    string
 	cancelExcept int64
+	calls        []string
+	enqueuerErr  error
+	roleErr      error
+	commentErr   error
+	cancelErr    error
 }
 
 func (f *fakeService) GetMergeQueueEnqueuer(string, string, int) (string, error) {
-	return "someone", nil
+	f.calls = append(f.calls, "pull-request:enqueuer")
+	return "someone", f.enqueuerErr
 }
-func (f *fakeService) GetUserRole(string, string, string) (string, error) { return f.role, nil }
+func (f *fakeService) GetUserRole(string, string, string) (string, error) {
+	f.calls = append(f.calls, "repository:role")
+	return f.role, f.roleErr
+}
 func (f *fakeService) CreateComment(_ string, _ string, number int, _ string) error {
+	f.calls = append(f.calls, "pull-request:comment")
 	f.commented, f.commentedOn = true, number
-	return nil
+	return f.commentErr
 }
 func (f *fakeService) CancelOtherRuns(_ string, _ string, sha string, except int64) error {
+	f.calls = append(f.calls, "merge-group:cancel")
 	f.cancelled, f.cancelSHA, f.cancelExcept = true, sha, except
-	return nil
+	return f.cancelErr
 }
