@@ -11,9 +11,11 @@ import (
 	"github.com/google/go-github/v93/github"
 
 	"flock/tools/github/github_service"
+	"flock/tools/github/issue_assignment"
 	"flock/tools/github/issue_triage"
 	"flock/tools/github/merge_gate"
 	"flock/tools/github/milestone_transfer"
+	"flock/tools/github/pr_assignment"
 	"flock/tools/github/pr_gate"
 	"flock/tools/github/repository"
 )
@@ -64,6 +66,11 @@ func runPullRequestEvent(api *github_service.Service, owner, repository string, 
 	if result.ApprovedIssue == nil {
 		return nil
 	}
+	if result.ApprovedIssue.Repository == repository {
+		if err := pr_assignment.Run(api, owner, *result.ApprovedIssue, event.GetPullRequest().GetUser().GetLogin()); err != nil {
+			return err
+		}
+	}
 	return milestone_transfer.Run(api, owner, repository, event.GetPullRequest().GetNumber(), *result.ApprovedIssue)
 }
 
@@ -77,12 +84,24 @@ func pullRequestGateEvent(event *github.PullRequestEvent) pr_gate.Event {
 	}
 }
 
-func runIssueEvent(api *github_service.Service, owner, repository string, data []byte) error {
+type issueEventService interface {
+	issue_triage.Service
+	issue_assignment.Service
+}
+
+func runIssueEvent(api issueEventService, owner, repository string, data []byte) error {
 	var event github.IssuesEvent
 	if err := json.Unmarshal(data, &event); err != nil {
 		return err
 	}
-	return issue_triage.Run(api, owner, repository, event.GetIssue())
+	switch event.GetAction() {
+	case "opened":
+		return issue_triage.Run(api, owner, repository, event.GetIssue())
+	case "assigned":
+		return issue_assignment.Run(api, owner, repository, event.GetIssue())
+	default:
+		return nil
+	}
 }
 
 func runMergeGroupEvent(api *github_service.Service, owner, repository string, data []byte) error {

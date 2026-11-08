@@ -3,7 +3,7 @@ name: Issue Triage
 
 on:
   issues:
-    types: [ opened ]
+    types: [ opened, assigned ]
 
 permissions:
   contents: read
