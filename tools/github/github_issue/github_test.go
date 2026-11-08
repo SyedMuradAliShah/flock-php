@@ -54,6 +54,21 @@ func TestServiceAssignsUserAndRemovesLabel(t *testing.T) {
 	}
 }
 
+func TestServiceRejectsAssignmentResponseWithoutRequestedUser(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = io.WriteString(w, `{"number":73,"assignees":[]}`)
+	}))
+	defer server.Close()
+
+	client, err := github_client.New(server.URL, "token")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := New(client).AddAssignee("flock-php", "flock", 73, "contributor"); err == nil {
+		t.Fatal("AddAssignee() returned nil error when GitHub did not assign the requested user")
+	}
+}
+
 func TestServiceIgnoresMissingHelpWantedLabel(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodDelete || r.URL.EscapedPath() != "/repos/flock-php/flock/issues/73/labels/help%20wanted" {

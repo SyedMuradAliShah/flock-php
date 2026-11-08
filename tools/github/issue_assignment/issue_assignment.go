@@ -4,6 +4,7 @@ package issue_assignment
 import "flock/tools/github/github_issue"
 
 type HelpWantedRemover interface {
+	Get(owner, repository string, number int) (*github_issue.Issue, error)
 	RemoveHelpWanted(owner, repository string, issue *github_issue.Issue) error
 }
 
@@ -11,8 +12,15 @@ func Execute(api HelpWantedRemover, owner, repository string, issue *github_issu
 	if issue == nil {
 		return nil
 	}
-	if len(issue.Assignees) == 0 {
+	currentIssue, err := api.Get(owner, repository, issue.Number)
+	if err != nil {
+		return err
+	}
+	if currentIssue == nil {
 		return nil
 	}
-	return api.RemoveHelpWanted(owner, repository, issue)
+	if len(currentIssue.Assignees) == 0 {
+		return nil
+	}
+	return api.RemoveHelpWanted(owner, repository, currentIssue)
 }

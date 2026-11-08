@@ -84,6 +84,12 @@ func runPullRequestEvent(pullRequests pullRequestEventPullRequestService, issues
 		if err != nil {
 			return err
 		}
+		if assignment.ApprovalWithdrawn {
+			_, err := pr_gate.Execute(pullRequests, issues, owner, repository, pr_gate.Event{
+				Action: event.Action, Number: event.Number, BodyEdited: event.BodyEdited, BaseEdited: event.BaseEdited,
+			})
+			return err
+		}
 		if assignment.ClaimedBy != "" {
 			return pr_gate.CloseClaimedIssue(pullRequests, owner, repository, event.Number, *result.ApprovedIssue, assignment.ClaimedBy)
 		}

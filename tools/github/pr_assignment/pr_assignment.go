@@ -2,6 +2,9 @@
 package pr_assignment
 
 import (
+	"fmt"
+	"sort"
+
 	"flock/tools/github/github_issue"
 	"flock/tools/github/issue_reference"
 )
@@ -18,7 +21,8 @@ type UserRoleReader interface {
 }
 
 type Result struct {
-	ClaimedBy string
+	ClaimedBy         string
+	ApprovalWithdrawn bool
 }
 
 func Execute(api IssueClaimer, repositories UserRoleReader, owner string, issueReference issue_reference.Reference, author string) (Result, error) {
@@ -26,14 +30,19 @@ func Execute(api IssueClaimer, repositories UserRoleReader, owner string, issueR
 	if err != nil {
 		return Result{}, err
 	}
-	if issue == nil {
-		return Result{}, nil
+	if !approvedFor(issue, author) {
+		return Result{ApprovalWithdrawn: true}, nil
 	}
-	claimedBy, err := externalAssignee(repositories, owner, issueReference.Repository, issue, author)
+	claimedBy, err := winningAssignee(repositories, owner, issueReference.Repository, issue)
 	if err != nil {
 		return Result{}, err
 	}
-	if claimedBy != "" {
+	if claimedBy != "" && claimedBy != author {
+		if github_issue.HasAssignee(issue, author) {
+			if err := api.RemoveAssignee(owner, issueReference.Repository, issueReference.Number, author); err != nil {
+				return Result{}, err
+			}
+		}
 		return Result{ClaimedBy: claimedBy}, nil
 	}
 	if github_issue.HasAssignee(issue, author) {
@@ -44,11 +53,17 @@ func Execute(api IssueClaimer, repositories UserRoleReader, owner string, issueR
 	if err != nil {
 		return Result{}, err
 	}
-	claimedBy, err = externalAssignee(repositories, owner, issueReference.Repository, issue, author)
+	if !github_issue.HasAssignee(issue, author) {
+		return Result{}, fmt.Errorf("issue #%d was not assigned to %q", issueReference.Number, author)
+	}
+	claimedBy, err = winningAssignee(repositories, owner, issueReference.Repository, issue)
 	if err != nil {
+		if cleanupErr := api.RemoveAssignee(owner, issueReference.Repository, issueReference.Number, author); cleanupErr != nil {
+			return Result{}, fmt.Errorf("verify issue claim: %w; remove unsuccessful assignment: %v", err, cleanupErr)
+		}
 		return Result{}, err
 	}
-	if claimedBy != "" {
+	if claimedBy != author {
 		if err := api.RemoveAssignee(owner, issueReference.Repository, issueReference.Number, author); err != nil {
 			return Result{}, err
 		}
@@ -57,17 +72,30 @@ func Execute(api IssueClaimer, repositories UserRoleReader, owner string, issueR
 	return Result{}, api.RemoveHelpWanted(owner, issueReference.Repository, issue)
 }
 
-func externalAssignee(repositories UserRoleReader, owner, repository string, issue *github_issue.Issue, author string) (string, error) {
+func approvedFor(issue *github_issue.Issue, author string) bool {
+	return issue != nil && !issue.IsPullRequest && issue.State == "open" &&
+		(github_issue.HasHelpWanted(issue) || github_issue.HasAssignee(issue, author))
+}
+
+func winningAssignee(repositories UserRoleReader, owner, repository string, issue *github_issue.Issue) (string, error) {
+	assignees := make([]string, 0, len(issue.Assignees))
 	for _, assignee := range issue.Assignees {
-		if assignee.Login == author {
-			continue
+		assignees = append(assignees, assignee.Login)
+	}
+	sort.Strings(assignees)
+	for i := 1; i < len(assignees); i++ {
+		if assignees[i] == assignees[i-1] {
+			assignees = append(assignees[:i], assignees[i+1:]...)
+			i--
 		}
-		role, err := repositories.GetUserRole(owner, repository, assignee.Login)
+	}
+	for _, username := range assignees {
+		role, err := repositories.GetUserRole(owner, repository, username)
 		if err != nil {
 			return "", err
 		}
 		if role != "admin" && role != "maintain" {
-			return assignee.Login, nil
+			return username, nil
 		}
 	}
 	return "", nil

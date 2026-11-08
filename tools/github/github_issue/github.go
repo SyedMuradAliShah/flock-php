@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/google/go-github/v93/github"
@@ -81,7 +82,11 @@ func (s *Service) AddAssignee(owner, repository string, number int, username str
 	if err != nil {
 		return nil, err
 	}
-	return issueFromGitHub(issue), nil
+	result := issueFromGitHub(issue)
+	if !HasAssignee(result, username) {
+		return nil, fmt.Errorf("GitHub did not assign %q to issue #%d", username, number)
+	}
+	return result, nil
 }
 
 func (s *Service) RemoveAssignee(owner, repository string, number int, username string) error {
