@@ -8,7 +8,10 @@ import (
 
 	"flock/tools/github/github_issue"
 	"flock/tools/github/github_pr"
+	"flock/tools/github/issue_triage"
 	"flock/tools/github/merge_gate"
+	"flock/tools/github/pr_assignment"
+	"flock/tools/github/pr_gate"
 )
 
 func TestPullRequestEventWithoutChangesDoesNotPanic(t *testing.T) {
@@ -96,7 +99,7 @@ func TestPolicies(t *testing.T) {
 					}
 					api.currentIssue = &parsed.Issue
 				}
-				if err := runIssueEvent(api, api, "flock-php", "flock", []byte(event)); err != nil {
+				if err := runIssueEvent(newIssueEventDependencies(api), "flock-php", "flock", []byte(event)); err != nil {
 					t.Fatal(err)
 				}
 			}
@@ -124,7 +127,7 @@ func TestRunIssueEventStopsOnParseAndServiceErrors(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := runIssueEvent(&tt.api, &tt.api, "flock-php", "flock", []byte(tt.data)); err == nil {
+			if err := runIssueEvent(newIssueEventDependencies(&tt.api), "flock-php", "flock", []byte(tt.data)); err == nil {
 				t.Fatal("runIssueEvent() returned nil error")
 			}
 		})
@@ -293,26 +296,26 @@ func TestRunPullRequestEventStopsOnErrors(t *testing.T) {
 func TestRunMergeGroupEvent(t *testing.T) {
 	api := &mergeGroupEventFake{}
 	t.Setenv("GITHUB_RUN_ID", "7")
-	if err := runMergeGroupEvent(api, api, api, "flock-php", "flock", []byte(`{"merge_group":{"head_ref":"refs/heads/gh-readonly-queue/main/pr-87-abc","head_sha":"abc"}}`)); err != nil {
+	if err := runMergeGroupEvent(newMergeGroupEventDependencies(api), "flock-php", "flock", []byte(`{"merge_group":{"head_ref":"refs/heads/gh-readonly-queue/main/pr-87-abc","head_sha":"abc"}}`)); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestRunMergeGroupEventRejectsInvalidPayloadAndUsesZeroForInvalidRunID(t *testing.T) {
-	if err := runMergeGroupEvent(&mergeGroupEventFake{}, &mergeGroupEventFake{}, &mergeGroupEventFake{}, "flock-php", "flock", []byte(`{`)); err == nil {
+	if err := runMergeGroupEvent(newMergeGroupEventDependencies(&mergeGroupEventFake{}), "flock-php", "flock", []byte(`{`)); err == nil {
 		t.Fatal("runMergeGroupEvent() returned nil error")
 	}
 
 	validRunIDAPI := &mergeGroupEventFake{role: "write"}
 	t.Setenv("GITHUB_RUN_ID", "7")
-	err := runMergeGroupEvent(validRunIDAPI, validRunIDAPI, validRunIDAPI, "flock-php", "flock", []byte(`{"merge_group":{"head_ref":"refs/heads/gh-readonly-queue/main/pr-87-abc","head_sha":"abc"}}`))
+	err := runMergeGroupEvent(newMergeGroupEventDependencies(validRunIDAPI), "flock-php", "flock", []byte(`{"merge_group":{"head_ref":"refs/heads/gh-readonly-queue/main/pr-87-abc","head_sha":"abc"}}`))
 	if !errors.Is(err, merge_gate.ErrNotAllowed) || validRunIDAPI.cancelExcept != 7 {
 		t.Fatalf("err = %v, except = %d", err, validRunIDAPI.cancelExcept)
 	}
 
 	api := &mergeGroupEventFake{role: "write"}
 	t.Setenv("GITHUB_RUN_ID", "not-a-number")
-	err = runMergeGroupEvent(api, api, api, "flock-php", "flock", []byte(`{"merge_group":{"head_ref":"refs/heads/gh-readonly-queue/main/pr-87-abc","head_sha":"abc"}}`))
+	err = runMergeGroupEvent(newMergeGroupEventDependencies(api), "flock-php", "flock", []byte(`{"merge_group":{"head_ref":"refs/heads/gh-readonly-queue/main/pr-87-abc","head_sha":"abc"}}`))
 	if !errors.Is(err, merge_gate.ErrNotAllowed) {
 		t.Fatalf("err = %v, want ErrNotAllowed", err)
 	}
@@ -340,6 +343,16 @@ type issueEventFakeService struct {
 	permissionErr error
 	labelErr      error
 	removeErr     error
+}
+
+func newIssueEventDependencies(issues *issueEventFakeService) issueEventDependencies {
+	return issueEventDependencies{
+		Assignment: issues,
+		Triage: issue_triage.Dependencies{
+			Issues:       issues,
+			Repositories: issues,
+		},
+	}
 }
 
 func (f *issueEventFakeService) Get(string, string, int) (*github_issue.Issue, error) {
@@ -376,11 +389,15 @@ type pullRequestEventFake struct {
 
 func newPullRequestEventDependencies(pullRequests *pullRequestEventFake, issues *pullRequestIssueFake) pullRequestEventDependencies {
 	return pullRequestEventDependencies{
-		PullRequestGate:       pullRequests,
-		PullRequestMilestones: pullRequests,
-		IssueReader:           issues,
-		IssueClaimer:          issues,
-		Repositories:          issues,
+		Assignment: pr_assignment.Dependencies{
+			Issues:       issues,
+			Repositories: issues,
+		},
+		Gate: pr_gate.Dependencies{
+			Issues:       issues,
+			PullRequests: pullRequests,
+		},
+		Milestones: pullRequests,
 	}
 }
 
@@ -474,6 +491,16 @@ type mergeGroupEventFake struct {
 	role         string
 	cancelled    bool
 	cancelExcept int64
+}
+
+func newMergeGroupEventDependencies(api *mergeGroupEventFake) mergeGroupEventDependencies {
+	return mergeGroupEventDependencies{
+		Gate: merge_gate.Dependencies{
+			MergeGroups:  api,
+			PullRequests: api,
+			Repositories: api,
+		},
+	}
 }
 
 func (mergeGroupEventFake) GetMergeQueueEnqueuer(string, string, int) (string, error) {

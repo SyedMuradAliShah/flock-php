@@ -51,9 +51,18 @@ func main() {
 		}
 		err = service.Run(owner, repo, event)
 	case "issue":
-		err = runIssueEvent(github_issue.New(client), github_repository.New(client), owner, repo, event)
+		service := IssueEventService{
+			Issues:       github_issue.New(client),
+			Repositories: github_repository.New(client),
+		}
+		err = service.Run(owner, repo, event)
 	case "merge":
-		err = runMergeGroupEvent(github_pr.New(client), github_repository.New(client), github_merge_group.New(client), owner, repo, event)
+		service := MergeGroupEventService{
+			PullRequests: github_pr.New(client),
+			Repositories: github_repository.New(client),
+			MergeGroups:  github_merge_group.New(client),
+		}
+		err = service.Execute(owner, repo, event)
 	}
 	if err != nil {
 		fail(err)
@@ -71,20 +80,22 @@ type PullRequestEventService struct {
 
 func (s PullRequestEventService) Run(owner, repository string, data []byte) error {
 	return runPullRequestEvent(pullRequestEventDependencies{
-		PullRequestGate:       s.PullRequests,
-		PullRequestMilestones: s.PullRequests,
-		IssueReader:           s.Issues,
-		IssueClaimer:          s.Issues,
-		Repositories:          s.Repositories,
+		Assignment: pr_assignment.Dependencies{
+			Issues:       s.Issues,
+			Repositories: s.Repositories,
+		},
+		Gate: pr_gate.Dependencies{
+			Issues:       s.Issues,
+			PullRequests: s.PullRequests,
+		},
+		Milestones: s.PullRequests,
 	}, owner, repository, data)
 }
 
 type pullRequestEventDependencies struct {
-	PullRequestGate       pr_gate.PullRequestGateService
-	PullRequestMilestones milestone_transfer.PullRequestMilestoneService
-	IssueReader           pr_gate.IssueReader
-	IssueClaimer          pr_assignment.IssueClaimer
-	Repositories          pr_assignment.UserRoleReader
+	Assignment pr_assignment.Dependencies
+	Gate       pr_gate.Dependencies
+	Milestones milestone_transfer.PullRequestMilestoneService
 }
 
 func runPullRequestEvent(dependencies pullRequestEventDependencies, owner, repository string, data []byte) error {
@@ -92,7 +103,7 @@ func runPullRequestEvent(dependencies pullRequestEventDependencies, owner, repos
 	if err != nil {
 		return err
 	}
-	result, err := pr_gate.Execute(dependencies.PullRequestGate, dependencies.IssueReader, owner, repository, pr_gate.Event{
+	result, err := pr_gate.Execute(dependencies.Gate, owner, repository, pr_gate.Event{
 		Action: event.Action, Number: event.Number, BodyEdited: event.BodyEdited, BaseEdited: event.BaseEdited,
 	})
 	if err != nil {
@@ -101,7 +112,7 @@ func runPullRequestEvent(dependencies pullRequestEventDependencies, owner, repos
 	for retries := 0; result.ApprovedIssue != nil; {
 		approvedIssue := *result.ApprovedIssue
 		if approvedIssue.Repository == repository {
-			assignment, err := pr_assignment.Execute(dependencies.IssueClaimer, dependencies.Repositories, owner, approvedIssue, event.Author)
+			assignment, err := pr_assignment.Execute(dependencies.Assignment, owner, approvedIssue, event.Author)
 			if err != nil {
 				return err
 			}
@@ -110,7 +121,7 @@ func runPullRequestEvent(dependencies pullRequestEventDependencies, owner, repos
 					return fmt.Errorf("issue approval changed repeatedly while processing pull request #%d", event.Number)
 				}
 				retries++
-				result, err = pr_gate.Execute(dependencies.PullRequestGate, dependencies.IssueReader, owner, repository, pr_gate.Event{
+				result, err = pr_gate.Execute(dependencies.Gate, owner, repository, pr_gate.Event{
 					Action: "synchronize", Number: event.Number,
 				})
 				if err != nil {
@@ -119,41 +130,78 @@ func runPullRequestEvent(dependencies pullRequestEventDependencies, owner, repos
 				continue
 			}
 			if assignment.ClaimedBy != "" {
-				return pr_gate.CloseClaimedIssue(dependencies.PullRequestGate, owner, repository, event.Number, approvedIssue, assignment.ClaimedBy)
+				return pr_gate.CloseClaimedIssue(dependencies.Gate.PullRequests, owner, repository, event.Number, approvedIssue, assignment.ClaimedBy)
 			}
 		}
-		return milestone_transfer.Execute(dependencies.PullRequestMilestones, owner, repository, event.Number, approvedIssue)
+		return milestone_transfer.Execute(dependencies.Milestones, owner, repository, event.Number, approvedIssue)
 	}
 	return nil
 }
 
-type issueEventIssueService interface {
-	issue_assignment.HelpWantedRemover
-	issue_triage.IssueLabelAdder
+// IssueEventService coordinates contribution policies for issue events.
+type IssueEventService struct {
+	Issues       *github_issue.Service
+	Repositories *github_repository.Service
 }
 
-func runIssueEvent(issues issueEventIssueService, repositories issue_triage.UserPermissionReader, owner, repository string, data []byte) error {
+func (s IssueEventService) Run(owner, repository string, data []byte) error {
+	return runIssueEvent(issueEventDependencies{
+		Assignment: s.Issues,
+		Triage: issue_triage.Dependencies{
+			Issues:       s.Issues,
+			Repositories: s.Repositories,
+		},
+	}, owner, repository, data)
+}
+
+type issueEventDependencies struct {
+	Assignment issue_assignment.HelpWantedRemover
+	Triage     issue_triage.Dependencies
+}
+
+func runIssueEvent(dependencies issueEventDependencies, owner, repository string, data []byte) error {
 	event, err := github_issue.ParseEvent(data)
 	if err != nil {
 		return err
 	}
 	switch event.Action {
 	case "opened":
-		return issue_triage.Execute(issues, repositories, owner, repository, &event.Issue)
+		return issue_triage.Execute(dependencies.Triage, owner, repository, &event.Issue)
 	case "assigned":
-		return issue_assignment.Execute(issues, owner, repository, &event.Issue)
+		return issue_assignment.Execute(dependencies.Assignment, owner, repository, &event.Issue)
 	default:
 		return nil
 	}
 }
 
-func runMergeGroupEvent(pullRequests merge_gate.MergeQueuePullRequestService, repositories merge_gate.RepositoryRoleReader, mergeGroups merge_gate.MergeGroupRunCanceler, owner, repository string, data []byte) error {
+// MergeGroupEventService coordinates merge queue policy for merge group events.
+type MergeGroupEventService struct {
+	PullRequests *github_pr.Service
+	Repositories *github_repository.Service
+	MergeGroups  *github_merge_group.Service
+}
+
+func (s MergeGroupEventService) Execute(owner, repository string, data []byte) error {
+	return runMergeGroupEvent(mergeGroupEventDependencies{
+		Gate: merge_gate.Dependencies{
+			MergeGroups:  s.MergeGroups,
+			PullRequests: s.PullRequests,
+			Repositories: s.Repositories,
+		},
+	}, owner, repository, data)
+}
+
+type mergeGroupEventDependencies struct {
+	Gate merge_gate.Dependencies
+}
+
+func runMergeGroupEvent(dependencies mergeGroupEventDependencies, owner, repository string, data []byte) error {
 	event, err := github_merge_group.ParseEvent(data)
 	if err != nil {
 		return err
 	}
 	runID, _ := strconv.ParseInt(os.Getenv("GITHUB_RUN_ID"), 10, 64)
-	return merge_gate.Execute(pullRequests, repositories, mergeGroups, owner, repository, merge_gate.Event{
+	return merge_gate.Execute(dependencies.Gate, owner, repository, merge_gate.Event{
 		HeadRef: event.HeadRef,
 		HeadSHA: event.HeadSHA,
 		RunID:   runID,

@@ -8,11 +8,11 @@ type HelpWantedRemover interface {
 	RemoveHelpWanted(owner, repository string, issue *github_issue.Issue) error
 }
 
-func Execute(api HelpWantedRemover, owner, repository string, issue *github_issue.Issue) error {
+func Execute(issues HelpWantedRemover, owner, repository string, issue *github_issue.Issue) error {
 	if issue == nil {
 		return nil
 	}
-	currentIssue, err := api.Get(owner, repository, issue.Number)
+	currentIssue, err := issues.Get(owner, repository, issue.Number)
 	if err != nil {
 		return err
 	}
@@ -22,5 +22,5 @@ func Execute(api HelpWantedRemover, owner, repository string, issue *github_issu
 	if len(currentIssue.Assignees) == 0 {
 		return nil
 	}
-	return api.RemoveHelpWanted(owner, repository, currentIssue)
+	return issues.RemoveHelpWanted(owner, repository, currentIssue)
 }

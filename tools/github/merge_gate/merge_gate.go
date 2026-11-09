@@ -29,22 +29,28 @@ type MergeGroupRunCanceler interface {
 	CancelOtherRuns(owner, repository, headSHA string, except int64) error
 }
 
+type Dependencies struct {
+	MergeGroups  MergeGroupRunCanceler
+	PullRequests MergeQueuePullRequestService
+	Repositories RepositoryRoleReader
+}
+
 type Event struct {
 	HeadRef string
 	HeadSHA string
 	RunID   int64
 }
 
-func Execute(pullRequests MergeQueuePullRequestService, repositories RepositoryRoleReader, mergeGroups MergeGroupRunCanceler, owner, repository string, event Event) error {
+func Execute(dependencies Dependencies, owner, repository string, event Event) error {
 	number, err := PullRequestNumber(event.HeadRef)
 	if err != nil {
 		return err
 	}
-	enqueuer, err := pullRequests.GetMergeQueueEnqueuer(owner, repository, number)
+	enqueuer, err := dependencies.PullRequests.GetMergeQueueEnqueuer(owner, repository, number)
 	if err != nil {
 		return err
 	}
-	role, err := repositories.GetUserRole(owner, repository, enqueuer)
+	role, err := dependencies.Repositories.GetUserRole(owner, repository, enqueuer)
 	if err != nil {
 		return err
 	}
@@ -53,10 +59,10 @@ func Execute(pullRequests MergeQueuePullRequestService, repositories RepositoryR
 	}
 
 	body := fmt.Sprintf("Only a repository admin or maintainer can merge, so this was taken out of the merge queue (queued by @%s). A maintainer will merge it.", enqueuer)
-	if err := pullRequests.CreateComment(owner, repository, number, body); err != nil {
+	if err := dependencies.PullRequests.CreateComment(owner, repository, number, body); err != nil {
 		return err
 	}
-	if err := mergeGroups.CancelOtherRuns(owner, repository, event.HeadSHA, event.RunID); err != nil {
+	if err := dependencies.MergeGroups.CancelOtherRuns(owner, repository, event.HeadSHA, event.RunID); err != nil {
 		return err
 	}
 	return fmt.Errorf("%w: @%s has the %q role", ErrNotAllowed, enqueuer, role)

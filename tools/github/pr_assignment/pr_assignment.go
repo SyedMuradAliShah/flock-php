@@ -20,56 +20,61 @@ type UserRoleReader interface {
 	GetUserRole(owner, repository, username string) (string, error)
 }
 
+type Dependencies struct {
+	Issues       IssueClaimer
+	Repositories UserRoleReader
+}
+
 type Result struct {
 	ClaimedBy         string
 	ApprovalWithdrawn bool
 }
 
-func Execute(api IssueClaimer, repositories UserRoleReader, owner string, issueReference issue_reference.Reference, author string) (Result, error) {
-	issue, err := api.Get(owner, issueReference.Repository, issueReference.Number)
+func Execute(dependencies Dependencies, owner string, issueReference issue_reference.Reference, author string) (Result, error) {
+	issue, err := dependencies.Issues.Get(owner, issueReference.Repository, issueReference.Number)
 	if err != nil {
 		return Result{}, err
 	}
 	if !approvedFor(issue, author) {
 		return Result{ApprovalWithdrawn: true}, nil
 	}
-	claimedBy, err := winningAssignee(repositories, owner, issueReference.Repository, issue)
+	claimedBy, err := winningAssignee(dependencies.Repositories, owner, issueReference.Repository, issue)
 	if err != nil {
 		return Result{}, err
 	}
 	if claimedBy != "" && claimedBy != author {
 		if github_issue.HasAssignee(issue, author) {
-			if err := api.RemoveAssignee(owner, issueReference.Repository, issueReference.Number, author); err != nil {
+			if err := dependencies.Issues.RemoveAssignee(owner, issueReference.Repository, issueReference.Number, author); err != nil {
 				return Result{}, err
 			}
 		}
 		return Result{ClaimedBy: claimedBy}, nil
 	}
 	if github_issue.HasAssignee(issue, author) {
-		return Result{}, api.RemoveHelpWanted(owner, issueReference.Repository, issue)
+		return Result{}, dependencies.Issues.RemoveHelpWanted(owner, issueReference.Repository, issue)
 	}
 
-	issue, err = api.AddAssignee(owner, issueReference.Repository, issueReference.Number, author)
+	issue, err = dependencies.Issues.AddAssignee(owner, issueReference.Repository, issueReference.Number, author)
 	if err != nil {
 		return Result{}, err
 	}
 	if !github_issue.HasAssignee(issue, author) {
 		return Result{}, fmt.Errorf("issue #%d was not assigned to %q", issueReference.Number, author)
 	}
-	claimedBy, err = winningAssignee(repositories, owner, issueReference.Repository, issue)
+	claimedBy, err = winningAssignee(dependencies.Repositories, owner, issueReference.Repository, issue)
 	if err != nil {
-		if cleanupErr := api.RemoveAssignee(owner, issueReference.Repository, issueReference.Number, author); cleanupErr != nil {
+		if cleanupErr := dependencies.Issues.RemoveAssignee(owner, issueReference.Repository, issueReference.Number, author); cleanupErr != nil {
 			return Result{}, fmt.Errorf("verify issue claim: %w; remove unsuccessful assignment: %v", err, cleanupErr)
 		}
 		return Result{}, err
 	}
 	if claimedBy != author {
-		if err := api.RemoveAssignee(owner, issueReference.Repository, issueReference.Number, author); err != nil {
+		if err := dependencies.Issues.RemoveAssignee(owner, issueReference.Repository, issueReference.Number, author); err != nil {
 			return Result{}, err
 		}
 		return Result{ClaimedBy: claimedBy}, nil
 	}
-	return Result{}, api.RemoveHelpWanted(owner, issueReference.Repository, issue)
+	return Result{}, dependencies.Issues.RemoveHelpWanted(owner, issueReference.Repository, issue)
 }
 
 func approvedFor(issue *github_issue.Issue, author string) bool {

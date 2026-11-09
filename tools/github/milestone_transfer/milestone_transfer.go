@@ -12,21 +12,21 @@ type PullRequestMilestoneService interface {
 	TransferIssueMilestone(owner, repository string, pullRequestNumber, issueNumber int) (bool, error)
 }
 
-func Execute(api PullRequestMilestoneService, owner, repository string, pullRequestNumber int, approvedIssue issue_reference.Reference) error {
+func Execute(pullRequests PullRequestMilestoneService, owner, repository string, pullRequestNumber int, approvedIssue issue_reference.Reference) error {
 	if approvedIssue.Repository != repository {
 		return nil
 	}
-	pullRequest, err := api.Get(owner, repository, pullRequestNumber)
+	pullRequest, err := pullRequests.Get(owner, repository, pullRequestNumber)
 	if err != nil || pullRequest == nil || pullRequest.State != "open" {
 		return err
 	}
-	issues, err := api.ListLinkedIssues(owner, repository, pullRequestNumber)
+	issues, err := pullRequests.ListLinkedIssues(owner, repository, pullRequestNumber)
 	if err != nil {
 		return err
 	}
 	for _, issue := range issues {
 		if issue.Number == approvedIssue.Number && issue.MilestoneNumber != nil {
-			_, err := api.TransferIssueMilestone(owner, repository, pullRequestNumber, approvedIssue.Number)
+			_, err := pullRequests.TransferIssueMilestone(owner, repository, pullRequestNumber, approvedIssue.Number)
 			return err
 		}
 	}

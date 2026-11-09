@@ -25,6 +25,11 @@ type IssueReader interface {
 	Get(owner, repository string, number int) (*github_issue.Issue, error)
 }
 
+type Dependencies struct {
+	Issues       IssueReader
+	PullRequests PullRequestGateService
+}
+
 type Event struct {
 	Action     string
 	Number     int
@@ -44,7 +49,9 @@ const (
 	closeUnapproved action = "close-unapproved"
 )
 
-func Execute(pullRequests PullRequestGateService, issues IssueReader, owner, repository string, event Event) (Result, error) {
+func Execute(dependencies Dependencies, owner, repository string, event Event) (Result, error) {
+	pullRequests := dependencies.PullRequests
+	issues := dependencies.Issues
 	for attempt := 0; ; attempt++ {
 		pr, err := pullRequests.Get(owner, repository, event.Number)
 		if err != nil {

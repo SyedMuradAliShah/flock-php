@@ -12,7 +12,7 @@ func TestRunAllowsAdminsAndMaintainers(t *testing.T) {
 	for _, role := range []string{"admin", "maintain"} {
 		t.Run(role, func(t *testing.T) {
 			api := &fakeService{role: role}
-			if err := Execute(api, api, api, "flock-php", "flock", Event{HeadRef: ref, HeadSHA: "abc", RunID: 7}); err != nil {
+			if err := Execute(Dependencies{MergeGroups: api, PullRequests: api, Repositories: api}, "flock-php", "flock", Event{HeadRef: ref, HeadSHA: "abc", RunID: 7}); err != nil {
 				t.Fatal(err)
 			}
 			if api.commented || api.cancelled {
@@ -26,7 +26,7 @@ func TestRunRejectsOtherRoles(t *testing.T) {
 	for _, role := range []string{"write", "triage", "read"} {
 		t.Run(role, func(t *testing.T) {
 			api := &fakeService{role: role}
-			err := Execute(api, api, api, "flock-php", "flock", Event{HeadRef: ref, HeadSHA: "abc", RunID: 7})
+			err := Execute(Dependencies{MergeGroups: api, PullRequests: api, Repositories: api}, "flock-php", "flock", Event{HeadRef: ref, HeadSHA: "abc", RunID: 7})
 			if !errors.Is(err, ErrNotAllowed) {
 				t.Fatalf("err = %v, want ErrNotAllowed", err)
 			}
@@ -57,7 +57,7 @@ func TestRunStopsOnServiceErrors(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := Execute(tt.api, tt.api, tt.api, "flock-php", "flock", Event{HeadRef: ref, HeadSHA: "abc", RunID: 7}); err == nil {
+			if err := Execute(Dependencies{MergeGroups: tt.api, PullRequests: tt.api, Repositories: tt.api}, "flock-php", "flock", Event{HeadRef: ref, HeadSHA: "abc", RunID: 7}); err == nil {
 				t.Fatal("Execute() returned nil error")
 			}
 			if !reflect.DeepEqual(tt.api.calls, tt.want) {

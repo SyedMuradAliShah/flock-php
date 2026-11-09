@@ -10,7 +10,7 @@ import (
 func TestRunLabelsOutsideContributor(t *testing.T) {
 	api := &fakeService{}
 	issue := &github_issue.Issue{Number: 73, User: github_issue.User{Type: "User"}}
-	if err := Execute(api, api, "flock-php", "flock", issue); err != nil {
+	if err := Execute(Dependencies{Issues: api, Repositories: api}, "flock-php", "flock", issue); err != nil {
 		t.Fatal(err)
 	}
 	if !api.labeled {
@@ -21,7 +21,7 @@ func TestRunLabelsOutsideContributor(t *testing.T) {
 func TestExecuteReturnsPermissionAndLabelErrors(t *testing.T) {
 	issue := &github_issue.Issue{Number: 73, User: github_issue.User{Type: "User"}}
 	for _, api := range []*fakeService{{permissionErr: errors.New("permission")}, {labelErr: errors.New("label")}} {
-		if err := Execute(api, api, "flock-php", "flock", issue); err == nil {
+		if err := Execute(Dependencies{Issues: api, Repositories: api}, "flock-php", "flock", issue); err == nil {
 			t.Fatal("Execute() returned nil error")
 		}
 	}
