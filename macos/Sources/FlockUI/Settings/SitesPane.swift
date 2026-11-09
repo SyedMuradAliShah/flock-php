@@ -269,8 +269,10 @@ struct SitesPane: View {
             }
             Spacer(minLength: 4)
             if let problem = problem(site) {
-                Image(systemName: "exclamationmark.triangle.fill").font(.caption).foregroundStyle(.orange)
-                    .help(problem)
+                ProblemIcon(text: problem)
+            }
+            if let dot = site.stateDot {
+                StateDot(color: dot.color).help(dot.help)
             }
             if site.shared {
                 Badge(text: "Shared", color: .green)
@@ -296,13 +298,9 @@ struct SitesPane: View {
             }
             Spacer(minLength: 4)
             if let problem = proxy.problem {
-                Image(systemName: "exclamationmark.triangle.fill").font(.caption).foregroundStyle(.orange)
-                    .help(problem)
+                ProblemIcon(text: problem)
             }
-            Circle()
-                .fill(proxy.command?.state == .failed ? StateDot.failed : proxy.running ? Color.green : Color.secondary.opacity(0.5))
-                .frame(width: 6, height: 6)
-                .help(proxy.command?.state == .failed ? proxy.command?.problem ?? "Failed" : proxy.running ? proxy.server ?? "Running" : "Not running")
+            StateDot(color: proxy.stateDot.color).help(proxy.stateDot.help)
             if proxy.secured {
                 Image(systemName: "lock.fill").font(.caption).foregroundStyle(.secondary)
                     .help("Served over HTTPS")
@@ -509,9 +507,6 @@ struct SitesPane: View {
         }
         if let domain = site.domains.first(where: { $0.problem != nil }) {
             return "\(domain.host): \(domain.problem ?? "")"
-        }
-        if site.isNode, let server = site.nodeServer, server.state == .failed {
-            return server.problem ?? "The dev server stopped"
         }
         if !site.isNode, site.server == .frankenphp, let franken = site.frankenPHP, franken.state == .failed || franken.state == .unavailable,
            !franken.problem.isEmpty {

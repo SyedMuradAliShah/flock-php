@@ -164,6 +164,45 @@ struct NodeDevServerSection: View {
     }
 }
 
+/// The state of what Flock runs for a row (Settings → Sites, the panel): a Node.js site's dev server,
+/// a proxy's server. PHP sites have none.
+extension Status.Site {
+    /// The dev server's dot and its state as help; nil for a PHP site.
+    var stateDot: (color: Color, help: String)? {
+        guard isNode, let server = nodeServer else { return nil }
+        let state = NodeDevServerSection.state(server)
+        return (state.color, state.text)
+    }
+
+    /// What the row warns about: the site's problem, or what needs a decision.
+    var rowProblem: String? { problem ?? notice }
+}
+
+extension Status.Proxy {
+    /// Its command's state when it has one (failed, on its way), else whether something answers.
+    var stateDot: (color: Color, help: String) {
+        if let command {
+            switch command.state {
+            case .failed: return (StateDot.failed, command.problem.map { "Failed: \($0)" } ?? "Failed")
+            case .starting: return (StateDot.busy, "Starting…")
+            case .stopping: return (StateDot.busy, "Stopping…")
+            case .running, .stopped: break
+            }
+        }
+        return running ? (StateDot.running, server ?? "Running") : (StateDot.stopped, "Not running")
+    }
+}
+
+/// A row's problem as an orange ⚠, the text as help.
+struct ProblemIcon: View {
+    let text: String
+
+    var body: some View {
+        Image(systemName: "exclamationmark.triangle.fill").font(.caption).foregroundStyle(.orange)
+            .help(text)
+    }
+}
+
 /// A server's state as a dot: grey stopped or sleeping, amber on the way, green running, red failed.
 struct StateDot: View {
     let color: Color
