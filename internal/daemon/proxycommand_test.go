@@ -34,6 +34,18 @@ func testCommand(mode string) int {
 		fmt.Println("listening on", ln.Addr())
 		_ = http.Serve(ln, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("request", r.Host, r.URL.Path)
+			if r.Header.Get("Upgrade") == "websocket" {
+				// Hot reload's WebSocket: open until the browser closes it.
+				conn, rw, err := http.NewResponseController(w).Hijack()
+				if err != nil {
+					return
+				}
+				defer conn.Close()
+				rw.WriteString("HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n\r\n")
+				rw.Flush()
+				_, _ = io.Copy(io.Discard, rw)
+				return
+			}
 			io.WriteString(w, "dev server for "+r.Host)
 		}))
 		return 0

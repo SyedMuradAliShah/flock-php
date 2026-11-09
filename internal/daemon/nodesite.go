@@ -1,6 +1,7 @@
 package daemon
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"hash/fnv"
@@ -9,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"flock/internal/api"
 	"flock/internal/config"
@@ -29,12 +31,32 @@ const (
 // nodeCommand runs the project's dev script; npm passes what follows -- to it.
 const nodeCommand = "npm run dev -- --port "
 
+// A dev server goes back to sleep once nothing has used it for nodeIdle: no request and no open
+// connection (a tab with the app open keeps its hot-reload WebSocket), and no share. It's checked
+// every nodeSleepCheck. Tests shorten both.
+var (
+	nodeIdle       = 30 * time.Minute
+	nodeSleepCheck = time.Minute
+)
+
 // nodeRuns are the Node.js sites' dev servers, by site name.
 type nodeRuns struct {
-	mu    sync.Mutex
-	specs map[string]supervisor.Spec // every Node.js site's dev server, as of the last reload
-	awake map[string]bool            // started by a request (or the apps) and kept running
-	ports map[string]int             // the port each site got
+	mu     sync.Mutex
+	specs  map[string]supervisor.Spec // every Node.js site's dev server, as of the last reload
+	awake  map[string]bool            // started by a request (or the apps) and kept running
+	ports  map[string]int             // the port each site got
+	open   map[string]int             // requests in progress, open WebSockets included
+	active map[string]time.Time       // when a request last came or ended
+}
+
+// wake marks a site's server as to run, and as used now. It reports whether it was asleep.
+func (r *nodeRuns) wake(site string) bool {
+	if r.awake == nil {
+		r.awake, r.open, r.active = map[string]bool{}, map[string]int{}, map[string]time.Time{}
+	}
+	asleep := !r.awake[site]
+	r.awake[site], r.active[site] = true, time.Now()
+	return asleep
 }
 
 // nodeProcess is the name of a Node.js site's dev server and of its log.
@@ -117,30 +139,111 @@ func (r *nodeRuns) isAwake(site string) bool {
 
 // wakeNode implements web.WakeFunc: it starts a Node.js site's dev server when it doesn't run.
 // The web server calls it for every request, so it only starts the server in the background.
-func (d *daemon) wakeNode(site string) (string, string) {
+func (d *daemon) wakeNode(site string) (string, string, func()) {
 	if runningAsRoot() {
-		return api.NodeFailed, "Flock runs as root here, and doesn't run a project's dev server with root's rights"
+		return api.NodeFailed, "Flock runs as root here, and doesn't run a project's dev server with root's rights", nil
 	}
 	r := &d.node
 	r.mu.Lock()
-	_, known := r.specs[site]
-	asleep := known && !r.awake[site]
-	if asleep {
-		if r.awake == nil {
-			r.awake = map[string]bool{}
-		}
-		r.awake[site] = true
+	if _, known := r.specs[site]; !known {
+		r.mu.Unlock()
+		return "", "", nil
 	}
+	asleep := r.wake(site)
+	r.open[site]++
 	r.mu.Unlock()
-	if !known {
-		return "", ""
+
+	var once sync.Once
+	done := func() {
+		once.Do(func() {
+			r.mu.Lock()
+			r.open[site]--
+			r.active[site] = time.Now()
+			r.mu.Unlock()
+		})
 	}
 	if asleep {
 		go d.startNode(site)
-		return api.NodeStarting, ""
+		return api.NodeStarting, "", done
 	}
 	state, problem := d.nodeState(site, false)
-	return state, problem
+	return state, problem, done
+}
+
+// sleepNodeSites puts the dev servers nothing used for nodeIdle back to sleep, until ctx ends.
+func (d *daemon) sleepNodeSites(ctx context.Context) {
+	tick := time.NewTicker(nodeSleepCheck)
+	defer tick.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-tick.C:
+		}
+		r := &d.node
+		var idle []string
+		r.mu.Lock()
+		for site, awake := range r.awake {
+			if awake && r.idle(site) && !d.shared(site) {
+				idle = append(idle, site)
+			}
+		}
+		r.mu.Unlock()
+		for _, site := range idle {
+			d.sleepNode(site, true)
+		}
+	}
+}
+
+// idle reports whether nothing has used a site's server for nodeIdle. r.mu is held.
+func (r *nodeRuns) idle(site string) bool {
+	return r.open[site] == 0 && time.Since(r.active[site]) > nodeIdle
+}
+
+// shared reports whether a site has a share running: its visitors come through the tunnel, which
+// the dev server's activity doesn't see.
+func (d *daemon) shared(site string) bool {
+	return d.shares != nil && d.shares.Get(site) != nil
+}
+
+// sleepNode stops a site's dev server until its next request; whenIdle only while it's still
+// idle (a request may have come since it was found idle).
+func (d *daemon) sleepNode(site string, whenIdle bool) {
+	d.reloadMu.Lock()
+	defer d.reloadMu.Unlock()
+	r := &d.node
+	r.mu.Lock()
+	if whenIdle && !r.idle(site) {
+		r.mu.Unlock()
+		return
+	}
+	delete(r.awake, site)
+	r.mu.Unlock()
+	keep := map[string]bool{}
+	for _, name := range d.procs.Running() {
+		keep[name] = name != nodeProcess(site)
+	}
+	d.procs.Retain(keep)
+}
+
+// StopSite implements api.Backend: it puts a Node.js site's dev server to sleep now, until the
+// site's next request.
+func (d *daemon) StopSite(name string) error {
+	d.mu.Lock()
+	cfg := d.cfg
+	d.mu.Unlock()
+	if cfg == nil {
+		return fmt.Errorf("the daemon has no configuration yet")
+	}
+	site, ok := cfg.FindSite(name)
+	switch {
+	case !ok:
+		return fmt.Errorf("%w: no site named %s", api.ErrInvalidRequest, name)
+	case site.Kind() != config.TypeNode:
+		return fmt.Errorf("%w: %s isn't a Node.js app: its server runs while Flock does", api.ErrInvalidRequest, name)
+	}
+	d.sleepNode(name, false)
+	return nil
 }
 
 // startNode starts an awake site's dev server, unless a reload did already.

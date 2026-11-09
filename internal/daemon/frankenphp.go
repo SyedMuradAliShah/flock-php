@@ -96,10 +96,7 @@ func (d *daemon) RestartSite(name string) error {
 	d.mu.Unlock()
 	if node {
 		d.node.mu.Lock()
-		if d.node.awake == nil {
-			d.node.awake = map[string]bool{}
-		}
-		d.node.awake[name] = true
+		d.node.wake(name)
 		d.node.mu.Unlock()
 	}
 	return d.reload()

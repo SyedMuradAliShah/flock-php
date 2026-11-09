@@ -1,8 +1,10 @@
 package daemon
 
 import (
+	"bufio"
 	"context"
 	"io"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -160,6 +162,99 @@ func TestRestartWakesANodeSite(t *testing.T) {
 			t.Fatalf("not running: %+v\n%s", siteStatus(t, client, "app").NodeServer, readLog(t, root, "node-app"))
 		}
 		time.Sleep(100 * time.Millisecond)
+	}
+}
+
+// quickSleep makes dev servers sleep after idle instead of 30 minutes, for the daemons started
+// after it.
+func quickSleep(t *testing.T, idle time.Duration) {
+	t.Helper()
+	oldIdle, oldCheck := nodeIdle, nodeSleepCheck
+	nodeIdle, nodeSleepCheck = idle, 50*time.Millisecond
+	t.Cleanup(func() { nodeIdle, nodeSleepCheck = oldIdle, oldCheck })
+}
+
+// waitNode waits until the site's dev server is in state.
+func waitNode(t *testing.T, client *api.Client, root, state string) {
+	t.Helper()
+	deadline := time.Now().Add(20 * time.Second)
+	for siteStatus(t, client, "app").NodeServer.State != state {
+		if time.Now().After(deadline) {
+			t.Fatalf("not %s: %+v\n%s", state, siteStatus(t, client, "app").NodeServer, readLog(t, root, "node-app"))
+		}
+		time.Sleep(50 * time.Millisecond)
+	}
+}
+
+func TestAnIdleNodeSiteGoesToSleepAndWakesAgain(t *testing.T) {
+	quickSleep(t, 500*time.Millisecond)
+	root, cfg := testRoot(t, func(c *config.Config) { nodeApp(t, c) })
+	fakeNpm(t, root, "flock-test-server")
+	client := startDaemon(t, root)
+
+	getPage(t, cfg, "app.test")
+	waitNode(t, client, root, api.NodeRunning)
+	port := siteStatus(t, client, "app").NodeServer.Port
+
+	waitNode(t, client, root, api.NodeSleeping)
+	if answers("http://localhost:" + strconv.Itoa(port)) {
+		t.Fatal("the sleeping dev server still holds its port")
+	}
+
+	// The next request wakes it.
+	if code, page, _ := getPage(t, cfg, "app.test"); page != "node-starting" {
+		t.Fatalf("waking: %d %q", code, page)
+	}
+	waitNode(t, client, root, api.NodeRunning)
+}
+
+func TestAnOpenHotReloadConnectionKeepsANodeSiteAwake(t *testing.T) {
+	quickSleep(t, 300*time.Millisecond)
+	root, cfg := testRoot(t, func(c *config.Config) { nodeApp(t, c) })
+	fakeNpm(t, root, "flock-test-server")
+	client := startDaemon(t, root)
+
+	getPage(t, cfg, "app.test")
+	waitNode(t, client, root, api.NodeRunning)
+
+	conn, err := net.DialTimeout("tcp", "127.0.0.1:"+strconv.Itoa(cfg.Ports.HTTP), 2*time.Second)
+	if err != nil {
+		t.Fatal(err)
+	}
+	io.WriteString(conn, "GET /@vite/client HTTP/1.1\r\nHost: app.test\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n"+
+		"Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\nSec-WebSocket-Version: 13\r\n\r\n")
+	_ = conn.SetReadDeadline(time.Now().Add(5 * time.Second))
+	if resp, err := http.ReadResponse(bufio.NewReader(conn), nil); err != nil || resp.StatusCode != http.StatusSwitchingProtocols {
+		t.Fatalf("upgrade: %v %+v", err, resp)
+	}
+
+	// Several idle periods pass with the tab open.
+	time.Sleep(1500 * time.Millisecond)
+	if s := siteStatus(t, client, "app").NodeServer.State; s != api.NodeRunning {
+		t.Fatalf("slept with a hot-reload connection open: %s", s)
+	}
+
+	conn.Close()
+	waitNode(t, client, root, api.NodeSleeping)
+}
+
+func TestStoppingANodeSitePutsItToSleep(t *testing.T) {
+	root, cfg := testRoot(t, func(c *config.Config) { nodeApp(t, c) })
+	fakeNpm(t, root, "flock-test-server")
+	client := startDaemon(t, root)
+
+	getPage(t, cfg, "app.test")
+	waitNode(t, client, root, api.NodeRunning)
+	port := siteStatus(t, client, "app").NodeServer.Port
+
+	if _, err := client.StopSite(context.Background(), "app"); err != nil {
+		t.Fatal(err)
+	}
+	if s := siteStatus(t, client, "app").NodeServer.State; s != api.NodeSleeping || answers("http://localhost:"+strconv.Itoa(port)) {
+		t.Fatalf("after the stop: %s", s)
+	}
+	if _, err := client.StopSite(context.Background(), "missing"); err == nil {
+		t.Fatal("stopped a site that doesn't exist")
 	}
 }
 

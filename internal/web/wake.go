@@ -12,8 +12,9 @@ import (
 
 // WakeFunc is told of every request to a Node.js site (see Site.Node) before it passes to the
 // site's dev server, which it starts when it isn't running. It returns the server's state and
-// what went wrong, for the page shown while the server doesn't answer.
-type WakeFunc func(site string) (state, problem string)
+// what went wrong, for the page shown while the server doesn't answer, and done, called when the
+// request is over: for a WebSocket (hot reload), once the connection closes.
+type WakeFunc func(site string) (state, problem string, done func())
 
 // currentWake is Config.Wake of the config Caddy runs.
 var currentWake atomic.Pointer[WakeFunc]
@@ -60,7 +61,11 @@ func (s *wakeHandler) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 
 func (s wakeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddyhttp.Handler) error {
 	if wake := currentWake.Load(); wake != nil {
-		state, problem := (*wake)(s.Site)
+		state, problem, done := (*wake)(s.Site)
+		if done != nil {
+			// reverse_proxy returns once an upgraded connection is closed.
+			defer done()
+		}
 		caddyhttp.SetVar(r.Context(), "flock_node_state", state)
 		caddyhttp.SetVar(r.Context(), "flock_node_problem", problem)
 	}

@@ -303,6 +303,8 @@ type Backend interface {
 	Binaries() *binaries.Catalog
 	// RestartSite restarts a FrankenPHP site's process, e.g. so Octane's workers load changed code.
 	RestartSite(name string) error
+	// StopSite puts a Node.js site's dev server to sleep until the site's next request.
+	StopSite(name string) error
 	// StartProxy and StopProxy run a proxy's command and stop its server (see config.Proxy.Command).
 	StartProxy(name string) error
 	StopProxy(name string) error

@@ -192,6 +192,11 @@ func (f *fakeDaemon) RestartSite(_ context.Context, name string) (api.Status, er
 	return f.status, nil
 }
 
+func (f *fakeDaemon) StopSite(_ context.Context, name string) (api.Status, error) {
+	f.record("stop", name)
+	return f.status, nil
+}
+
 func (f *fakeDaemon) CreateWorktree(_ context.Context, req api.WorktreeCreate) (api.WorktreeCreated, error) {
 	f.record("worktree create", req)
 	path := filepath.Join(filepath.Dir(f.status.Sites[0].Path), "shop-feature-x")
@@ -510,6 +515,7 @@ func TestUpdateSiteActions(t *testing.T) {
 		{map[string]any{"action": "set_type", "type": "node"}, `update ["shop",{"type":"node"}]`},
 		{map[string]any{"action": "add_domain", "domain": "tenant2"}, `domain ["shop","tenant2"]`},
 		{map[string]any{"action": "restart", "site": "shop.test"}, `restart ["shop"]`},
+		{map[string]any{"action": "stop"}, `stop ["shop"]`},
 	} {
 		d.changes = nil
 		if e := callTool(t, cs, "update_site", c.args, nil); e != "" {

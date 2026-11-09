@@ -89,10 +89,11 @@ func (s *server) addWriteTools(srv *mcp.Server) {
 			"- add_domain (domain): an extra domain, a subdomain (\"tenant1\" → tenant1.<site>.test) or an alias (\"my-app-2.test\").\n" +
 			"- set_server (server, worker): run PHP through FastCGI (PHP-FPM) or FrankenPHP, optionally in Octane's worker mode.\n" +
 			"- set_type (type): serve it as a php site or as a node app, whose dev server (npm run dev) Flock starts on the first visit.\n" +
-			"- restart: restart a FrankenPHP site's process, e.g. so Octane workers load changed code, or a Node.js app's dev server.",
+			"- restart: restart a FrankenPHP site's process, e.g. so Octane workers load changed code, or a Node.js app's dev server.\n" +
+			"- stop: stop a Node.js app's dev server until the site's next request (it also stops after 30 idle minutes).",
 		Annotations: additive(false),
 		InputSchema: schema[updateSiteIn](map[string][]any{
-			"action": {"secure", "unsecure", "isolate", "unisolate", "pin", "unpin", "add_domain", "set_server", "set_type", "restart"},
+			"action": {"secure", "unsecure", "isolate", "unisolate", "pin", "unpin", "add_domain", "set_server", "set_type", "restart", "stop"},
 			"type":   {"php", "node"},
 			"tool":   {"php", "node"},
 			"server": {"fastcgi", "frankenphp"},
@@ -825,6 +826,9 @@ func (s *server) updateSite(ctx context.Context, _ *mcp.CallToolRequest, in upda
 	case "restart":
 		st, err = s.Daemon.RestartSite(ctx, site.Name)
 		msg = fmt.Sprintf("Restarted %s.", site.Name)
+	case "stop":
+		st, err = s.Daemon.StopSite(ctx, site.Name)
+		msg = fmt.Sprintf("Stopped %s's dev server; the next request starts it again.", site.Name)
 	default:
 		return nil, siteActionOut{}, fmt.Errorf("unknown action %q", in.Action)
 	}
