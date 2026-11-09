@@ -9,13 +9,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ %2$@ je pro tento web nastaven jen na tomto počítači (izolovaně)."
+            "value" : "Pro tento web je na tomto počítači nastavena verze %1$@ %2$@ (izolovaně)."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ %2$@ está configurado para este sitio solo en este equipo (aislado)."
+            "value" : "%1$@ %2$@ está definido para este sitio en este equipo (aislado)."
           }
         }
       }
@@ -291,7 +291,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Větev %1$@ už existuje, takže ji worktree použije. Flock ho vytvoří vedle webu %2$@, připraví ho a bude ho poskytovat na adrese %3$@."
+            "value" : "Větev %1$@ už existuje, takže ji worktree použije. Flock ho vytvoří vedle webu %2$@, připraví ho a bude ho obsluhovat na %3$@."
           }
         },
         "es" : {
@@ -307,7 +307,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ pro PostgreSQL %2$@, pokud jsou pro něj k dispozici. Později to můžete změnit v Rozšířeních…."
+            "value" : "%1$@ pro PostgreSQL %2$@, pokud jsou pro něj k dispozici. Později to můžete změnit v části Rozšíření…."
           }
         },
         "es" : {
@@ -341,7 +341,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Log instalace – %@"
+            "value" : "Log instalace %@"
           }
         },
         "es" : {
@@ -375,7 +375,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ už je nainstalováno"
+            "value" : "Už je nainstalováno: %@"
           }
         },
         "es" : {
@@ -409,7 +409,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "K dispozici je verze %@"
+            "value" : "K dispozici je %@"
           }
         },
         "es" : {
@@ -442,7 +442,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Web %2$@ už nebude poskytovat %1$@."
+            "value" : "Web %2$@ už nebude obsluhovat %1$@."
           }
         },
         "es" : {
@@ -459,13 +459,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ je pro tento web nastavena jen na tomto počítači."
+            "value" : "%@ je pro tento web nastaveno na tomto počítači."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ está configurada para este sitio solo en este equipo."
+            "value" : "%@ está definido para este sitio en este equipo."
           }
         }
       }
@@ -482,7 +482,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aquí está configurado %1$@; el proyecto configura %2$@ en .flockrc."
+            "value" : "%1$@ está definido aquí; el proyecto define %2$@ en .flockrc."
           }
         }
       }
@@ -510,13 +510,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ není v %2$@. Kořenová složka musí být složka v projektu."
+            "value" : "%1$@ není ve složce %2$@. Kořenová složka webu musí být složkou v projektu."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ no está en %2$@. La carpeta raíz debe ser una carpeta del proyecto."
+            "value" : "%1$@ no está en %2$@. La raíz de documentos debe ser una carpeta del proyecto."
           }
         }
       }
@@ -607,13 +607,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ · nastavuje `flock install`"
+            "value" : "%@ · nastavil `flock install`"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ · lo configura `flock install`"
+            "value" : "%@ · definido por `flock install`"
           }
         }
       }
@@ -670,7 +670,7 @@
               "many" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lld dumpu"
+                  "value" : "%lld dumpů"
                 }
               },
               "one" : {
@@ -740,7 +740,7 @@
               "many" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lld události"
+                  "value" : "%lld událostí"
                 }
               },
               "one" : {
@@ -801,7 +801,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "(prázdný)"
+            "value" : "(prázdné)"
           }
         },
         "es" : {
@@ -1020,7 +1020,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un enlace ha pedido a Flock que proteja %@. Recibirá un certificado en el que este equipo ya confía."
+            "value" : "Un enlace pidió a Flock proteger %@. Recibirá un certificado en el que este equipo ya confía."
           }
         }
       }
@@ -1046,7 +1046,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "K dispozici je nový build"
+            "value" : "K dispozici je nové sestavení"
           }
         },
         "es" : {
@@ -1062,7 +1062,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "K dispozici je nový build PostgreSQL %@"
+            "value" : "K dispozici je nové sestavení PostgreSQL %@"
           }
         },
         "es" : {
@@ -1100,7 +1100,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un puerto solo significa 127.0.0.1; para cualquier otra cosa, indica host y puerto (localhost:5173) o una URL (https://127.0.0.1:8443)."
+            "value" : "Un puerto solo significa 127.0.0.1; para cualquier otra cosa, indica un host y un puerto (localhost:5173) o una URL (https://127.0.0.1:8443)."
           }
         }
       }
@@ -1132,7 +1132,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un worktree usa los ajustes de %1$@: sus versiones de PHP y Node.js, HTTPS y carpeta raíz. Cámbialos en %2$@."
+            "value" : "Un worktree usa los ajustes de %1$@: sus versiones de PHP y Node.js, HTTPS y raíz de documentos. Cámbialos en %2$@."
           }
         }
       }
@@ -1239,7 +1239,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Přidat Flock do Boost guidelines projektu %@?"
+            "value" : "Přidat Flock do pokynů Boost webu %@?"
           }
         },
         "es" : {
@@ -1255,7 +1255,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Přidat Flock do guidelines…"
+            "value" : "Přidat Flock do pokynů…"
           }
         },
         "es" : {
@@ -1336,7 +1336,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Přidejte sem jednotlivý web, nebo v Obecných přidejte složku s projekty."
+            "value" : "Přidejte sem jednotlivý web, nebo přidejte složku projektů v části Obecné."
           }
         },
         "es" : {
@@ -1368,7 +1368,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Přidejte do souboru .env svého projektu tyto řádky:"
+            "value" : "Přidejte tyto řádky do souboru .env svého projektu:"
           }
         },
         "es" : {
@@ -1390,7 +1390,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Añade esto a los ajustes de MCP del cliente."
+            "value" : "Añade esto a la configuración MCP del cliente."
           }
         }
       }
@@ -1416,13 +1416,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stačí přidat jednou a Flock funguje v každém projektu. Po přidání klienta restartujte nebo znovu načtěte jeho MCP servery."
+            "value" : "Stačí přidat jednou a Flock funguje v každém projektu. Po přidání Flocku klienta restartujte nebo znovu načtěte jeho MCP servery."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se añade una vez y Flock funciona en todos los proyectos. Después de añadir Flock, reinicia el cliente o recarga sus servidores MCP."
+            "value" : "Una vez añadido, Flock funciona en todos los proyectos. Después de añadir Flock, reinicia el cliente o vuelve a cargar sus servidores MCP."
           }
         }
       }
@@ -1448,13 +1448,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vše"
+            "value" : "Všechny"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Todo"
+            "value" : "Todos"
           }
         }
       }
@@ -1481,7 +1481,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Smazat i jeho databáze (%@)"
+            "value" : "Smazat také jeho databáze (%@)"
           }
         },
         "es" : {
@@ -1497,7 +1497,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Smazat i nastavení mých webů a databáze"
+            "value" : "Smazat také nastavení a databáze mých webů"
           }
         },
         "es" : {
@@ -1529,7 +1529,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Web může otevřít kdokoli s odkazem, pokud nezadáte e-mailové adresy — Cloudflare jim pak pošle kód e-mailem. Odkaz přestane fungovat po 8 hodinách nebo po ukončení sdílení."
+            "value" : "Web může otevřít kdokoli s odkazem, pokud neuvedete e-mailové adresy — Cloudflare jim pak pošle kód e-mailem. Odkaz přestane fungovat po 8 hodinách nebo po ukončení sdílení."
           }
         },
         "es" : {
@@ -1696,7 +1696,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Compilando los assets…"
+            "value" : "Compilando los recursos…"
           }
         }
       }
@@ -1724,7 +1724,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Caddy poskytuje každý web přes HTTPS (https://app.%@) s certifikáty od lokální certifikační autority Flocku, které systém díky `flock install` důvěřuje."
+            "value" : "Caddy obsluhuje každý web přes HTTPS (https://app.%@) s certifikáty od místní certifikační autority Flocku, kterou `flock install` přidá mezi důvěryhodné."
           }
         },
         "es" : {
@@ -1820,13 +1820,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zachytávat dumpy, dotazy, logy, views a joby"
+            "value" : "Zachytávat dumpy, dotazy, logy, pohledy a úlohy"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Capturar dumps, consultas, registros, vistas y jobs"
+            "value" : "Capturar dumps, consultas, registros, vistas y trabajos"
           }
         }
       }
@@ -1836,13 +1836,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zachytávání je vypnuté — zapněte ho tlačítkem s anténou a dumpy, dotazy, logy, views a joby se budou sbírat sem."
+            "value" : "Zachytávání je vypnuté — zapněte ho tlačítkem s anténou a dumpy, dotazy, logy, pohledy a úlohy se budou sbírat sem."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La captura está desactivada: actívala con el botón de la antena para recoger aquí dumps, consultas, registros, vistas y jobs."
+            "value" : "La captura está desactivada: actívala con el botón de la antena para recoger aquí dumps, consultas, registros, vistas y trabajos."
           }
         }
       }
@@ -1858,7 +1858,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Capturado"
+            "value" : "Capturados"
           }
         }
       }
@@ -2132,7 +2132,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Elige la carpeta con el index.php de la app, o crea %@."
+            "value" : "Elige la carpeta con el index.php de la app o crea %@."
           }
         }
       }
@@ -2449,13 +2449,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nová vydání se nepodařilo zkontrolovat: %@"
+            "value" : "Nová vydání se nepodařilo vyhledat: %@"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se pudo comprobar si hay versiones nuevas: %@"
+            "value" : "No se pudieron buscar nuevas versiones: %@"
           }
         }
       }
@@ -2466,13 +2466,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aktualizace se nepodařilo zkontrolovat: %@"
+            "value" : "Aktualizace se nepodařilo vyhledat: %@"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se pudo comprobar si hay actualizaciones: %@"
+            "value" : "No se pudieron buscar actualizaciones: %@"
           }
         }
       }
@@ -2553,7 +2553,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Daemon"
+            "value" : "Demonio"
           }
         }
       }
@@ -2682,7 +2682,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Databáze, cache, vyhledávání a nástroje kolem vašich webů. Vše naslouchá jen na 127.0.0.1."
+            "value" : "Databáze, mezipaměti, vyhledávání a nástroje kolem vašich webů. Vše naslouchá jen na 127.0.0.1."
           }
         },
         "es" : {
@@ -2714,7 +2714,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ladicí režim je zapnutý: návštěvníci uvidí stack trace"
+            "value" : "Ladicí režim je zapnutý: návštěvníci vidí výpisy zásobníku"
           }
         },
         "es" : {
@@ -2827,7 +2827,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Smazat všechnu zachycenou poštu?"
+            "value" : "Smazat veškerou zachycenou poštu?"
           }
         },
         "es" : {
@@ -2939,13 +2939,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kořenová složka"
+            "value" : "Kořenová složka webu"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Carpeta raíz"
+            "value" : "Raíz de documentos"
           }
         }
       }
@@ -3294,7 +3294,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stáhne hotový build (%@)."
+            "value" : "Stáhne hotové sestavení (%@)."
           }
         },
         "es" : {
@@ -3310,7 +3310,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stáhne hotový build."
+            "value" : "Stáhne hotové sestavení."
           }
         },
         "es" : {
@@ -3406,7 +3406,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Editor, ve kterém se otevře soubor a řádek po kliknutí v dumpu"
+            "value" : "Editor, který se otevře po kliknutí na soubor a řádek dumpu"
           }
         },
         "es" : {
@@ -3471,13 +3471,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Smažou se všechny zachycené dumpy, dotazy, logy, views a joby ze všech požadavků a příkazů."
+            "value" : "Smažou se všechny zachycené dumpy, dotazy, logy, pohledy a úlohy ze všech požadavků a příkazů."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se eliminan todos los dumps, consultas, registros, vistas y jobs capturados de todas las solicitudes y comandos."
+            "value" : "Se eliminan todos los dumps, consultas, registros, vistas y trabajos capturados de todas las solicitudes y comandos."
           }
         }
       }
@@ -3504,7 +3504,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Každá složka uvnitř složky s projekty běží jako <složka>.%@ — stejně jako u `flock park`."
+            "value" : "Každá složka uvnitř složky projektů se obsluhuje jako <složka>.%@ — stejně jako po `flock park`."
           }
         },
         "es" : {
@@ -3559,7 +3559,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cada solicitud pasa al destino con su cabecera Host, incluidas las conexiones WebSocket (recarga en caliente). Flock no inicia el servidor, así que inícialo como siempre. Hasta que responda, %@ muestra una página que lo indica."
+            "value" : "Cada solicitud pasa al destino con su encabezado Host, incluidas las conexiones WebSocket (recarga en caliente). Flock no inicia el servidor, así que inícialo como siempre. Hasta que responda, %@ muestra una página que lo indica."
           }
         }
       }
@@ -3772,7 +3772,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Flock odpověděl HTTP %@"
+            "value" : "Flock odpověděl kódem HTTP %@"
           }
         },
         "es" : {
@@ -3804,7 +3804,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Flock to na této platformě nemůže spustit."
+            "value" : "Flock ho na této platformě nedokáže spustit."
           }
         },
         "es" : {
@@ -3885,7 +3885,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Flock vytvoří worktree vedle webu %@ na nové větvi s vlastním názvem, připraví ho a bude ho poskytovat na vlastní adrese."
+            "value" : "Flock vytvoří worktree vedle webu %@ na nové větvi s vlastním názvem, připraví ho a bude ho obsluhovat na vlastní adrese."
           }
         },
         "es" : {
@@ -3902,7 +3902,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Flock vytvoří worktree vedle webu %1$@ na nové větvi %2$@, připraví ho a bude ho poskytovat na adrese %3$@."
+            "value" : "Flock vytvoří worktree vedle webu %1$@ na nové větvi %2$@, připraví ho a bude ho obsluhovat na %3$@."
           }
         },
         "es" : {
@@ -3984,7 +3984,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Flock nainstaluje jako výchozí nejnovější PHP a Node.js LTS. Další verze nainstalujete v Nastavení → PHP a Node."
+            "value" : "Flock jako výchozí nainstaluje nejnovější PHP a Node.js LTS. Další verze nainstalujete v Nastavení → PHP a Node."
           }
         },
         "es" : {
@@ -4000,7 +4000,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Flock je přidaný"
+            "value" : "Flock je přidán"
           }
         },
         "es" : {
@@ -4086,7 +4086,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Flock aún no está configurado en este Mac. La configuración instala el daemon, añade php, composer y node a tu PATH y hace que los sitios *.test funcionen con HTTPS de confianza."
+            "value" : "Flock aún no está configurado en este Mac. La configuración instala el demonio, añade php, composer y node a tu PATH y hace que los sitios *.test funcionen con HTTPS de confianza."
           }
         }
       }
@@ -4150,7 +4150,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Flock necesita estos puertos y *.%@ para sí, pero otros programas los usan. Si se ejecutan ambos, no funcionaría ninguno."
+            "value" : "Flock necesita estos puertos y *.%@ para sí, pero otros programas los usan. Si se ejecutaran ambos, ninguno funcionaría."
           }
         }
       }
@@ -4160,7 +4160,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Flock ho nahradí, jakmile vyjde opravený build."
+            "value" : "Flock ho nahradí, jakmile vyjde opravené sestavení."
           }
         },
         "es" : {
@@ -4227,7 +4227,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Flock bude poskytovat <název>.%@ z vlastního serveru, např. vývojového serveru Next.js, Nuxt nebo Vite. Samotný port znamená 127.0.0.1."
+            "value" : "Flock obsluhuje <název>.%@ z vlastního serveru, např. vývojového serveru Next.js, Nuxt nebo Vite. Samotný port znamená 127.0.0.1."
           }
         },
         "es" : {
@@ -4259,7 +4259,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Flock se zastaví a odebere se z PATH spolu se svými verzemi PHP a Node.js, certifikáty, logy a cache. macOS si vyžádá heslo, aby mohl odebrat nastavení DNS pro *.test a důvěryhodný certifikát Flocku. Pak se tato aplikace přesune do Koše."
+            "value" : "Flock se zastaví a odebere se z PATH spolu se svými verzemi PHP a Node.js, certifikáty, logy a mezipamětí. macOS si vyžádá heslo, aby mohl odebrat nastavení DNS pro *.test a důvěryhodný certifikát Flocku. Pak se tato aplikace přesune do Koše."
           }
         },
         "es" : {
@@ -4275,7 +4275,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Flock přestane poskytovat %1$@. Projektu v %2$@ se nic nestane."
+            "value" : "Flock přestane obsluhovat %1$@. Projekt ve složce %2$@ se nezmění."
           }
         },
         "es" : {
@@ -4292,7 +4292,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Flock přestane poskytovat %1$@. Server na %2$@ poběží dál."
+            "value" : "Flock přestane obsluhovat %1$@. Server na %2$@ poběží dál."
           }
         },
         "es" : {
@@ -4330,7 +4330,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Flock se ha desinstalado"
+            "value" : "Flock se desinstaló"
           }
         }
       }
@@ -4379,7 +4379,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El PHP %@ de Flock no la incluye"
+            "value" : "el PHP %@ de Flock no la incluye"
           }
         }
       }
@@ -4389,7 +4389,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Guideline Flocku v Boost guidelines projektu je zastaralá."
+            "value" : "Pokyn Flocku v pokynech Boost projektu je zastaralý."
           }
         },
         "es" : {
@@ -4443,7 +4443,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¿Has encontrado un error? Notifícalo"
+            "value" : "¿Encontraste un error? Infórmalo"
           }
         }
       }
@@ -4536,7 +4536,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dostávejte nové verze Flocku, PHP a služeb dříve, včetně předběžných verzí. Nemusí ještě fungovat."
+            "value" : "Získávejte nové verze Flocku, PHP a služeb dříve, včetně předběžných verzí. Nemusí ještě fungovat."
           }
         },
         "es" : {
@@ -4594,7 +4594,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cabeceras"
+            "value" : "Encabezados"
           }
         }
       }
@@ -4652,13 +4652,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "V projektu v Laravelu spusťte `flock link`: web pak poběží na http://<složka>.test. `flock secure` přidá HTTPS."
+            "value" : "V projektu v Laravelu spusťte `flock link`: web pak najdete na http://<složka>.test. `flock secure` přidá HTTPS."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "En un proyecto Laravel, ejecuta `flock link`: el sitio estará en http://<carpeta>.test. `flock secure` añade HTTPS."
+            "value" : "En un proyecto de Laravel, ejecuta `flock link`: el sitio estará en http://<carpeta>.test. `flock secure` añade HTTPS."
           }
         }
       }
@@ -4830,7 +4830,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nainstalované verze existují vedle sebe. Běží vždy jen jedna; každá si drží vlastní data a aktualizace v rámci verze je zachovají."
+            "value" : "Nainstalované verze zůstávají vedle sebe. Běží vždy jen jedna; každá má vlastní data, která zůstanou zachována i při aktualizacích v rámci verze."
           }
         },
         "es" : {
@@ -4846,7 +4846,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nainstalované verze existují vedle sebe. Běží vždy jen jedna; každá si drží vlastní databáze a aktualizace v rámci verze je zachovají."
+            "value" : "Nainstalované verze zůstávají vedle sebe. Běží vždy jen jedna; každá má vlastní databáze, které zůstanou zachovány i při aktualizacích v rámci verze."
           }
         },
         "es" : {
@@ -5138,13 +5138,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jeho databáze %@ bude odstraněna."
+            "value" : "Jeho databáze %@ se smaže."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Su base de datos %@ se elimina."
+            "value" : "Se elimina su base de datos %@."
           }
         }
       }
@@ -5171,13 +5171,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Odeberou se i jeho globální balíčky npm. Projekty a weby, které používají Node %@, se do opětovné instalace vrátí k výchozí verzi."
+            "value" : "Odeberou se i jeho globální balíčky npm. Projekty a weby, které používají Node %@, budou používat výchozí verzi, dokud ho znovu nenainstalujete."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "También se quitan sus paquetes globales de npm. Los proyectos y sitios que usan Node %@ pasan a la versión predeterminada hasta que lo vuelvas a instalar."
+            "value" : "También se quitan sus paquetes globales de npm. Los proyectos y sitios que usan Node %@ vuelven a la versión predeterminada hasta que lo instales de nuevo."
           }
         }
       }
@@ -5221,7 +5221,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Odebere se i jeho php.ini. Weby připnuté k PHP %@ přestanou fungovat, dokud nezvolíte jinou verzi."
+            "value" : "Odebere se i jeho php.ini. Weby připnuté k PHP %@ přestanou fungovat, dokud nevyberete jinou verzi."
           }
         },
         "es" : {
@@ -5237,13 +5237,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Joby"
+            "value" : "Úlohy"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jobs"
+            "value" : "Trabajos"
           }
         }
       }
@@ -5292,13 +5292,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zkontrolováno %@"
+            "value" : "Naposledy zkontrolováno %@"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Comprobado %@"
+            "value" : "Última comprobación: %@"
           }
         }
       }
@@ -5436,7 +5436,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Načítání…"
+            "value" : "Načítá se…"
           }
         },
         "es" : {
@@ -5490,7 +5490,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "MAIL_USERNAME elige la bandeja, así que cada proyecto tiene la suya."
+            "value" : "MAIL_USERNAME elige la bandeja de entrada, así que cada proyecto tiene la suya."
           }
         }
       }
@@ -5742,7 +5742,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Žádná databáze ani cache není nainstalovaná"
+            "value" : "Žádná databáze ani mezipaměť není nainstalovaná"
           }
         },
         "es" : {
@@ -5854,7 +5854,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Žádné složky s projekty"
+            "value" : "Žádné složky projektů"
           }
         },
         "es" : {
@@ -5876,7 +5876,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No hay public/, www/, web/ ni webroot/ con un index.php en %@. Elige la carpeta raíz en Ajustes → Sitios."
+            "value" : "No hay public/, www/, web/ ni webroot/ con un index.php en %@. Elige la raíz de documentos en Ajustes → Sitios."
           }
         }
       }
@@ -6071,7 +6071,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "V tomto buildu není"
+            "value" : "V tomto sestavení není"
           }
         },
         "es" : {
@@ -6119,7 +6119,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nenainstalováno · stáhne se samo, až ho bude web používat"
+            "value" : "Nenainstalováno · stáhne se samo, až ho nějaký web použije"
           }
         },
         "es" : {
@@ -6285,7 +6285,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oficiální buildy Node.js, nejnovější vydání každé hlavní verze. Projekt, který má verzi připnutou v .nvmrc, dostane tuto hlavní verzi nabídnutou, když v něm spustíte node, npm nebo npx. Globální balíčky (npm install -g) patří k řadě Node a přežijí její aktualizace; ty z výchozí verze jsou v PATH."
+            "value" : "Oficiální sestavení Node.js, nejnovější vydání každé hlavní verze. Projektu, který má verzi připnutou v .nvmrc, se tato hlavní verze nabídne, když v něm spustíte node, npm nebo npx. Globální balíčky (npm install -g) patří k řadě Node a přežijí její aktualizace; ty z výchozí verze jsou v PATH."
           }
         },
         "es" : {
@@ -6318,7 +6318,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jen pro tyto lidi (nepovinné)"
+            "value" : "Jen tito lidé (volitelné)"
           }
         },
         "es" : {
@@ -6437,7 +6437,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abrir correo"
+            "value" : "Abrir Correo"
           }
         }
       }
@@ -6447,7 +6447,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Otevřít Nastavení"
+            "value" : "Otevřít nastavení"
           }
         },
         "es" : {
@@ -6645,13 +6645,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PHP %@ zachytávají jen dumpy — jejich buildy zatím nemají rozšíření agenta, takže dotazy, logy, views a joby u nich chybí."
+            "value" : "PHP %@ zachytávají jen dumpy — jejich sestavení zatím nemají rozšíření agenta, takže dotazy, logy, pohledy a úlohy u nich chybí."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PHP %@ solo capturan dumps: sus compilaciones aún no tienen la extensión del agente, así que ahí faltan las consultas, registros, vistas y jobs."
+            "value" : "PHP %@ solo capturan dumps: sus compilaciones aún no tienen la extensión del agente, así que ahí faltan las consultas, registros, vistas y trabajos."
           }
         }
       }
@@ -6661,13 +6661,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PHP %@ zachytává jen dumpy — jeho build zatím nemá rozšíření agenta, takže dotazy, logy, views a joby u něj chybí."
+            "value" : "PHP %@ zachytává jen dumpy — jeho sestavení zatím nemá rozšíření agenta, takže dotazy, logy, pohledy a úlohy u něj chybí."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PHP %@ solo captura dumps: su compilación aún no tiene la extensión del agente, así que ahí faltan las consultas, registros, vistas y jobs."
+            "value" : "PHP %@ solo captura dumps: su compilación aún no tiene la extensión del agente, así que ahí faltan las consultas, registros, vistas y trabajos."
           }
         }
       }
@@ -6684,7 +6684,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PHP %@ · app Laravel"
+            "value" : "PHP %@ · app de Laravel"
           }
         }
       }
@@ -6762,7 +6762,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Než bude připraven, obsluhuje web PHP-FPM."
+            "value" : "Dokud nebude připravené, web obsluhuje PHP-FPM."
           }
         },
         "es" : {
@@ -6833,7 +6833,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fijar la carpeta raíz (%@) en el proyecto…"
+            "value" : "Fijar la raíz de documentos (%@) en el proyecto…"
           }
         }
       }
@@ -6844,7 +6844,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Připnout Node %1$@ k projektu %2$@?"
+            "value" : "Připnout Node %1$@ k webu %2$@?"
           }
         },
         "es" : {
@@ -6878,7 +6878,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Připnout PHP %1$@ k projektu %2$@?"
+            "value" : "Připnout PHP %1$@ k webu %2$@?"
           }
         },
         "es" : {
@@ -6912,13 +6912,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Připnout kořenovou složku %1$@ k projektu %2$@?"
+            "value" : "Připnout kořenovou složku %1$@ k webu %2$@?"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¿Fijar la carpeta raíz %1$@ en %2$@?"
+            "value" : "¿Fijar la raíz de documentos %1$@ en %2$@?"
           }
         }
       }
@@ -6934,7 +6934,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fijar las versiones y la carpeta raíz en el proyecto"
+            "value" : "Fijar las versiones y la raíz de documentos en el proyecto"
           }
         }
       }
@@ -7141,7 +7141,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PostgreSQL %1$@ se zastaví a Flock přepne na PostgreSQL %2$@ s jeho vlastními databázemi."
+            "value" : "PostgreSQL %1$@ se zastaví a Flock se přepne na PostgreSQL %2$@ s jeho vlastními databázemi."
           }
         },
         "es" : {
@@ -7173,7 +7173,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PostgreSQL %@ se zastaví; jeho databáze zůstanou, ale nebudou dostupné, dokud nepřepnete zpět."
+            "value" : "PostgreSQL %@ se zastaví; jeho databáze zůstanou, ale nebudou k dispozici, dokud nepřepnete zpět."
           }
         },
         "es" : {
@@ -7285,7 +7285,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Složky s projekty"
+            "value" : "Složky projektů"
           }
         },
         "es" : {
@@ -7366,13 +7366,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ukončit %@"
+            "value" : "Ukončete %@"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Salir de %@"
+            "value" : "Cierra %@"
           }
         }
       }
@@ -7452,7 +7452,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sin formato"
+            "value" : "Original"
           }
         }
       }
@@ -7501,7 +7501,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Volver a compilar los assets"
+            "value" : "Recompilar los recursos"
           }
         }
       }
@@ -7511,13 +7511,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sestavuje se…"
+            "value" : "Znovu se sestavuje…"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Compilando…"
+            "value" : "Recompilando…"
           }
         }
       }
@@ -7626,7 +7626,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Odebrat %@ ze složek s projekty?"
+            "value" : "Odebrat %@ ze složek projektů?"
           }
         },
         "es" : {
@@ -7681,7 +7681,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quitar el proxy"
+            "value" : "Quitar proxy"
           }
         }
       }
@@ -7697,7 +7697,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quitar el sitio"
+            "value" : "Quitar sitio"
           }
         }
       }
@@ -7713,7 +7713,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quitar el worktree"
+            "value" : "Quitar worktree"
           }
         }
       }
@@ -7723,13 +7723,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Odebere root= ze souboru .flockrc v %@. Flock pak kořenovou složku najde sám. Tím se změní soubory ve vašem projektu."
+            "value" : "Odebere root= z .flockrc ve složce %@. Flock pak kořenovou složku najde sám. Tím se změní soubory ve vašem projektu."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quita root= de .flockrc en %@. Después, Flock encuentra la carpeta raíz por sí mismo. Esto cambia archivos de tu proyecto."
+            "value" : "Quita root= de .flockrc en %@. Flock buscará entonces la raíz de documentos por sí mismo. Esto cambia archivos de tu proyecto."
           }
         }
       }
@@ -7739,7 +7739,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Odebere verzi Node.js ze souboru .flockrc a smaže .nvmrc / .node-version v %@. Web pak použije výchozí Node.js z Flocku. Tím se změní soubory ve vašem projektu."
+            "value" : "Odebere verzi Node.js z .flockrc a smaže .nvmrc / .node-version ve složce %@. Web pak použije výchozí Node.js Flocku. Tím se změní soubory ve vašem projektu."
           }
         },
         "es" : {
@@ -7755,7 +7755,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Odebere verzi PHP ze souboru %@. Web pak použije výchozí PHP z Flocku. Tím se změní soubory ve vašem projektu."
+            "value" : "Odebere verzi PHP z %@. Web pak použije výchozí PHP Flocku. Tím se změní soubory ve vašem projektu."
           }
         },
         "es" : {
@@ -7836,7 +7836,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vyžaduje %@"
+            "value" : "Vyžadováno balíčky: %@"
           }
         },
         "es" : {
@@ -7890,7 +7890,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reiniciar el daemon"
+            "value" : "Reiniciar el demonio"
           }
         }
       }
@@ -8003,7 +8003,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Repetir la preparación"
+            "value" : "Volver a preparar"
           }
         }
       }
@@ -8063,13 +8063,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spustí composer require ext-%1$@:* v %2$@, což změní composer.json a composer.lock. Commitněte je s projektem."
+            "value" : "Spustí composer require ext-%1$@:* ve složce %2$@, což změní composer.json a composer.lock. Commitněte je s projektem."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ejecuta composer require ext-%1$@:* en %2$@, lo que cambia composer.json y composer.lock. Haz commit de ellos con el proyecto."
+            "value" : "Ejecuta composer require ext-%1$@:* en %2$@, lo que cambia composer.json y composer.lock. Haz commit de ambos con el proyecto."
           }
         }
       }
@@ -8272,13 +8272,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Posílejte výstup dump() a dd(), dotazy, logy, views a joby do Flocku místo do stránky či terminálu — bez úprav vašich projektů."
+            "value" : "Posílejte výstup dump() a dd(), dotazy, logy, pohledy a úlohy do Flocku místo na stránku nebo do terminálu — bez úprav vašich projektů."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Envía a Flock la salida de dump() y dd(), las consultas, registros, vistas y jobs en lugar de a la página o la terminal, sin cambios en tus proyectos."
+            "value" : "Envía la salida de dump() y dd(), las consultas, los registros, las vistas y los trabajos a Flock en lugar de a la página o la terminal, sin cambiar tus proyectos."
           }
         }
       }
@@ -8289,7 +8289,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Poskytovat %@ přes HTTPS?"
+            "value" : "Obsluhovat web %@ přes HTTPS?"
           }
         },
         "es" : {
@@ -8305,7 +8305,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zpřístupnit vlastní server, např. vývojový server Node.js na nějakém portu, na doméně .%@"
+            "value" : "Obsluhovat vlastní server, např. vývojový server Node.js na portu, na doméně .%@"
           }
         },
         "es" : {
@@ -8321,13 +8321,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Běží přes HTTPS"
+            "value" : "Obsluhováno přes HTTPS"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se sirve por HTTPS"
+            "value" : "Servido por HTTPS"
           }
         }
       }
@@ -8506,7 +8506,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Falló la preparación de %@"
+            "value" : "No se pudo preparar %@"
           }
         }
       }
@@ -8586,7 +8586,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La configuración no ha terminado"
+            "value" : "La configuración no terminó"
           }
         }
       }
@@ -8603,7 +8603,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Falló la preparación: %@"
+            "value" : "La preparación falló: %@"
           }
         }
       }
@@ -8766,13 +8766,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zobrazit poslední log instalace"
+            "value" : "Zobrazit log poslední instalace"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mostrar el último registro de instalación"
+            "value" : "Mostrar el registro de la última instalación"
           }
         }
       }
@@ -8814,7 +8814,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zobrazovat dump() i ve stránce"
+            "value" : "Zobrazovat dump() i na stránce"
           }
         },
         "es" : {
@@ -8830,7 +8830,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zobrazovat výstup dump() i ve stránce"
+            "value" : "Zobrazovat výstup dump() i na stránce"
           }
         },
         "es" : {
@@ -9108,13 +9108,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Weby, které s touto verzí běží na FrankenPHP, bude obsluhovat PHP-FPM, dokud se znovu samo nestáhne."
+            "value" : "Weby, které běží na FrankenPHP s touto verzí, bude obsluhovat PHP-FPM, dokud se FrankenPHP samo znovu nestáhne."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Los sitios que usan FrankenPHP con esta versión los sirve PHP-FPM hasta que se vuelva a descargar por sí solo."
+            "value" : "PHP-FPM sirve los sitios que usan FrankenPHP con esta versión hasta que FrankenPHP se vuelva a descargar por sí solo."
           }
         }
       }
@@ -9131,7 +9131,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Los sitios usan los puertos %1$@ (HTTP) y %2$@ (HTTPS), configurados en config.json, así que sus direcciones incluyen el puerto."
+            "value" : "Los sitios usan los puertos %1$@ (HTTP) y %2$@ (HTTPS), definidos en config.json, así que sus direcciones incluyen el puerto."
           }
         }
       }
@@ -9141,7 +9141,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Weby, které jste přidali jednotlivě, a každá složka ve vašich složkách s projekty."
+            "value" : "Weby přidané jednotlivě a každá složka uvnitř vašich složek projektů."
           }
         },
         "es" : {
@@ -9163,7 +9163,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Algo ha fallado. La salida de abajo indica qué; puedes volver a intentarlo."
+            "value" : "Algo salió mal. La salida de abajo indica qué; puedes volver a intentarlo."
           }
         }
       }
@@ -9237,13 +9237,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spuštění ladění"
+            "value" : "Spusťte relaci"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Iniciar una sesión"
+            "value" : "Inicia una sesión"
           }
         }
       }
@@ -9275,7 +9275,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inicia el daemon para cambiar sus ajustes."
+            "value" : "Inicia el demonio para cambiar sus ajustes."
           }
         }
       }
@@ -9355,7 +9355,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Depura paso a paso las solicitudes y los comandos con Xdebug."
+            "value" : "Depura paso a paso solicitudes y comandos con Xdebug."
           }
         }
       }
@@ -9414,13 +9414,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zastavit zachytávání dumpů, dotazů, logů, views a jobů"
+            "value" : "Zastavit zachytávání dumpů, dotazů, logů, pohledů a úloh"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dejar de capturar dumps, consultas, registros, vistas y jobs"
+            "value" : "Dejar de capturar dumps, consultas, registros, vistas y trabajos"
           }
         }
       }
@@ -9698,7 +9698,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Las terminales que ya estaban abiertas siguen con el PATH antiguo."
+            "value" : "Las terminales que ya estaban abiertas siguen con el PATH anterior."
           }
         }
       }
@@ -9730,7 +9730,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El daemon de Flock ejecuta en segundo plano tus sitios, PHP y los servicios."
+            "value" : "El demonio de Flock ejecuta tus sitios, PHP y servicios en segundo plano."
           }
         }
       }
@@ -9746,7 +9746,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El daemon de Flock sirve tus sitios y servicios, y se inicia cada vez que inicias sesión."
+            "value" : "El demonio de Flock sirve tus sitios y servicios, y se inicia cada vez que inicias sesión."
           }
         }
       }
@@ -9827,7 +9827,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La descarga ha fallado."
+            "value" : "La descarga falló."
           }
         }
       }
@@ -9837,7 +9837,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Složka, ze které Flock web poskytuje. Složka zvolená zde platí jen na tomto počítači; připnutím (%@) ji zapíšete do .flockrc pro všechny."
+            "value" : "Složka, ze které Flock web obsluhuje. Složka zvolená zde platí jen na tomto počítači; připnutím (%@) ji zapíšete do .flockrc pro všechny."
           }
         },
         "es" : {
@@ -9907,7 +9907,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Puede que el enlace sea para un Flock más reciente. Actualiza Flock y vuelve a intentarlo."
+            "value" : "Puede que el enlace sea para una versión más reciente de Flock. Actualiza Flock y vuelve a intentarlo."
           }
         }
       }
@@ -9971,7 +9971,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El proyecto no requiere ninguna extensión de PHP."
+            "value" : "El proyecto no requiere extensiones de PHP."
           }
         }
       }
@@ -9988,7 +9988,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El proyecto configura %@ en .flockrc."
+            "value" : "El proyecto define %@ en .flockrc."
           }
         }
       }
@@ -9998,7 +9998,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Projekt používá Laravel Boost. Přidáním Flocku do jeho guidelines AI agenti zjistí, že aplikaci obsluhuje Flock a vybírá její verzi PHP."
+            "value" : "Projekt používá Laravel Boost. Přidáním Flocku do jeho pokynů se AI agenti dozvědí, že aplikaci obsluhuje Flock a vybírá její verzi PHP."
           }
         },
         "es" : {
@@ -10031,13 +10031,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Web používá výchozí verzi %@ z Flocku."
+            "value" : "Web se řídí výchozí verzí %@ ve Flocku."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El sitio usa la versión predeterminada de %@ de Flock."
+            "value" : "El sitio sigue la versión predeterminada de %@ de Flock."
           }
         }
       }
@@ -10063,7 +10063,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Weby v %@ přestanou být poskytovány. Složce ani jejím projektům se nic nestane."
+            "value" : "Weby ve složce %@ se přestanou obsluhovat. Složka ani její projekty se nezmění."
           }
         },
         "es" : {
@@ -10079,13 +10079,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pro tento počítač pro to neexistuje build, nebo je odkaz určený pro novější Flock."
+            "value" : "Pro tento počítač není k dispozici žádné sestavení, nebo je odkaz určený pro novější Flock."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No hay ninguna compilación para este equipo, o el enlace es para un Flock más reciente."
+            "value" : "No hay ninguna compilación para este equipo, o el enlace es para una versión más reciente de Flock."
           }
         }
       }
@@ -10117,7 +10117,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Este daemon de Flock no conoce %@. Actualiza Flock y vuelve a intentarlo."
+            "value" : "Este demonio de Flock no conoce %@. Actualiza Flock y vuelve a intentarlo."
           }
         }
       }
@@ -10127,7 +10127,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tento build Flocku neobsahuje CLI — spusťte v terminálu `flock install`."
+            "value" : "Toto sestavení Flocku neobsahuje CLI — spusťte v terminálu `flock install`."
           }
         },
         "es" : {
@@ -10143,7 +10143,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tento build byl vyřazen. Flock ho nahradí, jakmile vyjde opravený build."
+            "value" : "Toto sestavení bylo vyřazeno. Flock ho nahradí, jakmile vyjde opravené sestavení."
           }
         },
         "es" : {
@@ -10160,7 +10160,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tento build byl vyřazen: %@"
+            "value" : "Toto sestavení bylo vyřazeno: %@"
           }
         },
         "es" : {
@@ -10176,7 +10176,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tento build byl vyřazen: %@ — nahraďte ho aktualizací"
+            "value" : "Toto sestavení bylo vyřazeno: %@ — nahraďte ho aktualizací"
           }
         },
         "es" : {
@@ -10192,7 +10192,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tento build byl vyřazen: %@. Flock ho nahradí, jakmile vyjde opravený build."
+            "value" : "Toto sestavení bylo vyřazeno: %@. Flock ho nahradí, jakmile vyjde opravené sestavení."
           }
         },
         "es" : {
@@ -10272,7 +10272,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Po vypnutí uvidíte dumpy opět ve stránce."
+            "value" : "Po vypnutí uvidíte dumpy opět na stránce."
           }
         },
         "es" : {
@@ -10288,7 +10288,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zapne pro toto sdílení ladicí režim aplikace, takže návštěvníci uvidí stack trace. Jen pro lidi, kterým důvěřujete."
+            "value" : "Zapne pro toto sdílení ladicí režim aplikace, takže návštěvníci uvidí výpisy zásobníku. Jen pro lidi, kterým důvěřujete."
           }
         },
         "es" : {
@@ -10503,7 +10503,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desinstalar y eliminar los datos"
+            "value" : "Desinstalar y eliminar datos"
           }
         }
       }
@@ -10519,7 +10519,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desinstalar y conservar los datos"
+            "value" : "Desinstalar y conservar datos"
           }
         }
       }
@@ -10567,7 +10567,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La desinstalación no ha terminado"
+            "value" : "La desinstalación no terminó"
           }
         }
       }
@@ -10615,7 +10615,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desfijar"
+            "value" : "Dejar de fijar"
           }
         }
       }
@@ -10631,7 +10631,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desfijar la carpeta raíz (.flockrc)…"
+            "value" : "Dejar de fijar la raíz de documentos (.flockrc)…"
           }
         }
       }
@@ -10648,7 +10648,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desfijar Node (%@)…"
+            "value" : "Dejar de fijar Node (%@)…"
           }
         }
       }
@@ -10659,13 +10659,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Odepnout Node od projektu %@?"
+            "value" : "Odepnout Node od webu %@?"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¿Desfijar Node de %@?"
+            "value" : "¿Dejar de fijar Node en %@?"
           }
         }
       }
@@ -10682,7 +10682,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desfijar PHP (%@)…"
+            "value" : "Dejar de fijar PHP (%@)…"
           }
         }
       }
@@ -10693,13 +10693,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Odepnout PHP od projektu %@?"
+            "value" : "Odepnout PHP od webu %@?"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¿Desfijar PHP de %@?"
+            "value" : "¿Dejar de fijar PHP en %@?"
           }
         }
       }
@@ -10710,13 +10710,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Odepnout kořenovou složku od projektu %@?"
+            "value" : "Odepnout kořenovou složku od webu %@?"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¿Desfijar la carpeta raíz de %@?"
+            "value" : "¿Dejar de fijar la raíz de documentos en %@?"
           }
         }
       }
@@ -10759,7 +10759,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aktualizovat guideline Flocku v projektu %@?"
+            "value" : "Aktualizovat pokyn Flocku ve webu %@?"
           }
         },
         "es" : {
@@ -10872,7 +10872,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ve vývojových buildech jsou aktualizace vypnuté"
+            "value" : "Ve vývojových sestaveních jsou aktualizace vypnuté"
           }
         },
         "es" : {
@@ -10920,7 +10920,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aktualizuje se Flock…"
+            "value" : "Flock se aktualizuje…"
           }
         },
         "es" : {
@@ -11034,7 +11034,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Používat databázi webu %@?"
+            "value" : "Použít databázi webu %@?"
           }
         },
         "es" : {
@@ -11163,7 +11163,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Views"
+            "value" : "Pohledy"
           }
         },
         "es" : {
@@ -11201,7 +11201,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "En espera…"
+            "value" : "Esperando…"
           }
         }
       }
@@ -11260,7 +11260,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Co se zachytává kromě dumpů — dd() se vždy zobrazí i ve stránce"
+            "value" : "Co se zachytává kromě dumpů — dd() se vždy zobrazí i na stránce"
           }
         },
         "es" : {
@@ -11406,7 +11406,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zapíše %1$@ do %2$@ v %3$@. Commitněte ho a Flock, nvm i další nástroje pro Node budou pro tento projekt používat Node %4$@. Tím se změní soubor ve vašem projektu."
+            "value" : "Zapíše %1$@ do %2$@ ve složce %3$@. Commitněte ho a Flock, nvm i další nástroje pro Node použijí pro tento projekt Node %4$@. Tím se změní soubor ve vašem projektu."
           }
         },
         "es" : {
@@ -11422,7 +11422,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zapíše .ai/guidelines/flock.md v %@ a spustí php artisan boost:update, aby AI agenti věděli, že aplikaci obsluhuje Flock a vybírá její verzi PHP. Commitněte ho se zbytkem .ai/guidelines. Tím se změní soubory ve vašem projektu."
+            "value" : "Zapíše .ai/guidelines/flock.md do %@ a spustí php artisan boost:update, aby AI agenti věděli, že aplikaci obsluhuje Flock a vybírá její verzi PHP. Commitněte ho se zbytkem .ai/guidelines. Tím se změní soubory ve vašem projektu."
           }
         },
         "es" : {
@@ -11438,7 +11438,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zapíše php=%1$@ do .flockrc v %2$@. Commitněte ho a každý, kdo na tomto projektu používá Flock, dostane PHP %3$@. Tím se změní soubor ve vašem projektu."
+            "value" : "Zapíše php=%1$@ do .flockrc ve složce %2$@. Commitněte ho a každý, kdo na tomto projektu používá Flock, dostane PHP %3$@. Tím se změní soubor ve vašem projektu."
           }
         },
         "es" : {
@@ -11454,7 +11454,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zapíše root=%1$@ do .flockrc v %2$@. Commitněte ho a každý, kdo na tomto projektu používá Flock, ho bude poskytovat z %3$@. Tím se změní soubor ve vašem projektu."
+            "value" : "Zapíše root=%1$@ do .flockrc ve složce %2$@. Commitněte ho a každý, kdo na tomto projektu používá Flock, ho bude obsluhovat z %3$@. Tím se změní soubor ve vašem projektu."
           }
         },
         "es" : {
@@ -11683,7 +11683,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "dd() se vždy zobrazí i ve stránce, protože ukončí požadavek."
+            "value" : "dd() se vždy zobrazí i na stránce, protože ukončí požadavek."
           }
         },
         "es" : {
@@ -11699,7 +11699,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "dd() se vždy zobrazí i ve stránce, protože ukončí požadavek. PHP %@ zachytávají jen dumpy: jejich buildy zatím nemají rozšíření agenta."
+            "value" : "dd() se vždy zobrazí i na stránce, protože ukončí požadavek. PHP %@ zachytávají jen dumpy: jejich sestavení zatím nemají rozšíření agenta."
           }
         },
         "es" : {
@@ -11715,7 +11715,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "dd() se vždy zobrazí i ve stránce, protože ukončí požadavek. PHP %@ zachytává jen dumpy: jeho build zatím nemá rozšíření agenta."
+            "value" : "dd() se vždy zobrazí i na stránce, protože ukončí požadavek. PHP %@ zachytává jen dumpy: jeho sestavení zatím nemá rozšíření agenta."
           }
         },
         "es" : {
@@ -11747,13 +11747,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zde se zobrazí výstup dump() a dd(), dotazy, logy, views a joby z vašich webů a příkazů artisan."
+            "value" : "Zde se objeví výstup dump() a dd(), dotazy, logy, pohledy a úlohy z vašich webů a příkazů artisan."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aquí aparecen la salida de dump() y dd(), las consultas, registros, vistas y jobs de tus sitios y comandos artisan."
+            "value" : "Aquí aparecen la salida de dump() y dd(), las consultas, los registros, las vistas y los trabajos de tus sitios y comandos de artisan."
           }
         }
       }
@@ -11827,7 +11827,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "k dispozici je nový build"
+            "value" : "k dispozici nové sestavení"
           }
         },
         "es" : {
@@ -12105,7 +12105,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "→ nový build"
+            "value" : "→ nové sestavení"
           }
         },
         "es" : {

@@ -44,7 +44,7 @@
         <value>Eliminar también los ajustes de mis sitios y las bases de datos</value>
     </data>
     <data name="About_App" xml:space="preserve">
-        <value>Aplicación</value>
+        <value>App</value>
     </data>
     <data name="About_DaemonNotRunning" xml:space="preserve">
         <value>no está en ejecución</value>
@@ -68,7 +68,7 @@
         <value>Copyright © Guava s.r.o. Con licencia AGPL-3.0.</value>
     </data>
     <data name="About_NotInstalledWithSetup" xml:space="preserve">
-        <value>Esta compilación de Flock no se instaló con Flock-Setup.exe. Ejecuta `flock uninstall` en una terminal y elimina la carpeta de la aplicación.</value>
+        <value>Esta compilación de Flock no se instaló con Flock-Setup.exe. Ejecuta `flock uninstall` en una terminal y elimina la carpeta de la app.</value>
     </data>
     <data name="About_ReportIssue" xml:space="preserve">
         <value>Informar de un problema</value>
@@ -92,7 +92,7 @@
         <value>Desinstalar Flock…</value>
     </data>
     <data name="About_UninstallKeeps" xml:space="preserve">
-        <value>Los ajustes de tus sitios y tus bases de datos de PostgreSQL y Redis se quedan en {0}, así que al reinstalar continuarás donde lo dejaste, salvo que también los elimines:</value>
+        <value>Los ajustes de tus sitios y tus bases de datos de PostgreSQL y Redis se conservan en {0}, así que al reinstalar continúas donde lo dejaste, salvo que también los elimines:</value>
     </data>
     <data name="About_UninstallQuestion" xml:space="preserve">
         <value>¿Desinstalar Flock?</value>
@@ -113,7 +113,7 @@
         <value>Otros clientes</value>
     </data>
     <data name="Ai_Subtitle" xml:space="preserve">
-        <value>Permite que agentes de IA como Claude Code y Cursor trabajen con Flock: las URL y versiones de PHP de tus sitios, registros, dumps y correo, y la instalación de versiones y servicios.</value>
+        <value>Deja que agentes de IA como Claude Code y Cursor trabajen con Flock: las URL y versiones de PHP de tus sitios, registros, dumps y correo, y la instalación de versiones y servicios.</value>
     </data>
     <data name="App_CouldNotRelaunch" xml:space="preserve">
         <value>No se pudo reiniciar Flock: {0}</value>
@@ -184,7 +184,7 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>(vacío)</value>
     </data>
     <data name="Common_FlockNotRunning" xml:space="preserve">
-        <value>Flock no se está ejecutando</value>
+        <value>Flock no está en ejecución</value>
     </data>
     <data name="Common_Hide" xml:space="preserve">
         <value>Ocultar</value>
@@ -292,7 +292,7 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>No incluido en esta compilación</value>
     </data>
     <data name="Debugger_StartSession" xml:space="preserve">
-        <value>Iniciar una sesión</value>
+        <value>Inicia una sesión</value>
     </data>
     <data name="Debugger_StartSessionDescription" xml:space="preserve">
         <value>Pon un punto de interrupción en PhpStorm y escucha las conexiones de depuración, usa la extensión de Xdebug para el navegador o añade ?XDEBUG_TRIGGER=1 a la URL. En la línea de comandos, ejecuta `flock debug artisan …`.</value>
@@ -370,7 +370,7 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>Mostrar dump() también en la página</value>
     </data>
     <data name="Dumps_Sources" xml:space="preserve">
-        <value>Fuentes</value>
+        <value>Código fuente</value>
     </data>
     <data name="Dumps_StartCapturing" xml:space="preserve">
         <value>Empezar a capturar</value>
@@ -385,7 +385,7 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>Añadir carpetas de proyectos</value>
     </data>
     <data name="General_AppLanguage" xml:space="preserve">
-        <value>Idioma de la aplicación</value>
+        <value>Idioma de la app</value>
     </data>
     <data name="General_AppLanguageDescription" xml:space="preserve">
         <value>El idioma de las ventanas, los menús y las notificaciones de Flock.</value>
@@ -475,7 +475,7 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>Reinicio</value>
     </data>
     <data name="General_RestartDaemon" xml:space="preserve">
-        <value>Reiniciar demonio</value>
+        <value>Reiniciar el demonio</value>
     </data>
     <data name="General_RestartDescription" xml:space="preserve">
         <value>Reinicia el demonio y todos los servicios que ejecuta.</value>
@@ -615,7 +615,7 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>Añade estas líneas al .env de tu proyecto:</value>
     </data>
     <data name="Mail_CatchTitle" xml:space="preserve">
-        <value>Captura el correo de tu aplicación</value>
+        <value>Captura el correo de tu app</value>
     </data>
     <data name="Mail_Caught" xml:space="preserve">
         <value>Correos capturados</value>
@@ -642,7 +642,7 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>Host</value>
     </data>
     <data name="Mail_NoHtmlPart" xml:space="preserve">
-        <value>No hay parte HTML</value>
+        <value>Sin parte HTML</value>
     </data>
     <data name="Mail_NoMail" xml:space="preserve">
         <value>No hay correo</value>
@@ -657,7 +657,7 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>(sin asunto)</value>
     </data>
     <data name="Mail_NoTextPart" xml:space="preserve">
-        <value>(no hay parte de texto)</value>
+        <value>(sin parte de texto)</value>
     </data>
     <data name="Mail_Open" xml:space="preserve">
         <value>Abrir Correo</value>
@@ -750,13 +750,13 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>Compilaciones oficiales de Node.js, la versión más reciente de cada versión principal. Si un proyecto fija una versión en .nvmrc, se ofrece esa versión principal al ejecutar node, npm o npx en él. Los paquetes globales pertenecen a una línea de Node y se conservan en sus actualizaciones; los de la versión predeterminada están en tu PATH.</value>
     </data>
     <data name="Node_NoVersions" xml:space="preserve">
-        <value>Todavía no hay versiones de Node.js para mostrar.</value>
+        <value>Aún no hay versiones de Node.js que mostrar.</value>
     </data>
     <data name="Node_Subtitle" xml:space="preserve">
-        <value>node, npm y npx siguen el .nvmrc / .node-version del proyecto, luego la versión del sitio y, por último, la predeterminada.</value>
+        <value>node, npm y npx siguen el .nvmrc / .node-version del proyecto, después la versión del sitio y, por último, la predeterminada.</value>
     </data>
     <data name="Node_UninstallDetails" xml:space="preserve">
-        <value>También se quitan sus paquetes globales de npm. Los proyectos y sitios que usan Node {0} vuelven a la versión predeterminada hasta que la instales de nuevo.</value>
+        <value>También se quitan sus paquetes globales de npm. Los proyectos y sitios que usan Node {0} vuelven a la versión predeterminada hasta que lo instales de nuevo.</value>
     </data>
     <data name="Node_Uninstalling" xml:space="preserve">
         <value>Desinstalando…</value>
@@ -906,7 +906,7 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>No hay ninguna versión activa. Cambia a una versión instalada de abajo para iniciar PostgreSQL.</value>
     </data>
     <data name="Postgres_SideBySide" xml:space="preserve">
-        <value>Las versiones instaladas conviven. Se ejecuta una a la vez; cada una conserva sus propias bases de datos, y las actualizaciones dentro de una versión las mantienen.</value>
+        <value>Las versiones instaladas conviven. Solo se ejecuta una a la vez; cada una tiene sus propias bases de datos, y las actualizaciones dentro de una versión las conservan.</value>
     </data>
     <data name="Postgres_StartsEmpty" xml:space="preserve">
         <value>Empieza con un clúster de bases de datos nuevo y vacío.</value>
@@ -936,10 +936,10 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>Instala {0} en lugar de {1}. Tus bases de datos se conservan; PostgreSQL se reinicia un momento.</value>
     </data>
     <data name="Postgres_Withdrawn" xml:space="preserve">
-        <value>Esta compilación se retiró: {0}</value>
+        <value>Esta compilación se ha retirado: {0}</value>
     </data>
     <data name="Postgres_WithdrawnTooltip" xml:space="preserve">
-        <value>Flock la reemplaza en cuanto se publique una compilación corregida.</value>
+        <value>Flock la sustituye en cuanto se publique una compilación corregida.</value>
     </data>
     <data name="Preferences_SaveCanceled" xml:space="preserve">
         <value>Se canceló el guardado de las preferencias.</value>
@@ -951,7 +951,7 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>El proceso no se inició.</value>
     </data>
     <data name="Proxy_NothingAnswers" xml:space="preserve">
-        <value>Nada responde en {0}. Inicia el servidor allí.</value>
+        <value>No responde nada en {0}. Inicia allí el servidor.</value>
     </data>
     <data name="Releases_Available" xml:space="preserve">
         <value>{0} disponible</value>
@@ -996,7 +996,7 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>No disponible</value>
     </data>
     <data name="Releases_UpToDate" xml:space="preserve">
-        <value>actualizada</value>
+        <value>actualizado</value>
     </data>
     <data name="Releases_Withdrawn" xml:space="preserve">
         <value>retirada: {0}</value>
@@ -1044,7 +1044,7 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>Descarga la versión más reciente.</value>
     </data>
     <data name="Services_FilterTooltip" xml:space="preserve">
-        <value>Muestra solo los servicios instalados o todos los que ofrece Flock</value>
+        <value>Mostrar solo los servicios instalados o todos los que ofrece Flock</value>
     </data>
     <data name="Services_HostsInstalled" xml:space="preserve">
         <value>El asistente de hosts de Flock escribe en el archivo hosts el dominio de cada sitio y los dominios añadidos.</value>
@@ -1104,7 +1104,7 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>No disponible en Windows</value>
     </data>
     <data name="Services_PortDetails" xml:space="preserve">
-        <value>Puertos 1024–65535. Actualiza también el puerto en los archivos .env de tus proyectos.</value>
+        <value>Puertos 1024–65535. Cambia el puerto también en los archivos .env de tus proyectos.</value>
     </data>
     <data name="Services_PortEllipsis" xml:space="preserve">
         <value>Puerto…</value>
@@ -1128,7 +1128,7 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>Mostrar el último registro</value>
     </data>
     <data name="Services_SideBySide" xml:space="preserve">
-        <value>Las versiones instaladas conviven. Se ejecuta una a la vez; cada una conserva sus propios datos, y las actualizaciones dentro de una versión los mantienen.</value>
+        <value>Las versiones instaladas conviven. Solo se ejecuta una a la vez; cada una tiene sus propios datos, y las actualizaciones dentro de una versión los conservan.</value>
     </data>
     <data name="Services_Start" xml:space="preserve">
         <value>Iniciar</value>
@@ -1188,19 +1188,19 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>{0} está disponible</value>
     </data>
     <data name="Services_WebDown" xml:space="preserve">
-        <value>Los sitios no abren mientras el servidor web está caído. Su registro puede indicar el motivo; `flock restart` lo vuelve a iniciar.</value>
+        <value>Los sitios no se abren mientras el servidor web está caído. Su registro puede indicar por qué; `flock restart` lo vuelve a iniciar.</value>
     </data>
     <data name="Services_WebRunning" xml:space="preserve">
-        <value>Caddy sirve cada sitio por HTTPS (https://app.{0}) con certificados de la autoridad de certificación local de Flock, en la que `flock install` confía.</value>
+        <value>Caddy sirve cada sitio por HTTPS (https://app.{0}) con certificados de la autoridad de certificación local de Flock, en la que `flock install` hace confiar al sistema.</value>
     </data>
     <data name="Services_Withdrawn" xml:space="preserve">
         <value>Retirada: {0}</value>
     </data>
     <data name="Services_WithdrawnTooltip" xml:space="preserve">
-        <value>Esta compilación se retiró. Flock la reemplaza en cuanto se publique una corregida.</value>
+        <value>Esta compilación se ha retirado. Flock la sustituye en cuanto se publique una compilación corregida.</value>
     </data>
     <data name="Services_WithdrawnUpdate" xml:space="preserve">
-        <value>Retirada: {0}. Actualiza para reemplazarla</value>
+        <value>Retirada: {0}. Actualiza para sustituirla</value>
     </data>
     <data name="Settings_CouldNotShow" xml:space="preserve">
         <value>No se pudo mostrar la configuración</value>
@@ -1272,7 +1272,7 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>Abre una terminal nueva</value>
     </data>
     <data name="Setup_NewTerminalDescription" xml:space="preserve">
-        <value>Las terminales que ya estaban abiertas siguen teniendo el PATH anterior.</value>
+        <value>Las terminales que ya estaban abiertas siguen con el PATH anterior.</value>
     </data>
     <data name="Setup_NextSteps" xml:space="preserve">
         <value>Próximos pasos</value>
@@ -1293,10 +1293,10 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>PHP y Node.js</value>
     </data>
     <data name="Setup_PhpAndNodeDescription" xml:space="preserve">
-        <value>Flock instala la versión más reciente de PHP y Node.js LTS como predeterminadas. En Configuración → PHP y Node se instalan otras versiones.</value>
+        <value>Flock instala como predeterminados el PHP y el Node.js LTS más recientes. En Configuración → PHP y Node puedes instalar otras versiones.</value>
     </data>
     <data name="Setup_QuitOthers" xml:space="preserve">
-        <value>Primero cierra otros entornos locales</value>
+        <value>Primero cierra los otros entornos locales</value>
     </data>
     <data name="Setup_QuitOthersDescription" xml:space="preserve">
         <value>Flock necesita estos puertos, pero otros programas los usan. Si se ejecutan ambos, ninguno funcionará.</value>
@@ -1329,7 +1329,7 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>Sitios *.test con HTTPS de confianza</value>
     </data>
     <data name="Setup_TryAgain" xml:space="preserve">
-        <value>Volver a intentarlo</value>
+        <value>Reintentar</value>
     </data>
     <data name="Setup_TwoNames" xml:space="preserve">
         <value>{0} y {1}</value>
@@ -1347,7 +1347,7 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>Te damos la bienvenida a Flock</value>
     </data>
     <data name="Share_AllowExplanation" xml:space="preserve">
-        <value>Cualquiera con el enlace puede abrir el sitio, salvo que indiques direcciones de correo: entonces Cloudflare les envía un código. El enlace deja de funcionar a las 8 horas o cuando dejes de compartir.</value>
+        <value>Cualquiera con el enlace puede abrir el sitio, salvo que indiques direcciones de correo: en ese caso Cloudflare les envía un código por correo. El enlace deja de funcionar a las 8 horas o cuando dejes de compartir.</value>
     </data>
     <data name="Share_AllowHeader" xml:space="preserve">
         <value>Solo estas personas (opcional)</value>
@@ -1365,7 +1365,7 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>No se pudo guardar el código QR</value>
     </data>
     <data name="Share_DebugOn" xml:space="preserve">
-        <value>El modo de depuración está activado: los visitantes ven los stack traces</value>
+        <value>El modo de depuración está activado: los visitantes ven las trazas de pila</value>
     </data>
     <data name="Share_Dismiss" xml:space="preserve">
         <value>Descartar</value>
@@ -1386,7 +1386,7 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>Código QR de la dirección compartida</value>
     </data>
     <data name="Share_QrTooltip" xml:space="preserve">
-        <value>Haz clic con el botón derecho para copiar o guardar el código QR, o arrástralo</value>
+        <value>Haz clic con el botón derecho para copiar o guardar el código QR, o arrástralo fuera</value>
     </data>
     <data name="Share_Rebuild" xml:space="preserve">
         <value>Recompilar los recursos</value>
@@ -1407,10 +1407,10 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>Compartir…</value>
     </data>
     <data name="Share_ShowErrors" xml:space="preserve">
-        <value>Mostrar detalles de errores a los visitantes</value>
+        <value>Mostrar los detalles de los errores a los visitantes</value>
     </data>
     <data name="Share_ShowErrorsExplanation" xml:space="preserve">
-        <value>Activa el modo de depuración de la aplicación para este enlace, así que los visitantes ven los stack traces. Solo para personas de confianza.</value>
+        <value>Activa el modo de depuración de la app para este enlace compartido, así que los visitantes ven las trazas de pila. Solo para personas de confianza.</value>
     </data>
     <data name="Share_Starting" xml:space="preserve">
         <value>Iniciando el túnel…</value>
@@ -1485,10 +1485,10 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>¿Añadir Flock a las directrices de Boost de {0}?</value>
     </data>
     <data name="Sites_BoostDetails" xml:space="preserve">
-        <value>Escribe .ai\guidelines\flock.md en {0} y ejecuta php artisan boost:update, para que los agentes de IA sepan que Flock sirve la aplicación y elige su versión de PHP. Haz commit junto con el resto de .ai\guidelines. Esto cambia archivos de tu proyecto.</value>
+        <value>Escribe .ai\guidelines\flock.md en {0} y ejecuta php artisan boost:update, para que los agentes de IA sepan que Flock sirve la app y elige su versión de PHP. Haz commit junto con el resto de .ai\guidelines. Esto cambia archivos de tu proyecto.</value>
     </data>
     <data name="Sites_BoostMissing" xml:space="preserve">
-        <value>El proyecto usa Laravel Boost. Añadir Flock a sus directrices indica a los agentes de IA que Flock sirve la aplicación y elige su versión de PHP.</value>
+        <value>El proyecto usa Laravel Boost. Añadir Flock a sus directrices indica a los agentes de IA que Flock sirve la app y elige su versión de PHP.</value>
     </data>
     <data name="Sites_BoostOutdated" xml:space="preserve">
         <value>La directriz de Flock en las directrices de Boost del proyecto está desactualizada.</value>
@@ -1560,10 +1560,10 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>No es obligatoria, pero se usa: {0}</value>
     </data>
     <data name="Sites_ExtensionsFootnote" xml:space="preserve">
-        <value>Requerir una extensión en composer.json hace que composer install rechace un servidor que no la tenga, en lugar de que la aplicación falle allí.</value>
+        <value>Requerir una extensión en composer.json hace que composer install rechace un servidor que no la tenga, en lugar de que la app falle allí.</value>
     </data>
     <data name="Sites_ExtensionsLaravel" xml:space="preserve">
-        <value>PHP {0} · aplicación de Laravel</value>
+        <value>PHP {0} · app de Laravel</value>
     </data>
     <data name="Sites_ExtensionsNone" xml:space="preserve">
         <value>El proyecto no requiere extensiones de PHP.</value>
@@ -1590,10 +1590,10 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>Añade aquí un sitio suelto o añade una carpeta de proyectos en General.</value>
     </data>
     <data name="Sites_NodeWins" xml:space="preserve">
-        <value>Node {0} de .flockrc tiene prioridad sobre {1}.</value>
+        <value>El Node {0} de .flockrc tiene prioridad sobre {1}.</value>
     </data>
     <data name="Sites_NothingAnswersYet" xml:space="preserve">
-        <value>Todavía no responde nada en {0}.</value>
+        <value>Aún no responde nada en {0}.</value>
     </data>
     <data name="Sites_OctaneTooltip" xml:space="preserve">
         <value>Instala Laravel Octane en el proyecto (composer require laravel/octane) para usar el modo worker.</value>
@@ -1611,13 +1611,13 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>Fijar</value>
     </data>
     <data name="Sites_PinMenuTooltip" xml:space="preserve">
-        <value>Fijar las versiones y la raíz de documentos al proyecto</value>
+        <value>Fijar las versiones y la raíz de documentos en el proyecto</value>
     </data>
     <data name="Sites_PinNodeDetails" xml:space="preserve">
         <value>Escribe {0} en {1} en {2}. Haz commit y Flock, nvm y otras herramientas de Node usarán Node {0} en este proyecto.</value>
     </data>
     <data name="Sites_PinNodeItem" xml:space="preserve">
-        <value>Fijar Node {0} al proyecto…</value>
+        <value>Fijar Node {0} en el proyecto…</value>
     </data>
     <data name="Sites_PinNodeQuestion" xml:space="preserve">
         <value>¿Fijar Node {0} en {1}?</value>
@@ -1626,7 +1626,7 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>Escribe php={0} en .flockrc en {1}. Haz commit y todos los que usen Flock en este proyecto tendrán PHP {0}.</value>
     </data>
     <data name="Sites_PinPhpItem" xml:space="preserve">
-        <value>Fijar PHP {0} al proyecto…</value>
+        <value>Fijar PHP {0} en el proyecto…</value>
     </data>
     <data name="Sites_PinPhpQuestion" xml:space="preserve">
         <value>¿Fijar PHP {0} en {1}?</value>
@@ -1635,7 +1635,7 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>Escribe root={0} en .flockrc en {1}. Haz commit y todos los que usen Flock en este proyecto lo servirán desde {2}.</value>
     </data>
     <data name="Sites_PinRootItem" xml:space="preserve">
-        <value>Fijar la raíz de documentos ({0}) al proyecto…</value>
+        <value>Fijar la raíz de documentos ({0}) en el proyecto…</value>
     </data>
     <data name="Sites_PinRootQuestion" xml:space="preserve">
         <value>¿Fijar la raíz de documentos {0} en {1}?</value>
@@ -1650,7 +1650,7 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>Proxy</value>
     </data>
     <data name="Sites_ProxyFootnote" xml:space="preserve">
-        <value>Cada solicitud pasa al destino con su encabezado Host, incluidas las actualizaciones a WebSocket (recarga en caliente). Flock no inicia el servidor, así que inícialo como siempre. Hasta que responda, {0} muestra una página que lo indica.</value>
+        <value>Cada solicitud pasa al destino con su encabezado Host, incluidas las conexiones WebSocket (recarga en caliente). Flock no inicia el servidor, así que inícialo como siempre. Hasta que responda, {0} muestra una página que lo indica.</value>
     </data>
     <data name="Sites_ProxyName" xml:space="preserve">
         <value>Nombre</value>
@@ -1674,10 +1674,10 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>Requerir</value>
     </data>
     <data name="Sites_RequireTooltip" xml:space="preserve">
-        <value>Ejecuta composer require ext-{0}:* en {1}, lo que cambia composer.json y composer.lock. Haz commit de ellos con el proyecto.</value>
+        <value>Ejecuta composer require ext-{0}:* en {1}, lo que cambia composer.json y composer.lock. Haz commit de ambos con el proyecto.</value>
     </data>
     <data name="Sites_RestartFrankenPhpTooltip" xml:space="preserve">
-        <value>Reinicia FrankenPHP, p. ej. para que los workers de Octane carguen el código modificado</value>
+        <value>Reiniciar FrankenPHP, p. ej. para que los workers de Octane carguen el código modificado</value>
     </data>
     <data name="Sites_Root" xml:space="preserve">
         <value>Raíz</value>
@@ -1701,13 +1701,13 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>{0} está definido para este sitio en este equipo.</value>
     </data>
     <data name="Sites_RootMissing" xml:space="preserve">
-        <value>Elige la carpeta con el index.php de la aplicación o crea {0}.</value>
+        <value>Elige la carpeta con el index.php de la app o crea {0}.</value>
     </data>
     <data name="Sites_RootNoIndex" xml:space="preserve">
-        <value>{0} no tiene index.php ni index.html, así que Flock muestra una página en lugar del sitio hasta que lo tenga.</value>
+        <value>{0} no tiene index.php ni index.html, así que Flock muestra una página en lugar del sitio hasta que los tenga.</value>
     </data>
     <data name="Sites_RootNotFound" xml:space="preserve">
-        <value>No se encontró ninguna carpeta public\, www\, web\ ni webroot\ con un index.php, así que Flock muestra una página en lugar del sitio. Elige la carpeta con el index.php de la aplicación.</value>
+        <value>No se encontró ninguna carpeta public\, www\, web\ ni webroot\ con un index.php, así que Flock muestra una página en lugar del sitio. Elige la carpeta con el index.php de la app.</value>
     </data>
     <data name="Sites_RootPinned" xml:space="preserve">
         <value>El proyecto define {0} en .flockrc.</value>
@@ -1740,37 +1740,37 @@ Encontrarás los detalles en %LocalAppData%\Flock\tray.log.</value>
         <value>Los subdominios solo funcionan si los añades aquí: {0}.</value>
     </data>
     <data name="Sites_Subtitle" xml:space="preserve">
-        <value>Los sitios que añadiste uno a uno y todas las carpetas dentro de tus carpetas de proyectos.</value>
+        <value>Los sitios que añadiste uno a uno, más cada carpeta dentro de tus carpetas de proyectos.</value>
     </data>
     <data name="Sites_Unpin" xml:space="preserve">
-        <value>Desfijar</value>
+        <value>Dejar de fijar</value>
     </data>
     <data name="Sites_UnpinNodeDetails" xml:space="preserve">
         <value>Quita la versión de Node.js de .flockrc y elimina .nvmrc / .node-version en {0}. Después, el sitio usa el Node.js predeterminado de Flock.</value>
     </data>
     <data name="Sites_UnpinNodeItem" xml:space="preserve">
-        <value>Desfijar Node ({0})…</value>
+        <value>Dejar de fijar Node ({0})…</value>
     </data>
     <data name="Sites_UnpinNodeQuestion" xml:space="preserve">
-        <value>¿Desfijar Node de {0}?</value>
+        <value>¿Dejar de fijar Node en {0}?</value>
     </data>
     <data name="Sites_UnpinPhpDetails" xml:space="preserve">
         <value>Quita la versión de PHP de {0}. Después, el sitio usa el PHP predeterminado de Flock.</value>
     </data>
     <data name="Sites_UnpinPhpItem" xml:space="preserve">
-        <value>Desfijar PHP ({0})…</value>
+        <value>Dejar de fijar PHP ({0})…</value>
     </data>
     <data name="Sites_UnpinPhpQuestion" xml:space="preserve">
-        <value>¿Desfijar PHP de {0}?</value>
+        <value>¿Dejar de fijar PHP en {0}?</value>
     </data>
     <data name="Sites_UnpinRootDetails" xml:space="preserve">
         <value>Quita root= de .flockrc en {0}. Después, Flock encuentra la raíz de documentos por sí mismo.</value>
     </data>
     <data name="Sites_UnpinRootItem" xml:space="preserve">
-        <value>Desfijar la raíz de documentos (.flockrc)…</value>
+        <value>Dejar de fijar la raíz de documentos (.flockrc)…</value>
     </data>
     <data name="Sites_UnpinRootQuestion" xml:space="preserve">
-        <value>¿Desfijar la raíz de documentos de {0}?</value>
+        <value>¿Dejar de fijar la raíz de documentos en {0}?</value>
     </data>
     <data name="Sites_Upstream" xml:space="preserve">
         <value>Destino</value>
@@ -1913,7 +1913,7 @@ Puedes ejecutar `flock install` en una terminal o reinstalar Flock.</value>
         <value>No se pudo comprobar: {0}</value>
     </data>
     <data name="Versions_CouldNotCheckUpdates" xml:space="preserve">
-        <value>No se pudo buscar actualizaciones: {0}</value>
+        <value>No se pudieron buscar actualizaciones: {0}</value>
     </data>
     <data name="Versions_Default" xml:space="preserve">
         <value>Predeterminada</value>
@@ -1946,7 +1946,7 @@ Puedes ejecutar `flock install` en una terminal o reinstalar Flock.</value>
         <value>npm {0} disponible</value>
     </data>
     <data name="Versions_Prerelease" xml:space="preserve">
-        <value>Versión preliminar</value>
+        <value>Preliminar</value>
     </data>
     <data name="Versions_ShowLastInstallLog" xml:space="preserve">
         <value>Mostrar el registro de la última instalación</value>
@@ -1955,7 +1955,7 @@ Puedes ejecutar `flock install` en una terminal o reinstalar Flock.</value>
         <value>Mostrar registro</value>
     </data>
     <data name="Versions_UpToDate" xml:space="preserve">
-        <value>Actualizada</value>
+        <value>Actualizado</value>
     </data>
     <data name="Versions_UpdateAvailable" xml:space="preserve">
         <value>Actualización disponible</value>

@@ -11,7 +11,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
 msgid " (npm {version} available)"
-msgstr " (dostupné npm {version})"
+msgstr " (k dispozici npm {version})"
 
 msgid " · worker mode"
 msgstr " · režim workerů"
@@ -32,7 +32,7 @@ msgid "(no subject)"
 msgstr "(bez předmětu)"
 
 msgid "(no text part)"
-msgstr "(žádná textová část)"
+msgstr "(bez textové části)"
 
 msgid "*.test sites with trusted HTTPS"
 msgstr "Weby *.test s důvěryhodným HTTPS"
@@ -56,13 +56,13 @@ msgstr "Odkaz žádá Flock o instalaci {name} {version}. {purpose}"
 
 #. {domain}: the site's domain
 msgid "A link asked Flock to secure {domain}. It gets a certificate this computer already trusts."
-msgstr "Odkaz žádá Flock o zabezpečení {domain}. Dostane certifikát, kterému tento počítač už důvěřuje."
+msgstr "Odkaz žádá Flock o zabezpečení {domain}. Web dostane certifikát, kterému tento počítač už důvěřuje."
 
 msgid "A native local development environment for Laravel."
 msgstr "Nativní lokální vývojové prostředí pro Laravel."
 
 msgid "A new build is available"
-msgstr "Je dostupné nové sestavení"
+msgstr "K dispozici je nové sestavení"
 
 msgid "A new, empty one"
 msgstr "Nová, prázdná"
@@ -122,7 +122,7 @@ msgid "Add a proxy"
 msgstr "Přidat proxy"
 
 msgid "Add a single site here, or add a project folder in General."
-msgstr "Přidejte sem jednotlivý web nebo přidejte složku projektů v části Obecné."
+msgstr "Přidejte sem jednotlivý web, nebo přidejte složku projektů v části Obecné."
 
 msgid "Add the site in Settings → Sites first."
 msgstr "Nejdřív web přidejte v Nastavení → Weby."
@@ -131,7 +131,7 @@ msgid "Add these lines to your project's .env. MAIL_USERNAME picks the inbox, so
 msgstr "Přidejte tyto řádky do .env svého projektu. MAIL_USERNAME určuje schránku, takže každý projekt má svou vlastní."
 
 msgid "Add this to the client's MCP settings."
-msgstr "Přidejte toto do nastavení MCP klienta."
+msgstr "Přidejte toto do nastavení MCP daného klienta."
 
 msgid "Add to composer.json"
 msgstr "Přidat do composer.json"
@@ -146,7 +146,7 @@ msgid "After installing one, run CREATE EXTENSION in each database that uses it.
 msgstr "Po instalaci spusťte CREATE EXTENSION v každé databázi, která rozšíření používá."
 
 msgid "All"
-msgstr "Vše"
+msgstr "Všechny"
 
 msgid "All levels"
 msgstr "Všechny úrovně"
@@ -158,7 +158,7 @@ msgid "Also install the extensions of PostgreSQL {version}?"
 msgstr "Nainstalovat i rozšíření z PostgreSQL {version}?"
 
 msgid "Anyone with the link can open the site unless you list email addresses — Cloudflare then emails them a code. The link stops working after 8 hours or when you stop sharing."
-msgstr "Web může otevřít kdokoli s odkazem, pokud neuvedete e-mailové adresy — Cloudflare jim pak pošle kód e-mailem. Odkaz přestane fungovat po 8 hodinách nebo když sdílení ukončíte."
+msgstr "Web může otevřít kdokoli s odkazem, pokud neuvedete e-mailové adresy — Cloudflare jim pak pošle kód e-mailem. Odkaz přestane fungovat po 8 hodinách nebo po ukončení sdílení."
 
 msgid "App {version}"
 msgstr "Aplikace {version}"
@@ -183,7 +183,7 @@ msgid "Availability"
 msgstr "Dostupnost"
 
 msgid "Available"
-msgstr "Dostupné"
+msgstr "K dispozici"
 
 msgid "Back"
 msgstr "Zpět"
@@ -203,7 +203,7 @@ msgstr "Mezipaměť a fronty"
 
 #. {tld}: the TLD
 msgid "Caddy serves every site over HTTPS (https://app.{tld}) with certificates from Flock's local certificate authority, which `flock install` trusts."
-msgstr "Caddy obsluhuje každý web přes HTTPS (https://app.{tld}) s certifikáty od místní certifikační autority Flocku, které `flock install` nastaví jako důvěryhodnou."
+msgstr "Caddy obsluhuje každý web přes HTTPS (https://app.{tld}) s certifikáty od místní certifikační autority Flocku, kterou `flock install` přidá mezi důvěryhodné."
 
 msgid "Cancel"
 msgstr "Zrušit"
@@ -242,11 +242,11 @@ msgid "Change Port"
 msgstr "Změnit port"
 
 msgid "Change its PHP and Node.js versions, HTTPS and document root on the site."
-msgstr "Verze PHP a Node.js, HTTPS a kořen dokumentů změníte u webu."
+msgstr "Verze PHP a Node.js, HTTPS a kořenovou složku změníte u webu."
 
 #. {proxy}: the proxy
 msgid "Change the upstream of {proxy}"
-msgstr "Změnit upstream proxy {proxy}"
+msgstr "Změnit cíl proxy {proxy}"
 
 msgid "Change…"
 msgstr "Změnit…"
@@ -298,7 +298,7 @@ msgstr "Vyberte složku s index.php aplikace ve webu {site}"
 
 #. {root}: the configured folder
 msgid "Choose the folder with the app's index.php, or create {root}."
-msgstr "Vyberte složku s index.php aplikace, nebo vytvořte {root}."
+msgstr "Vyberte složku se souborem index.php aplikace, nebo vytvořte {root}."
 
 msgid "Classic"
 msgstr "Klasický"
@@ -339,31 +339,31 @@ msgid "Core"
 msgstr "Základní"
 
 msgid "Could Not Load Message"
-msgstr "Zprávu nelze načíst"
+msgstr "Zprávu se nepodařilo načíst"
 
 msgid "Could Not Load the Raw Message"
-msgstr "Zdroj zprávy nelze načíst"
+msgstr "Zdroj zprávy se nepodařilo načíst"
 
 #. {error}: the error
 msgid "Could not change the startup setting: {error}"
-msgstr "Nastavení spouštění nelze změnit: {error}"
+msgstr "Nastavení spouštění se nepodařilo změnit: {error}"
 
 msgid "Could not change the startup setting: {error}."
-msgstr "Nastavení spouštění nelze změnit: {error}."
+msgstr "Nastavení spouštění se nepodařilo změnit: {error}."
 
 msgid "Could not open {program}: {error}"
-msgstr "{program} nelze otevřít: {error}"
+msgstr "{program} se nepodařilo otevřít: {error}"
 
 msgid "Couldn't check for new releases: {error}"
-msgstr "Nová vydání nelze zkontrolovat: {error}"
+msgstr "Nová vydání se nepodařilo vyhledat: {error}"
 
 #. {error}: the error
 msgid "Couldn't check for updates: {error}"
-msgstr "Aktualizace nelze zkontrolovat: {error}"
+msgstr "Aktualizace se nepodařilo vyhledat: {error}"
 
 #. {name}: the worktree
 msgid "Couldn't remove {name}"
-msgstr "{name} nelze odebrat"
+msgstr "{name} se nepodařilo odebrat"
 
 msgid "Create"
 msgstr "Vytvořit"
@@ -398,7 +398,7 @@ msgid "Date"
 msgstr "Datum"
 
 msgid "Debug mode is on: visitors see stack traces"
-msgstr "Režim ladění je zapnutý: návštěvníci vidí výpisy zásobníku"
+msgstr "Ladicí režim je zapnutý: návštěvníci vidí výpisy zásobníku"
 
 msgid "Debugger"
 msgstr "Debugger"
@@ -423,22 +423,22 @@ msgid "Delete all caught mail?"
 msgstr "Smazat veškerou zachycenou poštu?"
 
 msgid "Deletes the Laravel log files in storage/logs of {site}. This can't be undone."
-msgstr "Smaže soubory logu Laravelu ve storage/logs webu {site}. Tuto akci nelze vrátit."
+msgstr "Smaže soubory logů Laravelu ve storage/logs webu {site}. Tuto akci nelze vrátit."
 
 msgid "Details"
 msgstr "Podrobnosti"
 
 msgid "Detect PhpStorm breakpoints"
-msgstr "Rozpoznávat breakpointy PhpStormu"
+msgstr "Rozpoznávat breakpointy z PhpStormu"
 
 msgid "Detect Xdebug requests"
-msgstr "Rozpoznávat požadavky Xdebugu"
+msgstr "Rozpoznávat požadavky na Xdebug"
 
 msgid "Dismiss"
-msgstr "Skrýt"
+msgstr "Zavřít"
 
 msgid "Document root"
-msgstr "Kořen dokumentů"
+msgstr "Kořenová složka webu"
 
 msgid "Domain"
 msgstr "Doména"
@@ -475,7 +475,7 @@ msgstr "Stáhne PHP {version} ({size} MB)"
 
 #. {database}: the database
 msgid "Drop {database}?"
-msgstr "Odstranit {database}?"
+msgstr "Smazat databázi {database}?"
 
 msgid "Dumps"
 msgstr "Dumpy"
@@ -491,24 +491,24 @@ msgid "Environment Variables"
 msgstr "Proměnné prostředí"
 
 msgid "Error and above"
-msgstr "Error a vyšší"
+msgstr "Error a závažnější"
 
 msgid "Every captured dump, query, log, view and job is deleted, from all requests and commands."
 msgstr "Smažou se všechny zachycené dumpy, dotazy, logy, pohledy a úlohy ze všech požadavků a příkazů."
 
 #. {tld}: the TLD ("test")
 msgid "Every folder inside a project folder is served as <folder>.{tld} — the same as `flock park`."
-msgstr "Každá složka uvnitř složky projektů se obsluhuje jako <folder>.{tld} — stejně jako u `flock park`."
+msgstr "Každá složka uvnitř složky projektů se obsluhuje jako <složka>.{tld} — stejně jako po `flock park`."
 
 msgid "Every installed version runs its own PHP-FPM pool. Sites use the default unless pinned to a version."
-msgstr "Každá nainstalovaná verze má vlastní pool PHP-FPM. Weby používají výchozí verzi, pokud nemají připnutou jinou."
+msgstr "Každá nainstalovaná verze má vlastní PHP-FPM pool. Weby používají výchozí verzi, pokud nemají připnutou jinou."
 
 msgid "Every name, any subdomain included, is resolved by Flock's DNS server through systemd-resolved."
 msgstr "Každý název včetně libovolné subdomény překládá DNS server Flocku přes systemd-resolved."
 
 #. {domain}: the domain
 msgid "Every request passes to the upstream with its Host header, WebSocket upgrades (hot reload) included. Flock doesn't start the server, so start it as usual. Until it answers, {domain} shows a page saying so."
-msgstr "Každý požadavek se předá upstreamu i s hlavičkou Host, včetně upgradů na WebSocket (hot reload). Flock server nespouští, takže ho spusťte jako obvykle. Dokud neodpoví, {domain} zobrazuje stránku, která to oznamuje."
+msgstr "Každý požadavek se předá cíli i s hlavičkou Host, včetně přechodu na WebSocket (hot reload). Flock server nespouští, takže ho spusťte jako obvykle. Dokud neodpovídá, {domain} zobrazuje stránku s touto informací."
 
 msgid "Every service Flock offers: MySQL, Redis, Meilisearch and more"
 msgstr "Všechny služby, které Flock nabízí: MySQL, Redis, Meilisearch a další"
@@ -520,7 +520,7 @@ msgstr[1] "Každá subdoména až {n} úrovně pod webem už funguje. Pro alias 
 msgstr[2] "Každá subdoména až {n} úrovní pod webem už funguje. Pro alias přidejte celý název jako {site}-2.{tld}, nebo subdoménu (tenant1, a.b), aby byla uvedená zde a překládala se i na počítačích s Windows bez wildcard DNS."
 
 msgid "Experimental channel: packages that aren’t released yet are offered. `flock channel stable` switches back."
-msgstr "Experimentální kanál: nabízejí se i balíčky, které ještě nebyly vydány. `flock channel stable` vás vrátí zpět."
+msgstr "Experimentální kanál: nabízí se i dosud nevydané balíčky. Zpět přepnete příkazem `flock channel stable`."
 
 msgid "Extensions folder"
 msgstr "Složka rozšíření"
@@ -539,7 +539,7 @@ msgstr "Flock neběží"
 
 #. {status}: the HTTP status code
 msgid "Flock answered with HTTP {status}"
-msgstr "Flock odpověděl s HTTP {status}"
+msgstr "Flock odpověděl kódem HTTP {status}"
 
 msgid "Flock can't run it on this platform."
 msgstr "Flock ho na této platformě nedokáže spustit."
@@ -558,7 +558,7 @@ msgstr "Flock vytvoří prázdnou databázi a spustí migrace."
 
 #. {site}: the site
 msgid "Flock creates the worktree next to {site} on a new branch with a name of its own, sets it up and serves it at its own address."
-msgstr "Flock vytvoří worktree vedle webu {site} na nové větvi s vlastním názvem, připraví ho a bude ho obsluhovat na jeho vlastní adrese."
+msgstr "Flock vytvoří worktree vedle webu {site} na nové větvi s vlastním názvem, připraví ho a bude ho obsluhovat na vlastní adrese."
 
 #. {branch}: the branch, {site}: the site, {address}: the address
 msgid "Flock creates the worktree next to {site} on the new branch {branch}, sets it up and serves it at {address}."
@@ -573,13 +573,13 @@ msgstr "Flock nenabízí {name} {version}"
 
 #. {site}: the site
 msgid "Flock has no site called {site}"
-msgstr "Flock nemá žádný web s názvem {site}"
+msgstr "Flock nemá web s názvem {site}"
 
 msgid "Flock hasn't set this worktree up"
 msgstr "Flock tento worktree nepřipravil"
 
 msgid "Flock is added"
-msgstr "Flock je přidaný"
+msgstr "Flock je přidán"
 
 msgid "Flock is not installed for this user ({path} is missing) — run `flk install` once."
 msgstr "Flock není pro tohoto uživatele nainstalovaný (chybí {path}) — spusťte jednou `flk install`."
@@ -600,7 +600,7 @@ msgstr[1] "Flock je nastaví jako výchozí pro vaše weby a terminál."
 msgstr[2] "Flock je nastaví jako výchozí pro vaše weby a terminál."
 
 msgid "Flock needs these ports and *.{tld} for itself, but other programs use them. Running both would leave neither working."
-msgstr "Flock potřebuje tyto porty a *.{tld} pro sebe, ale používají je jiné programy. Kdyby běžely oba, nefungoval by ani jeden."
+msgstr "Flock potřebuje tyto porty a *.{tld} pro sebe, ale používají je jiné programy. Pokud by běželo obojí, nefungovalo by ani jedno."
 
 #. {path}: the folder, {database}: the database
 msgid "Flock runs its before_delete hook and deletes {path} and its database {database}."
@@ -615,7 +615,7 @@ msgstr "Flock na tomto počítači provozuje vaše weby v Laravelu, PHP, poštu 
 
 #. {tld}: the TLD
 msgid "Flock serves <name>.{tld} from a server of its own, e.g. a Next.js, Nuxt or Vite dev server. A port means 127.0.0.1."
-msgstr "Flock obsluhuje <name>.{tld} z vlastního serveru, např. vývojového serveru Next.js, Nuxt nebo Vite. Samotný port znamená 127.0.0.1."
+msgstr "Flock obsluhuje <název>.{tld} z vlastního serveru, např. vývojového serveru Next.js, Nuxt nebo Vite. Samotný port znamená 127.0.0.1."
 
 msgid "Flock stops and is removed from your PATH, together with its PHP and Node.js versions, certificates, logs and caches. Linux asks for your password to remove the *.test DNS setup and Flock's trusted certificate.\n\nYour sites' settings and databases stay in {folder}, so reinstalling picks up where you left off — unless you also delete them."
 msgstr "Flock se zastaví a odebere se z vaší PATH spolu se svými verzemi PHP a Node.js, certifikáty, logy a mezipamětí. Linux se zeptá na heslo, aby odebral nastavení DNS pro *.test a důvěryhodný certifikát Flocku.\n\nNastavení a databáze vašich webů zůstanou ve složce {folder}, takže po opětovné instalaci budete pokračovat tam, kde jste skončili — pokud je také nesmažete."
@@ -643,7 +643,7 @@ msgid "Flock's guideline in the project's Boost guidelines is outdated."
 msgstr "Pokyn Flocku v pokynech Boost projektu je zastaralý."
 
 msgid "Flock's versions come first on your PATH. Open a new terminal after setup."
-msgstr "Verze Flocku jsou ve vaší proměnné PATH na prvním místě. Po nastavení otevřete nový terminál."
+msgstr "Verze z Flocku budou v PATH na prvním místě. Po nastavení otevřete nový terminál."
 
 msgid "Folder"
 msgstr "Složka"
@@ -652,10 +652,10 @@ msgid "Found a bug? Report an issue"
 msgstr "Našli jste chybu? Nahlaste ji"
 
 msgid "FrankenPHP needs PHP 8.2 or newer. Requests that ask for Xdebug still go to PHP-FPM."
-msgstr "FrankenPHP potřebuje PHP 8.2 nebo novější. Požadavky, které žádají o Xdebug, dál jdou do PHP-FPM."
+msgstr "FrankenPHP vyžaduje PHP 8.2 nebo novější. Požadavky, které chtějí Xdebug, dál obsluhuje PHP-FPM."
 
 msgid "FrankenPHP needs PHP 8.2 or newer. Requests that ask for Xdebug still go to PHP-FPM. For worker mode, install Laravel Octane in the project (composer require laravel/octane)."
-msgstr "FrankenPHP potřebuje PHP 8.2 nebo novější. Požadavky, které žádají o Xdebug, dál jdou do PHP-FPM. Pro režim workerů nainstalujte do projektu Laravel Octane (composer require laravel/octane)."
+msgstr "FrankenPHP vyžaduje PHP 8.2 nebo novější. Požadavky, které chtějí Xdebug, dál obsluhuje PHP-FPM. Pro režim workerů nainstalujte do projektu Laravel Octane (composer require laravel/octane)."
 
 msgid "From"
 msgstr "Od"
@@ -682,13 +682,13 @@ msgid "Host"
 msgstr "Hostitel"
 
 msgid "In a Laravel project, run `flock link`: the site is then at http://<folder>.test. `flock secure` adds HTTPS."
-msgstr "V projektu v Laravelu spusťte `flock link`: web pak najdete na http://<folder>.test. `flock secure` přidá HTTPS."
+msgstr "V projektu v Laravelu spusťte `flock link`: web pak najdete na http://<složka>.test. `flock secure` přidá HTTPS."
 
 msgid "Inbox"
 msgstr "Schránka"
 
 msgid "Info and above"
-msgstr "Info a vyšší"
+msgstr "Info a závažnější"
 
 msgid "Install"
 msgstr "Nainstalovat"
@@ -707,10 +707,10 @@ msgid "Installed"
 msgstr "Nainstalováno"
 
 msgid "Installed versions stay side by side. One runs at a time; each keeps its own data, and updates within a version keep it."
-msgstr "Nainstalované verze zůstávají vedle sebe. Běží vždy jedna; každá má svá vlastní data a aktualizace v rámci verze je zachovají."
+msgstr "Nainstalované verze zůstávají vedle sebe. Běží vždy jen jedna; každá má vlastní data, která zůstanou zachována i při aktualizacích v rámci verze."
 
 msgid "Installed versions stay side by side. One runs at a time; each keeps its own databases, and updates within a version keep them."
-msgstr "Nainstalované verze zůstávají vedle sebe. Běží vždy jedna; každá má své vlastní databáze a aktualizace v rámci verze je zachovají."
+msgstr "Nainstalované verze zůstávají vedle sebe. Běží vždy jen jedna; každá má vlastní databáze, které zůstanou zachovány i při aktualizacích v rámci verze."
 
 msgid "Installing PostgreSQL {version}…"
 msgstr "Instaluje se PostgreSQL {version}…"
@@ -737,10 +737,10 @@ msgstr "Běží na 127.0.0.1 pro vaše weby."
 
 #. {domain}: the site's domain
 msgid "It's served at https://{domain}."
-msgstr "Obsluhuje se na https://{domain}."
+msgstr "Web běží na https://{domain}."
 
 msgid "Its database {database} is dropped."
-msgstr "Jeho databáze {database} se odstraní."
+msgstr "Jeho databáze {database} se smaže."
 
 #. {version}: the major
 msgid "Its global npm packages are removed too. Projects and sites that use Node {version} fall back to the default version until you install it again."
@@ -770,7 +770,7 @@ msgid "Latest request only"
 msgstr "Jen poslední požadavek"
 
 msgid "Let AI agents like Claude Code and Cursor work with Flock: your sites' URLs and PHP versions, logs, dumps and mail, and installing versions and services."
-msgstr "Umožněte AI agentům jako Claude Code a Cursor pracovat s Flockem: s URL a verzemi PHP vašich webů, logy, dumpy a poštou a s instalací verzí a služeb."
+msgstr "Umožněte AI agentům jako Claude Code a Cursor pracovat s Flockem: s URL a verzemi PHP vašich webů, logy, dumpy a poštou i s instalací verzí a služeb."
 
 msgid "License"
 msgstr "Licence"
@@ -871,7 +871,7 @@ msgid "No Message Selected"
 msgstr "Není vybraná žádná zpráva"
 
 msgid "No Node.js versions to show yet."
-msgstr "Zatím nejsou k dispozici žádné verze Node.js."
+msgstr "Zatím nejsou k zobrazení žádné verze Node.js."
 
 msgid "No Results"
 msgstr "Žádné výsledky"
@@ -889,7 +889,7 @@ msgid "No project folders"
 msgstr "Žádné složky projektů"
 
 msgid "No public/, www/, web/ or webroot/ with an index.php was found, so Flock shows a page instead of the site. Choose the folder with the app's index.php."
-msgstr "Nebyla nalezena složka public/, www/, web/ ani webroot/ s index.php, takže Flock místo webu zobrazuje stránku s upozorněním. Vyberte složku s index.php aplikace."
+msgstr "Nebyla nalezena složka public/, www/, web/ ani webroot/ se souborem index.php, takže Flock místo webu zobrazuje informační stránku. Vyberte složku se souborem index.php aplikace."
 
 msgid "No sites"
 msgstr "Žádné weby"
@@ -901,31 +901,31 @@ msgid "No worktrees"
 msgstr "Žádné worktrees"
 
 msgid "Node {version} is isolated here; the project pins {pinned} in {file}."
-msgstr "Node {version} je zde izolované; projekt připíná {pinned} v {file}."
+msgstr "Node {version} je zde izolovaný; projekt v {file} připíná {pinned}."
 
 msgid "None (detached HEAD)"
 msgstr "Žádná (odpojený HEAD)"
 
 msgid "Not available"
-msgstr "Nedostupné"
+msgstr "Není k dispozici"
 
 msgid "Not available for PostgreSQL {version}"
-msgstr "Pro PostgreSQL {version} není dostupné"
+msgstr "Pro PostgreSQL {version} není k dispozici"
 
 msgid "Not available on Linux"
-msgstr "Na Linuxu není dostupné"
+msgstr "Na Linuxu není k dispozici"
 
 msgid "Not checked yet"
 msgstr "Zatím nezkontrolováno"
 
 msgid "Not in this build"
-msgstr "Není v tomto sestavení"
+msgstr "V tomto sestavení není"
 
 msgid "Not installed"
 msgstr "Nenainstalováno"
 
 msgid "Not installed · downloads by itself when a site uses it"
-msgstr "Nenainstalováno · stáhne se samo, jakmile ho web použije"
+msgstr "Nenainstalováno · stáhne se samo, až ho nějaký web použije"
 
 msgid "Not installed · its data is kept · {version}"
 msgstr "Nenainstalováno · data zůstala zachovaná · {version}"
@@ -941,7 +941,7 @@ msgstr "Nenabízí se"
 
 #. {hint}: where (from the daemon)
 msgid "Not required, but used: {hint}"
-msgstr "Nevyžaduje se, ale používá se: {hint}"
+msgstr "Není vyžadováno, ale používá se: {hint}"
 
 msgid "Not running"
 msgstr "Neběží"
@@ -963,7 +963,7 @@ msgid "OK"
 msgstr "OK"
 
 msgid "Official Node.js builds, the newest release of each major. A project that pins a version in .nvmrc gets that major offered when you run node, npm or npx there. Global packages (npm install -g) belong to a Node line and survive its updates; those of the default version are on your PATH."
-msgstr "Oficiální sestavení Node.js, nejnovější vydání každé hlavní verze. Projekt, který má verzi v .nvmrc, dostane tuto hlavní verzi nabídnutou, když v něm spustíte node, npm nebo npx. Globální balíčky (npm install -g) patří k řadě Node a přežijí její aktualizace; ty z výchozí verze jsou ve vaší PATH."
+msgstr "Oficiální sestavení Node.js, nejnovější vydání každé hlavní verze. Projektu, který má verzi připnutou v .nvmrc, se tato hlavní verze nabídne, když v něm spustíte node, npm nebo npx. Globální balíčky (npm install -g) patří k řadě Node a přežijí její aktualizace; ty z výchozí verze jsou v PATH."
 
 #. {emails}: email addresses
 msgid "Only for: {emails}"
@@ -1050,17 +1050,17 @@ msgid "PHP {version} install log"
 msgstr "Log instalace PHP {version}"
 
 msgid "PHP {version} is isolated here; the project pins {pinned} in {file}."
-msgstr "PHP {version} je zde izolované; projekt připíná {pinned} v {file}."
+msgstr "PHP {version} je zde izolované; projekt v {file} připíná {pinned}."
 
 msgid "PHP {version} isn’t released yet — it may not work. Offered on the beta channel."
-msgstr "PHP {version} ještě nebylo vydáno — nemusí fungovat. Nabízí se v beta kanálu."
+msgstr "PHP {version} ještě nevyšlo — nemusí fungovat. Nabízí se v beta kanálu."
 
 #. {version}: PHP version
 msgid "PHP {version} · Laravel app"
 msgstr "PHP {version} · aplikace v Laravelu"
 
 msgid "PHP-FPM serves the site meanwhile."
-msgstr "Web mezitím obsluhuje PHP-FPM."
+msgstr "Mezitím web obsluhuje PHP-FPM."
 
 msgid "PHP-FPM serves the site until it's ready."
 msgstr "Dokud nebude připravené, web obsluhuje PHP-FPM."
@@ -1073,7 +1073,7 @@ msgstr "Připnout"
 
 #. {root}: the folder
 msgid "Pin Document Root ({root}) to Project…"
-msgstr "Připnout kořen dokumentů ({root}) k projektu…"
+msgstr "Připnout kořenovou složku ({root}) k projektu…"
 
 #. {version}: major version
 msgid "Pin Node {version} to Project…"
@@ -1093,10 +1093,10 @@ msgstr "Připnout PHP {version} k webu {site}?"
 
 #. {root}: the folder, {site}: the site
 msgid "Pin the document root {root} to {site}?"
-msgstr "Připnout kořen dokumentů {root} k webu {site}?"
+msgstr "Připnout kořenovou složku {root} k webu {site}?"
 
 msgid "Pin versions and the document root to the project"
-msgstr "Připnout verze a kořen dokumentů k projektu"
+msgstr "Připnout verze a kořenovou složku k projektu"
 
 msgid "Port"
 msgstr "Port"
@@ -1106,10 +1106,10 @@ msgid "Port {port}"
 msgstr "Port {port}"
 
 msgid "Port, host:port or URL"
-msgstr "Port, host:port nebo URL"
+msgstr "Port, hostitel:port nebo URL"
 
 msgid "Port, host:port or URL, e.g. 3000"
-msgstr "Port, host:port nebo URL, např. 3000"
+msgstr "Port, hostitel:port nebo URL, např. 3000"
 
 msgid "PostgreSQL Only"
 msgstr "Jen PostgreSQL"
@@ -1127,13 +1127,13 @@ msgid "PostgreSQL {version} stops and Flock switches to PostgreSQL {next} with i
 msgstr "PostgreSQL {version} se zastaví a Flock se přepne na PostgreSQL {next} s jeho vlastními databázemi."
 
 msgid "PostgreSQL {version} stops, and your sites can't use PostgreSQL until you install a version again."
-msgstr "PostgreSQL {version} se zastaví a vaše weby nebudou moct PostgreSQL používat, dokud znovu nenainstalujete některou verzi."
+msgstr "PostgreSQL {version} se zastaví a vaše weby nebudou moci PostgreSQL používat, dokud znovu nenainstalujete některou verzi."
 
 msgid "PostgreSQL {version} stops; its databases stay but aren't available until you switch back. {then}"
-msgstr "PostgreSQL {version} se zastaví; jeho databáze zůstanou, ale nebudou dostupné, dokud se nepřepnete zpět. {then}"
+msgstr "PostgreSQL {version} se zastaví; jeho databáze zůstanou, ale nebudou k dispozici, dokud se nepřepnete zpět. {then}"
 
 msgid "PostgreSQL {version} uses its own databases."
-msgstr "PostgreSQL {version} používá své vlastní databáze."
+msgstr "PostgreSQL {version} používá vlastní databáze."
 
 msgid "Pre-release"
 msgstr "Předběžná verze"
@@ -1142,7 +1142,7 @@ msgid "Process"
 msgstr "Proces"
 
 msgid "Project default"
-msgstr "Výchozí pro projekt"
+msgstr "Výchozí podle projektu"
 
 msgid "Project folder"
 msgstr "Složka projektu"
@@ -1151,7 +1151,7 @@ msgid "Project folders"
 msgstr "Složky projektů"
 
 msgid "Projects that use it get node, npm and npx as soon as it's installed."
-msgstr "Projekty, které ho používají, dostanou node, npm a npx, jakmile se nainstaluje."
+msgstr "Projekty, které ho používají, dostanou node, npm a npx hned po instalaci."
 
 msgid "Proxies"
 msgstr "Proxy"
@@ -1229,7 +1229,7 @@ msgid "Remove {name}?"
 msgstr "Odebrat {name}?"
 
 msgid "Removes root= from .flockrc in {path}. Flock then finds the document root itself. This changes files in your project."
-msgstr "Odebere root= z .flockrc ve složce {path}. Flock pak kořen dokumentů najde sám. Tím se změní soubory ve vašem projektu."
+msgstr "Odebere root= z .flockrc ve složce {path}. Flock pak kořenovou složku najde sám. Tím se změní soubory ve vašem projektu."
 
 msgid "Removes the Node.js version from .flockrc and deletes .nvmrc / .node-version in {path}. The site then uses Flock's default Node.js. This changes files in your project."
 msgstr "Odebere verzi Node.js z .flockrc a smaže .nvmrc / .node-version ve složce {path}. Web pak použije výchozí Node.js Flocku. Tím se změní soubory ve vašem projektu."
@@ -1254,7 +1254,7 @@ msgid "Required by {packages}"
 msgstr "Vyžadováno balíčky: {packages}"
 
 msgid "Requiring an extension in composer.json makes composer install refuse a server without it, instead of the app failing there."
-msgstr "Když rozšíření vyžadujete v composer.json, composer install odmítne server, který ho nemá, místo aby tam aplikace selhala."
+msgstr "Když je rozšíření vyžadované v composer.json, composer install odmítne server, který ho nemá, místo aby tam aplikace selhala."
 
 msgid "Restart"
 msgstr "Restartovat"
@@ -1275,7 +1275,7 @@ msgid "Retry"
 msgstr "Zkusit znovu"
 
 msgid "Run Setup Again"
-msgstr "Spustit přípravu znovu"
+msgstr "Znovu spustit přípravu"
 
 msgid "Running"
 msgstr "Běží"
@@ -1295,7 +1295,7 @@ msgid "Runs in the background"
 msgstr "Běží na pozadí"
 
 msgid "Runs npm run build again, so visitors see your latest changes when they reload"
-msgstr "Znovu spustí npm run build, aby návštěvníci po načtení stránky viděli vaše nejnovější změny"
+msgstr "Znovu spustí npm run build, aby návštěvníci po obnovení stránky viděli vaše poslední změny"
 
 msgid "Runs on"
 msgstr "Běží na"
@@ -1327,7 +1327,7 @@ msgstr "Obsluhovat vlastní server, např. vývojový server Node.js na portu, n
 
 #. {site}: the site
 msgid "Serve {site} over HTTPS?"
-msgstr "Obsluhovat {site} přes HTTPS?"
+msgstr "Obsluhovat web {site} přes HTTPS?"
 
 msgid "Served over HTTPS"
 msgstr "Obsluhováno přes HTTPS"
@@ -1352,11 +1352,11 @@ msgid "Set Up Flock…"
 msgstr "Nastavit Flock…"
 
 msgid "Set a breakpoint in PhpStorm and listen for debug connections, use the Xdebug browser extension, or add ?XDEBUG_TRIGGER=1 to the URL. On the command line, run `flock debug artisan …`."
-msgstr "Nastavte breakpoint v PhpStormu a naslouchejte ladicím připojením, použijte rozšíření prohlížeče Xdebug nebo přidejte ?XDEBUG_TRIGGER=1 do URL. Na příkazové řádce spusťte `flock debug artisan …`."
+msgstr "Nastavte breakpoint v PhpStormu a zapněte naslouchání ladicím spojením, použijte rozšíření prohlížeče Xdebug, nebo přidejte do URL ?XDEBUG_TRIGGER=1. Na příkazové řádce spusťte `flock debug artisan …`."
 
 #. {worktree}: the worktree
 msgid "Setting Up {worktree}"
-msgstr "Příprava {worktree}"
+msgstr "Připravuje se {worktree}"
 
 msgid "Setting it up copies dependencies and .env, installs and runs the project's hooks."
 msgstr "Příprava zkopíruje závislosti a .env, nainstaluje je a spustí hooky projektu."
@@ -1366,14 +1366,14 @@ msgstr "Nastavuje se Flock…"
 
 #. {worktree}: the worktree's branch
 msgid "Setting up {worktree} failed"
-msgstr "Příprava {worktree} selhala"
+msgstr "Příprava {worktree} se nezdařila"
 
 msgid "Setting up…"
 msgstr "Připravuje se…"
 
 #. {pane}: the Settings pane
 msgid "Settings → {pane} shows how far it is."
-msgstr "Jak daleko je, ukazuje Nastavení → {pane}."
+msgstr "Průběh uvidíte v Nastavení → {pane}."
 
 msgid "Settings…"
 msgstr "Nastavení…"
@@ -1382,7 +1382,7 @@ msgid "Setup"
 msgstr "Příprava"
 
 msgid "Setup didn't finish"
-msgstr "Nastavení se nedokončilo"
+msgstr "Nastavení nebylo dokončeno"
 
 msgid "Setup failed"
 msgstr "Příprava selhala"
@@ -1408,7 +1408,7 @@ msgid "Sharing failed."
 msgstr "Sdílení selhalo."
 
 msgid "Show Last Install Log"
-msgstr "Zobrazit poslední log instalace"
+msgstr "Zobrazit log poslední instalace"
 
 msgid "Show Last Log"
 msgstr "Zobrazit poslední log"
@@ -1429,7 +1429,7 @@ msgid "Show only entries of this level and above (site logs)"
 msgstr "Zobrazit jen záznamy této a vyšší úrovně (logy webů)"
 
 msgid "Show the site at a temporary public address to preview work in progress, never for production. Visitors don't get debug pages, dumps or the dev tools."
-msgstr "Zobrazte web na dočasné veřejné adrese a ukažte rozpracovanou práci, nikdy ne pro produkci. Návštěvníci neuvidí ladicí stránky, dumpy ani vývojářské nástroje."
+msgstr "Zpřístupněte web na dočasné veřejné adrese k náhledu rozpracované práce, nikdy ne pro produkci. Návštěvníci neuvidí ladicí stránky, dumpy ani vývojářské nástroje."
 
 msgid "Shows the Flock icon in the tray when you log in. The daemon itself always starts with your computer."
 msgstr "Po přihlášení zobrazí ikonu Flocku v oznamovací oblasti. Samotný démon se spouští vždy spolu s počítačem."
@@ -1441,13 +1441,13 @@ msgid "Sites"
 msgstr "Weby"
 
 msgid "Sites don't open while the web server is down. Its log may tell why; `flock restart` starts it again."
-msgstr "Dokud webový server nefunguje, weby se neotevřou. Jeho log možná řekne proč; `flock restart` ho znovu spustí."
+msgstr "Dokud webový server neběží, weby se neotevřou. Proč, může prozradit jeho log; `flock restart` ho znovu spustí."
 
 msgid "Sites that run on FrankenPHP with this version are served by PHP-FPM until it has downloaded again by itself."
 msgstr "Weby, které běží na FrankenPHP s touto verzí, bude obsluhovat PHP-FPM, dokud se FrankenPHP samo znovu nestáhne."
 
 msgid "Sites that use it are served as soon as it's installed."
-msgstr "Weby, které ho používají, se začnou obsluhovat, jakmile se nainstaluje."
+msgstr "Weby, které ho používají, začnou fungovat hned po instalaci."
 
 #. {http}: the HTTP port, {https}: the HTTPS port
 msgid "Sites use ports {http} (HTTP) and {https} (HTTPS), set in config.json, so their addresses include the port."
@@ -1475,10 +1475,10 @@ msgid "Start a session"
 msgstr "Spusťte relaci"
 
 msgid "Start from"
-msgstr "Začít od"
+msgstr "Vycházet z"
 
 msgid "Start the daemon to change its settings."
-msgstr "Spusťte démona, abyste mohli měnit jeho nastavení."
+msgstr "Pro změnu nastavení spusťte démona."
 
 msgid "Starting the tunnel…"
 msgstr "Spouští se tunel…"
@@ -1520,7 +1520,7 @@ msgstr "Úložiště"
 
 #. {problem}: why wildcard DNS does not work (from the daemon)
 msgid "Subdomains only work when you add them here: {problem}."
-msgstr "Subdomény fungují, jen když je přidáte zde: {problem}."
+msgstr "Subdomény fungují, jen když je přidáte sem: {problem}."
 
 msgid "Switch"
 msgstr "Přepnout"
@@ -1551,7 +1551,7 @@ msgid "Text"
 msgstr "Text"
 
 msgid "The Flock daemon runs your sites, PHP and services in the background."
-msgstr "Démon Flocku provozuje vaše weby, PHP a služby na pozadí."
+msgstr "Démon Flocku provozuje na pozadí vaše weby, PHP a služby."
 
 msgid "The Flock daemon serves your sites and services, and starts with your computer."
 msgstr "Démon Flocku obsluhuje vaše weby a služby a spouští se spolu s počítačem."
@@ -1567,7 +1567,7 @@ msgid "The current commit"
 msgstr "Aktuální commit"
 
 msgid "The document root is the folder Flock serves the site from. One picked here applies on this machine only; pin it to write it into .flockrc for everyone."
-msgstr "Kořen dokumentů je složka, ze které Flock web obsluhuje. Zde vybraný platí jen na tomto počítači; připněte ho, aby se zapsal do .flockrc pro všechny."
+msgstr "Kořenová složka webu je složka, ze které Flock web obsluhuje. Zde vybraná platí jen na tomto počítači; připněte ji, aby se zapsala do .flockrc pro všechny."
 
 msgid "The download failed."
 msgstr "Stahování selhalo."
@@ -1576,10 +1576,10 @@ msgid "The link may be meant for a newer Flock. Update Flock, then try again."
 msgstr "Odkaz je možná určený pro novější Flock. Aktualizujte Flock a zkuste to znovu."
 
 msgid "The password prompt was cancelled, so the DNS setup and the certificate are still in place."
-msgstr "Dotaz na heslo byl zrušen, takže nastavení DNS a certifikát zůstávají na místě."
+msgstr "Výzva k zadání hesla byla zrušena, takže nastavení DNS i certifikát zůstaly na místě."
 
 msgid "The password prompt was cancelled. Flock runs, but *.test sites won't resolve and HTTPS isn't trusted until you allow it."
-msgstr "Dotaz na heslo byl zrušen. Flock běží, ale weby *.test se nebudou překládat a HTTPS nebude důvěryhodné, dokud to nepovolíte."
+msgstr "Výzva k zadání hesla byla zrušena. Flock běží, ale weby *.test se nebudou překládat a HTTPS nebude důvěryhodné, dokud to nepovolíte."
 
 msgid "The project pins {tool} {version} in {file}."
 msgstr "Projekt připíná {tool} {version} v {file}."
@@ -1607,7 +1607,7 @@ msgid "The sites in {path} are no longer served. The folder and its projects are
 msgstr "Weby ve složce {path} se přestanou obsluhovat. Složka ani její projekty se nezmění."
 
 msgid "There's no build of it for this computer, or the link is meant for a newer Flock."
-msgstr "Pro tento počítač neexistuje jeho sestavení, nebo je odkaz určený pro novější Flock."
+msgstr "Pro tento počítač není k dispozici žádné sestavení, nebo je odkaz určený pro novější Flock."
 
 msgid "They're the defaults for your sites and terminal."
 msgstr "Jsou výchozí pro vaše weby a terminál."
@@ -1622,10 +1622,10 @@ msgid "Try Again"
 msgstr "Zkusit znovu"
 
 msgid "Turn it off to see dumps in the page again."
-msgstr "Vypněte ho, abyste dumpy znovu viděli na stránce."
+msgstr "Po vypnutí uvidíte dumpy opět na stránce."
 
 msgid "Turns the app's debug mode on for this share, so visitors see stack traces. Only for people you trust."
-msgstr "Zapne pro toto sdílení režim ladění aplikace, takže návštěvníci uvidí výpisy zásobníku. Jen pro lidi, kterým důvěřujete."
+msgstr "Zapne pro toto sdílení ladicí režim aplikace, takže návštěvníci uvidí výpisy zásobníku. Jen pro lidi, kterým důvěřujete."
 
 msgid "URL"
 msgstr "URL"
@@ -1692,7 +1692,7 @@ msgid "Unpin"
 msgstr "Odepnout"
 
 msgid "Unpin Document Root (.flockrc)…"
-msgstr "Odepnout kořen dokumentů (.flockrc)…"
+msgstr "Odepnout kořenovou složku (.flockrc)…"
 
 #. {file}: the file
 msgid "Unpin Node ({file})…"
@@ -1712,7 +1712,7 @@ msgstr "Odepnout PHP od webu {site}?"
 
 #. {site}: the site
 msgid "Unpin the document root from {site}?"
-msgstr "Odepnout kořen dokumentů od webu {site}?"
+msgstr "Odepnout kořenovou složku od webu {site}?"
 
 msgid "Up to date"
 msgstr "Aktuální"
@@ -1729,7 +1729,7 @@ msgid "Update"
 msgstr "Aktualizace"
 
 msgid "Update available"
-msgstr "Je dostupná aktualizace"
+msgstr "K dispozici je aktualizace"
 
 msgid "Update it…"
 msgstr "Aktualizovat…"
@@ -1748,7 +1748,7 @@ msgid "Updates"
 msgstr "Aktualizace"
 
 msgid "Updates keep your data."
-msgstr "Aktualizace zachovají vaše data."
+msgstr "Aktualizace vaše data zachovají."
 
 msgid "Updating PostgreSQL {version}…"
 msgstr "Aktualizuje se PostgreSQL {version}…"
@@ -1761,7 +1761,7 @@ msgstr "Aktualizuje se…"
 
 #. Where a proxy passes requests to
 msgid "Upstream"
-msgstr "Upstream"
+msgstr "Cíl"
 
 msgid "Use .flockrc"
 msgstr "Použít .flockrc"
@@ -1798,24 +1798,24 @@ msgid "Waiting…"
 msgstr "Čeká se…"
 
 msgid "Warning and above"
-msgstr "Warning a vyšší"
+msgstr "Warning a závažnější"
 
 msgid "Welcome to Flock"
-msgstr "Vítá vás Flock"
+msgstr "Vítejte ve Flocku"
 
 msgid "While capturing"
 msgstr "Při zachytávání"
 
 msgid "Wildcard subdomains don't work here ({problem}), so add each subdomain you use (tenant1, a.b). A full name adds an alias."
-msgstr "Wildcard subdomény tu nefungují ({problem}), takže přidejte každou subdoménu, kterou používáte (tenant1, a.b). Celý název přidá alias."
+msgstr "Zástupné subdomény tu nefungují ({problem}), takže přidejte každou subdoménu, kterou používáte (tenant1, a.b). Celé jméno přidá alias."
 
 #. {reason}: why (from the manifest)
 msgid "Withdrawn: {reason}"
-msgstr "Staženo: {reason}"
+msgstr "Vyřazeno: {reason}"
 
 #. {reason}: why (from the manifest)
 msgid "Withdrawn: {reason} — update to replace it"
-msgstr "Staženo: {reason} — aktualizací ho nahradíte"
+msgstr "Vyřazeno: {reason} — nahraďte ho aktualizací"
 
 msgid "Worktree"
 msgstr "Worktree"
@@ -1846,10 +1846,10 @@ msgid "Your own extensions"
 msgstr "Vaše vlastní rozšíření"
 
 msgid "Your sites can't use {service} until you start it again; it stays stopped after restarts."
-msgstr "Vaše weby nebudou moct {service} používat, dokud ho znovu nespustíte; zůstane zastavené i po restartech."
+msgstr "Vaše weby nebudou moci službu {service} používat, dokud ji znovu nespustíte; zůstane zastavená i po restartech."
 
 msgid "Yours"
-msgstr "Vaše"
+msgstr "Vlastní"
 
 msgid "a name like brave-otter"
 msgstr "název jako brave-otter"
@@ -1887,7 +1887,7 @@ msgid "own database"
 msgstr "vlastní databáze"
 
 msgid "php, composer and node in your terminal"
-msgstr "php, composer a node ve vašem terminálu"
+msgstr "php, composer a node v terminálu"
 
 #. {pid}: the process id
 msgid "pid {pid}"
@@ -1928,7 +1928,7 @@ msgstr "neočekávaná odpověď od Flocku: {error}"
 
 #. {branch}: the branch, {site}: the site, {address}: the address
 msgid "{branch} exists, so the worktree checks it out. Flock creates it next to {site}, sets it up and serves it at {address}."
-msgstr "{branch} existuje, takže ji worktree použije. Flock ho vytvoří vedle webu {site}, připraví ho a bude ho obsluhovat na {address}."
+msgstr "Větev {branch} už existuje, takže ji worktree použije. Flock ho vytvoří vedle webu {site}, připraví ho a bude ho obsluhovat na {address}."
 
 #. {domain}: the domain
 msgid "{domain} (alias)"
@@ -1941,7 +1941,7 @@ msgid "{error}Try again in Settings → {pane}."
 msgstr "{error}Zkuste to znovu v Nastavení → {pane}."
 
 msgid "{extensions} for PostgreSQL {version}, where they're available for it. You can change this later under Extensions…."
-msgstr "{extensions} pro PostgreSQL {version}, pokud jsou pro něj dostupná. Později to můžete změnit v části Rozšíření…."
+msgstr "{extensions} pro PostgreSQL {version}, pokud jsou pro něj k dispozici. Později to můžete změnit v části Rozšíření…."
 
 #. The last two items of a list
 msgid "{first} and {second}"
@@ -1949,7 +1949,7 @@ msgstr "{first} a {second}"
 
 #. {folder}: the chosen folder, {project}: the project
 msgid "{folder} isn't in {project}. The document root must be a folder in the project."
-msgstr "{folder} není ve složce {project}. Kořen dokumentů musí být složka v projektu."
+msgstr "{folder} není ve složce {project}. Kořenová složka webu musí být složkou v projektu."
 
 msgid "{names} are installed"
 msgstr "{names} jsou nainstalované"
@@ -1975,11 +1975,11 @@ msgstr "{name} se už instaluje"
 
 #. {name}: the name and version ("PHP 8.4")
 msgid "{name} is already installed"
-msgstr "{name} už je nainstalované"
+msgstr "Už je nainstalováno: {name}"
 
 #. {name}: the service
 msgid "{name} isn't available on this computer"
-msgstr "{name} není na tomto počítači dostupné"
+msgstr "{name} není na tomto počítači k dispozici"
 
 msgid "{name} {version} starts with empty data."
 msgstr "{name} {version} začne s prázdnými daty."
@@ -1991,10 +1991,10 @@ msgid "{name} {version} stops; its data stays but isn't used until you switch ba
 msgstr "{name} {version} se zastaví; jeho data zůstanou, ale nepoužijí se, dokud se nepřepnete zpět. {then}"
 
 msgid "{name} {version} stops; your sites can't use {name} until you install a version again."
-msgstr "{name} {version} se zastaví; vaše weby nebudou moct {name} používat, dokud znovu nenainstalujete některou verzi."
+msgstr "{name} {version} se zastaví; vaše weby nebudou moci {name} používat, dokud znovu nenainstalujete některou verzi."
 
 msgid "{name} {version} uses its own data."
-msgstr "{name} {version} používá svá vlastní data."
+msgstr "{name} {version} používá vlastní data."
 
 msgid "{n} dump"
 msgid_plural "{n} dumps"
@@ -2033,7 +2033,7 @@ msgstr[1] "{n} worktrees"
 msgstr[2] "{n} worktrees"
 
 msgid "{old} → {new} available"
-msgstr "{old} → dostupná {new}"
+msgstr "{old} → k dispozici {new}"
 
 msgid "{percent}%"
 msgstr "{percent} %"
@@ -2049,21 +2049,21 @@ msgstr "{program} používá {ports}."
 
 #. {root}: the folder
 msgid "{root} has no index.php or index.html, so Flock shows a page instead of the site until it does."
-msgstr "{root} neobsahuje index.php ani index.html, takže Flock místo webu zobrazuje stránku s upozorněním, dokud to tak bude."
+msgstr "{root} neobsahuje index.php ani index.html, takže Flock místo webu zobrazuje informační stránku, dokud tam nebudou."
 
 #. {root}: the folder set here, {pinned}: the project's
 msgid "{root} is set here; the project sets {pinned} in .flockrc."
-msgstr "{root} je nastavené zde; projekt nastavuje {pinned} v .flockrc."
+msgstr "Zde je nastaveno {root}; projekt v .flockrc nastavuje {pinned}."
 
 msgid "{service} Port"
 msgstr "Port služby {service}"
 
 #. {site}: the site
 msgid "{site} is already secured"
-msgstr "{site} už je zabezpečený"
+msgstr "Web {site} už je zabezpečený"
 
 msgid "{tool} {version} is set for this site on this machine (isolated)."
-msgstr "{tool} {version} je pro tento web nastavené na tomto počítači (izolovaně)."
+msgstr "Pro tento web je na tomto počítači nastavena verze {tool} {version} (izolovaně)."
 
 msgid "{worktree} then uses {site}'s database."
 msgstr "{worktree} pak bude používat databázi webu {site}."

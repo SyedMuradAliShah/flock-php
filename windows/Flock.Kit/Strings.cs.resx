@@ -62,7 +62,7 @@
         <value>prázdná odpověď z {0}</value>
     </data>
     <data name="Client_HttpStatus" xml:space="preserve">
-        <value>Flock odpověděl chybou HTTP {0}</value>
+        <value>Flock odpověděl kódem HTTP {0}</value>
     </data>
     <data name="Client_NotRunning" xml:space="preserve">
         <value>Flock neběží</value>
@@ -110,16 +110,16 @@
         <value>Požadavky</value>
     </data>
     <data name="EventKind_Views" xml:space="preserve">
-        <value>Šablony</value>
+        <value>Pohledy</value>
     </data>
     <data name="InstallLink_AlreadyInstalledMessage" xml:space="preserve">
         <value>Najdete ho v Nastavení → {0}.</value>
     </data>
     <data name="InstallLink_AlreadyInstalledTitle" xml:space="preserve">
-        <value>{0} je už nainstalováno</value>
+        <value>Už je nainstalováno: {0}</value>
     </data>
     <data name="InstallLink_InstallMessage" xml:space="preserve">
-        <value>Odkaz požádal Flock o instalaci {0} {1}. {2}</value>
+        <value>Odkaz žádá Flock o instalaci {0} {1}. {2}</value>
     </data>
     <data name="InstallLink_InstallTitle" xml:space="preserve">
         <value>Nainstalovat {0} {1}?</value>
@@ -143,7 +143,7 @@
         <value>Weby, které ho používají, začnou fungovat hned po instalaci.</value>
     </data>
     <data name="InstallLink_PurposeService" xml:space="preserve">
-        <value>Poběží na 127.0.0.1 pro vaše weby.</value>
+        <value>Běží na 127.0.0.1 pro vaše weby.</value>
     </data>
     <data name="InstallLink_UnavailableMessage" xml:space="preserve">
         <value>Flock ho na této platformě nedokáže spustit.</value>
@@ -170,16 +170,16 @@
         <value>Běží</value>
     </data>
     <data name="SecureLink_AlreadySecuredMessage" xml:space="preserve">
-        <value>Je dostupný na https://{0}.</value>
+        <value>Web běží na https://{0}.</value>
     </data>
     <data name="SecureLink_AlreadySecuredTitle" xml:space="preserve">
-        <value>Web {0} je už zabezpečený</value>
+        <value>Web {0} už je zabezpečený</value>
     </data>
     <data name="SecureLink_SecureMessage" xml:space="preserve">
-        <value>Odkaz požádal Flock o zabezpečení {0}. Web dostane certifikát, kterému tento počítač už důvěřuje.</value>
+        <value>Odkaz žádá Flock o zabezpečení {0}. Web dostane certifikát, kterému tento počítač už důvěřuje.</value>
     </data>
     <data name="SecureLink_SecureTitle" xml:space="preserve">
-        <value>Zabezpečit web {0} pomocí HTTPS?</value>
+        <value>Obsluhovat web {0} přes HTTPS?</value>
     </data>
     <data name="SecureLink_UnknownMessage" xml:space="preserve">
         <value>Nejdřív web přidejte v Nastavení → Weby.</value>
@@ -194,7 +194,7 @@
         <value>Dotaz</value>
     </data>
     <data name="Timeline_View" xml:space="preserve">
-        <value>Šablona</value>
+        <value>Pohled</value>
     </data>
     <data name="UpdateFeed_Invalid" xml:space="preserve">
         <value>Zdroj aktualizací není platný: {0}</value>

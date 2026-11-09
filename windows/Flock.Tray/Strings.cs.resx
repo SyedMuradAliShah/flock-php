@@ -41,7 +41,7 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="About_AlsoDeleteData" xml:space="preserve">
-        <value>Smazat také nastavení mých webů a databáze</value>
+        <value>Smazat také nastavení a databáze mých webů</value>
     </data>
     <data name="About_App" xml:space="preserve">
         <value>Aplikace</value>
@@ -92,7 +92,7 @@
         <value>Odinstalovat Flock…</value>
     </data>
     <data name="About_UninstallKeeps" xml:space="preserve">
-        <value>Nastavení vašich webů a databáze PostgreSQL a Redis zůstanou v {0}, takže po opětovné instalaci budete pokračovat tam, kde jste skončili — pokud je nesmažete také:</value>
+        <value>Nastavení vašich webů a databáze PostgreSQL a Redis zůstanou v {0}, takže po přeinstalaci navážete, kde jste skončili — pokud je také nesmažete:</value>
     </data>
     <data name="About_UninstallQuestion" xml:space="preserve">
         <value>Odinstalovat Flock?</value>
@@ -101,7 +101,7 @@
         <value>Přidejte toto do nastavení MCP daného klienta.</value>
     </data>
     <data name="Ai_AddedOnce" xml:space="preserve">
-        <value>Stačí Flock přidat jednou a funguje ve všech projektech. Po přidání restartujte klienta nebo znovu načtěte jeho servery MCP.</value>
+        <value>Stačí přidat jednou a Flock funguje v každém projektu. Po přidání Flocku klienta restartujte nebo znovu načtěte jeho MCP servery.</value>
     </data>
     <data name="Ai_Clients" xml:space="preserve">
         <value>AI klienti</value>
@@ -110,10 +110,10 @@
         <value>Flock je přidán</value>
     </data>
     <data name="Ai_OtherClients" xml:space="preserve">
-        <value>Ostatní klienti</value>
+        <value>Další klienti</value>
     </data>
     <data name="Ai_Subtitle" xml:space="preserve">
-        <value>Umožněte AI agentům jako Claude Code a Cursor pracovat s Flockem: s adresami a verzemi PHP vašich webů, logy, dumpy a poštou i s instalací verzí a služeb.</value>
+        <value>Umožněte AI agentům jako Claude Code a Cursor pracovat s Flockem: s URL a verzemi PHP vašich webů, logy, dumpy a poštou i s instalací verzí a služeb.</value>
     </data>
     <data name="App_CouldNotRelaunch" xml:space="preserve">
         <value>Flock se nepodařilo restartovat: {0}</value>
@@ -268,19 +268,19 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Port klienta</value>
     </data>
     <data name="Debugger_ConnectIde" xml:space="preserve">
-        <value>Připojení IDE</value>
+        <value>Připojte své IDE</value>
     </data>
     <data name="Debugger_DebuggingNow" xml:space="preserve">
         <value>Právě se ladí</value>
     </data>
     <data name="Debugger_DetectBreakpoints" xml:space="preserve">
-        <value>Rozpoznávat breakpointy v PhpStormu</value>
+        <value>Rozpoznávat breakpointy z PhpStormu</value>
     </data>
     <data name="Debugger_DetectBreakpointsDescription" xml:space="preserve">
         <value>Dokud má projekt v PhpStormu breakpointy, ladí se každý požadavek na jeho web.</value>
     </data>
     <data name="Debugger_DetectRequests" xml:space="preserve">
-        <value>Rozpoznávat požadavky Xdebugu</value>
+        <value>Rozpoznávat požadavky na Xdebug</value>
     </data>
     <data name="Debugger_DetectRequestsDescription" xml:space="preserve">
         <value>Xdebug se načte jen pro požadavky, které o něj žádají, takže vše ostatní zůstane rychlé.</value>
@@ -292,7 +292,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>V tomto sestavení není</value>
     </data>
     <data name="Debugger_StartSession" xml:space="preserve">
-        <value>Zahájení relace</value>
+        <value>Spusťte relaci</value>
     </data>
     <data name="Debugger_StartSessionDescription" xml:space="preserve">
         <value>Nastavte breakpoint v PhpStormu a zapněte naslouchání ladicím spojením, použijte rozšíření prohlížeče Xdebug, nebo přidejte do URL ?XDEBUG_TRIGGER=1. Na příkazové řádce spusťte `flock debug artisan …`.</value>
@@ -304,7 +304,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Zachytávat dumpy</value>
     </data>
     <data name="Dumps_CaptureDescription" xml:space="preserve">
-        <value>Po vypnutí se dumpy opět zobrazí ve stránce.</value>
+        <value>Po vypnutí uvidíte dumpy opět na stránce.</value>
     </data>
     <data name="Dumps_CaptureDumps" xml:space="preserve">
         <value>Zachytávat dumpy</value>
@@ -322,13 +322,13 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Zachytávání není k dispozici: PHP {0}</value>
     </data>
     <data name="Dumps_Captured" xml:space="preserve">
-        <value>Zachycené</value>
+        <value>Zachyceno</value>
     </data>
     <data name="Dumps_Capturing" xml:space="preserve">
         <value>Zachytává se</value>
     </data>
     <data name="Dumps_ClearDetails" xml:space="preserve">
-        <value>Smažou se všechny zachycené dumpy, dotazy, logy, šablony a úlohy ze všech webů a příkazů.</value>
+        <value>Smažou se všechny zachycené dumpy, dotazy, logy, pohledy a úlohy ze všech webů a příkazů.</value>
     </data>
     <data name="Dumps_ClearQuestion" xml:space="preserve">
         <value>Vymazat všechny dumpy?</value>
@@ -343,7 +343,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Zachytávání je vypnuté — zapněte ho a výstup dump() a dd() se bude shromažďovat zde.</value>
     </data>
     <data name="Dumps_EmptyCapturing" xml:space="preserve">
-        <value>Zde se zobrazí výstup dump() a dd(), dotazy, logy, šablony a úlohy z vašich webů a příkazů artisan.</value>
+        <value>Zde se objeví výstup dump() a dd(), dotazy, logy, pohledy a úlohy z vašich webů a příkazů artisan.</value>
     </data>
     <data name="Dumps_LatestOnly" xml:space="preserve">
         <value>Jen poslední požadavek</value>
@@ -367,13 +367,13 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Hledat v dumpech</value>
     </data>
     <data name="Dumps_ShowInPageToo" xml:space="preserve">
-        <value>Zobrazovat dump() i ve stránce</value>
+        <value>Zobrazovat dump() i na stránce</value>
     </data>
     <data name="Dumps_Sources" xml:space="preserve">
-        <value>Zdroje</value>
+        <value>Zdrojové soubory</value>
     </data>
     <data name="Dumps_StartCapturing" xml:space="preserve">
-        <value>Začít zachytávat</value>
+        <value>Spustit zachytávání</value>
     </data>
     <data name="Dumps_Subtitle" xml:space="preserve">
         <value>Posílejte výstup dump() a dd() do Flocku místo do stránky nebo terminálu — bez úprav vašich projektů.</value>
@@ -460,7 +460,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Složky projektů</value>
     </data>
     <data name="General_ProjectFoldersDescription" xml:space="preserve">
-        <value>Každá složka uvnitř složky projektů je dostupná jako &lt;složka&gt;.{0} — stejně jako po `flock park`.</value>
+        <value>Každá složka uvnitř složky projektů se obsluhuje jako &lt;složka&gt;.{0} — stejně jako po `flock park`.</value>
     </data>
     <data name="General_ReleaseNotes" xml:space="preserve">
         <value>Poznámky k verzi</value>
@@ -493,7 +493,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Stav</value>
     </data>
     <data name="General_Subtitle" xml:space="preserve">
-        <value>Démon Flocku na pozadí provozuje vaše weby, PHP a služby.</value>
+        <value>Démon Flocku provozuje na pozadí vaše weby, PHP a služby.</value>
     </data>
     <data name="General_Title" xml:space="preserve">
         <value>Obecné</value>
@@ -633,7 +633,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Smazat vše</value>
     </data>
     <data name="Mail_DeleteAllQuestion" xml:space="preserve">
-        <value>Smazat všechnu zachycenou poštu?</value>
+        <value>Smazat veškerou zachycenou poštu?</value>
     </data>
     <data name="Mail_EnvironmentVariables" xml:space="preserve">
         <value>Proměnné prostředí</value>
@@ -642,7 +642,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Hostitel</value>
     </data>
     <data name="Mail_NoHtmlPart" xml:space="preserve">
-        <value>Žádná část HTML</value>
+        <value>Bez části HTML</value>
     </data>
     <data name="Mail_NoMail" xml:space="preserve">
         <value>Žádná pošta</value>
@@ -651,13 +651,13 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Posílejte poštu na {0}. MAIL_USERNAME určuje schránku.</value>
     </data>
     <data name="Mail_NoMessageSelected" xml:space="preserve">
-        <value>Není vybraná žádná zpráva</value>
+        <value>Není vybrána žádná zpráva</value>
     </data>
     <data name="Mail_NoSubject" xml:space="preserve">
         <value>(bez předmětu)</value>
     </data>
     <data name="Mail_NoTextPart" xml:space="preserve">
-        <value>(žádná textová část)</value>
+        <value>(bez textové části)</value>
     </data>
     <data name="Mail_Open" xml:space="preserve">
         <value>Otevřít poštu</value>
@@ -672,13 +672,13 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Uložit…</value>
     </data>
     <data name="Mail_SmtpServer" xml:space="preserve">
-        <value>SMTP server</value>
+        <value>Server SMTP</value>
     </data>
     <data name="Mail_Subtitle" xml:space="preserve">
         <value>Flock zachytí každý e-mail, který vaše aplikace odešlou — nic neopustí váš počítač.</value>
     </data>
     <data name="Mail_UsernameInbox" xml:space="preserve">
-        <value>MAIL_USERNAME určuje schránku, takže každý projekt má vlastní.</value>
+        <value>MAIL_USERNAME určuje schránku, takže každý projekt má svou vlastní.</value>
     </data>
     <data name="Menu_Dumps" xml:space="preserve">
         <value>Dumpy</value>
@@ -732,16 +732,16 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>{0} (výchozí)</value>
     </data>
     <data name="NewWorktree_ExplainExisting" xml:space="preserve">
-        <value>Větev {0} existuje, takže si ji worktree checkoutne. Flock ho vytvoří vedle {1}, připraví ho a zpřístupní na {2}.</value>
+        <value>Větev {0} už existuje, takže ji worktree použije. Flock ho vytvoří vedle webu {1}, připraví ho a bude ho obsluhovat na {2}.</value>
     </data>
     <data name="NewWorktree_ExplainNew" xml:space="preserve">
-        <value>Flock vytvoří worktree vedle {1} na nové větvi {0}, připraví ho a zpřístupní na {2}.</value>
+        <value>Flock vytvoří worktree vedle webu {1} na nové větvi {0}, připraví ho a bude ho obsluhovat na {2}.</value>
     </data>
     <data name="NewWorktree_ExplainUnnamed" xml:space="preserve">
-        <value>Flock vytvoří worktree vedle {0} na nové větvi s vlastním názvem, připraví ho a zpřístupní na vlastní adrese.</value>
+        <value>Flock vytvoří worktree vedle webu {0} na nové větvi s vlastním názvem, připraví ho a bude ho obsluhovat na vlastní adrese.</value>
     </data>
     <data name="NewWorktree_StartFrom" xml:space="preserve">
-        <value>Výchozí bod</value>
+        <value>Vycházet z</value>
     </data>
     <data name="Node_DownloadingAndInstalling" xml:space="preserve">
         <value>Stahuje se a instaluje…</value>
@@ -756,7 +756,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>node, npm a npx se řídí souborem .nvmrc / .node-version projektu, pak verzí webu a nakonec výchozí verzí.</value>
     </data>
     <data name="Node_UninstallDetails" xml:space="preserve">
-        <value>Odeberou se i její globální balíčky npm. Projekty a weby, které používají Node {0}, budou do opětovné instalace používat výchozí verzi.</value>
+        <value>Odeberou se i jeho globální balíčky npm. Projekty a weby, které používají Node {0}, budou používat výchozí verzi, dokud ho znovu nenainstalujete.</value>
     </data>
     <data name="Node_Uninstalling" xml:space="preserve">
         <value>Odinstalovává se…</value>
@@ -834,7 +834,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>běží</value>
     </data>
     <data name="Panel_UpdateAvailable" xml:space="preserve">
-        <value>Je k dispozici Flock {0}</value>
+        <value>K dispozici je Flock {0}</value>
     </data>
     <data name="Panel_Updating" xml:space="preserve">
         <value>Flock se aktualizuje…</value>
@@ -858,7 +858,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Každá nainstalovaná verze má vlastní skupinu PHP workerů. Weby používají výchozí verzi, pokud nemají připnutou jinou.</value>
     </data>
     <data name="Php_UninstallDetails" xml:space="preserve">
-        <value>Odebere se i její php.ini. Weby připnuté k PHP {0} přestanou fungovat, dokud nevyberete jinou verzi.</value>
+        <value>Odebere se i jeho php.ini. Weby připnuté k PHP {0} přestanou fungovat, dokud nevyberete jinou verzi.</value>
     </data>
     <data name="Php_UninstallFrankenDetails" xml:space="preserve">
         <value>Weby, které běží na FrankenPHP s touto verzí, bude obsluhovat PHP-CGI, dokud se FrankenPHP samo znovu nestáhne.</value>
@@ -921,7 +921,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Zastaveno</value>
     </data>
     <data name="Postgres_SwitchDetails" xml:space="preserve">
-        <value>PostgreSQL {0} se zastaví; jeho databáze zůstanou, ale nebudou dostupné, dokud nepřepnete zpět. {1} používá vlastní databáze.</value>
+        <value>PostgreSQL {0} se zastaví; jeho databáze zůstanou, ale nebudou k dispozici, dokud nepřepnete zpět. {1} používá vlastní databáze.</value>
     </data>
     <data name="Postgres_UninstallLast" xml:space="preserve">
         <value>PostgreSQL {0} se zastaví; dokud znovu nenainstalujete nějakou verzi, žádný PostgreSQL nepoběží.</value>
@@ -939,7 +939,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Nainstaluje {0} místo {1}. Vaše databáze zůstanou; PostgreSQL se na chvíli restartuje.</value>
     </data>
     <data name="Postgres_Withdrawn" xml:space="preserve">
-        <value>Toto sestavení bylo staženo: {0}</value>
+        <value>Toto sestavení bylo vyřazeno: {0}</value>
     </data>
     <data name="Postgres_WithdrawnTooltip" xml:space="preserve">
         <value>Flock ho nahradí, jakmile vyjde opravené sestavení.</value>
@@ -948,7 +948,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Uložení předvoleb bylo zrušeno.</value>
     </data>
     <data name="Process_CouldNotRun" xml:space="preserve">
-        <value>{0} se nepodařilo spustit: {1}</value>
+        <value>Nepodařilo se spustit {0}: {1}</value>
     </data>
     <data name="Process_DidNotStart" xml:space="preserve">
         <value>Proces se nespustil.</value>
@@ -1002,13 +1002,13 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>{0} je předběžná verze</value>
     </data>
     <data name="Releases_Unavailable" xml:space="preserve">
-        <value>Nedostupné</value>
+        <value>Není k dispozici</value>
     </data>
     <data name="Releases_UpToDate" xml:space="preserve">
         <value>aktuální</value>
     </data>
     <data name="Releases_Withdrawn" xml:space="preserve">
-        <value>staženo: {0}</value>
+        <value>vyřazeno: {0}</value>
     </data>
     <data name="Services_Active" xml:space="preserve">
         <value>Aktivní</value>
@@ -1053,7 +1053,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Stáhne nejnovější vydání.</value>
     </data>
     <data name="Services_FilterTooltip" xml:space="preserve">
-        <value>Zobrazit jen nainstalované služby, nebo všechny služby, které Flock nabízí</value>
+        <value>Zobrazit jen nainstalované služby, nebo všechny, které Flock nabízí</value>
     </data>
     <data name="Services_HostsInstalled" xml:space="preserve">
         <value>Pomocník Flocku pro soubor hosts do něj zapisuje doménu každého webu i přidané domény.</value>
@@ -1116,7 +1116,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Není k dispozici ve Windows</value>
     </data>
     <data name="Services_PortDetails" xml:space="preserve">
-        <value>Porty 1024–65535. Port aktualizujte i v souborech .env svých projektů.</value>
+        <value>Porty 1024–65535. Změňte port také v souborech .env svých projektů.</value>
     </data>
     <data name="Services_PortEllipsis" xml:space="preserve">
         <value>Port…</value>
@@ -1125,7 +1125,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Port {0}</value>
     </data>
     <data name="Services_PortTaken" xml:space="preserve">
-        <value>Port {0} je obsazený, takže Flock navrhuje {1}.</value>
+        <value>Port {0} je obsazený, proto Flock navrhuje {1}.</value>
     </data>
     <data name="Services_PortTitle" xml:space="preserve">
         <value>Port služby {0}</value>
@@ -1197,22 +1197,22 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>{0} používá vlastní data.</value>
     </data>
     <data name="Services_VersionAvailable" xml:space="preserve">
-        <value>Je k dispozici {0}</value>
+        <value>K dispozici je {0}</value>
     </data>
     <data name="Services_WebDown" xml:space="preserve">
-        <value>Dokud webový server neběží, weby se neotevřou. Proč, možná prozradí jeho log; znovu ho spustí `flock restart`.</value>
+        <value>Dokud webový server neběží, weby se neotevřou. Proč, může prozradit jeho log; `flock restart` ho znovu spustí.</value>
     </data>
     <data name="Services_WebRunning" xml:space="preserve">
         <value>Caddy obsluhuje každý web přes HTTPS (https://app.{0}) s certifikáty od místní certifikační autority Flocku, kterou `flock install` přidá mezi důvěryhodné.</value>
     </data>
     <data name="Services_Withdrawn" xml:space="preserve">
-        <value>Staženo: {0}</value>
+        <value>Vyřazeno: {0}</value>
     </data>
     <data name="Services_WithdrawnTooltip" xml:space="preserve">
-        <value>Toto sestavení bylo staženo. Flock ho nahradí, jakmile vyjde opravené.</value>
+        <value>Toto sestavení bylo vyřazeno. Flock ho nahradí, jakmile vyjde opravené sestavení.</value>
     </data>
     <data name="Services_WithdrawnUpdate" xml:space="preserve">
-        <value>Staženo: {0} — nahradíte ho aktualizací</value>
+        <value>Vyřazeno: {0} — nahraďte ho aktualizací</value>
     </data>
     <data name="Settings_CouldNotShow" xml:space="preserve">
         <value>Nastavení se nepodařilo zobrazit</value>
@@ -1284,7 +1284,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Otevřete nový terminál</value>
     </data>
     <data name="Setup_NewTerminalDescription" xml:space="preserve">
-        <value>Terminály, které už byly otevřené, mají stále starou proměnnou PATH.</value>
+        <value>Terminály, které už byly otevřené, mají stále starou PATH.</value>
     </data>
     <data name="Setup_NextSteps" xml:space="preserve">
         <value>Další kroky</value>
@@ -1308,7 +1308,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Flock jako výchozí nainstaluje nejnovější PHP a Node.js LTS. Další verze nainstalujete v Nastavení → PHP a Node.</value>
     </data>
     <data name="Setup_QuitOthers" xml:space="preserve">
-        <value>Nejdřív ukončete ostatní lokální prostředí</value>
+        <value>Nejdřív ukončete jiná lokální prostředí</value>
     </data>
     <data name="Setup_QuitOthersDescription" xml:space="preserve">
         <value>Flock tyto porty potřebuje pro sebe, ale používají je jiné programy. Kdyby běžely oba, nefungoval by ani jeden.</value>
@@ -1326,7 +1326,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Terminál</value>
     </data>
     <data name="Setup_TerminalDescription" xml:space="preserve">
-        <value>Verze z Flocku budou v proměnné PATH na prvním místě. Po nastavení otevřete nový terminál.</value>
+        <value>Verze z Flocku budou v PATH na prvním místě. Po nastavení otevřete nový terminál.</value>
     </data>
     <data name="Setup_TerminalTitle" xml:space="preserve">
         <value>php, composer a node v terminálu</value>
@@ -1377,16 +1377,16 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>QR kód se nepodařilo uložit</value>
     </data>
     <data name="Share_DebugOn" xml:space="preserve">
-        <value>Ladicí režim je zapnutý: návštěvníci vidí stack trace</value>
+        <value>Ladicí režim je zapnutý: návštěvníci vidí výpisy zásobníku</value>
     </data>
     <data name="Share_Dismiss" xml:space="preserve">
         <value>Zavřít</value>
     </data>
     <data name="Share_EndsAt" xml:space="preserve">
-        <value>Končí v {0:t}</value>
+        <value>Skončí v {0:t}</value>
     </data>
     <data name="Share_Explanation" xml:space="preserve">
-        <value>Zpřístupní web na dočasné veřejné adrese pro náhled rozpracované práce, nikdy ne pro produkci. Návštěvníci neuvidí ladicí stránky, dumpy ani vývojářské nástroje.</value>
+        <value>Zpřístupněte web na dočasné veřejné adrese k náhledu rozpracované práce, nikdy ne pro produkci. Návštěvníci neuvidí ladicí stránky, dumpy ani vývojářské nástroje.</value>
     </data>
     <data name="Share_OnlyFor" xml:space="preserve">
         <value>Jen pro: {0}</value>
@@ -1419,10 +1419,10 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Sdílet…</value>
     </data>
     <data name="Share_ShowErrors" xml:space="preserve">
-        <value>Zobrazovat návštěvníkům podrobnosti o chybách</value>
+        <value>Zobrazovat návštěvníkům podrobnosti chyb</value>
     </data>
     <data name="Share_ShowErrorsExplanation" xml:space="preserve">
-        <value>Zapne pro toto sdílení ladicí režim aplikace, takže návštěvníci uvidí stack trace. Jen pro lidi, kterým důvěřujete.</value>
+        <value>Zapne pro toto sdílení ladicí režim aplikace, takže návštěvníci uvidí výpisy zásobníku. Jen pro lidi, kterým důvěřujete.</value>
     </data>
     <data name="Share_Starting" xml:space="preserve">
         <value>Spouští se tunel…</value>
@@ -1476,13 +1476,13 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Přidat proxy…</value>
     </data>
     <data name="Sites_AddProxyDetails" xml:space="preserve">
-        <value>Flock zpřístupní &lt;název&gt;.{0} z vlastního serveru, např. vývojového serveru Next.js, Nuxt nebo Vite. Samotný port znamená 127.0.0.1.</value>
+        <value>Flock obsluhuje &lt;název&gt;.{0} z vlastního serveru, např. vývojového serveru Next.js, Nuxt nebo Vite. Samotný port znamená 127.0.0.1.</value>
     </data>
     <data name="Sites_AddProxyTitle" xml:space="preserve">
         <value>Přidat proxy</value>
     </data>
     <data name="Sites_AddProxyTooltip" xml:space="preserve">
-        <value>Zpřístupní vlastní server, např. vývojový server Node.js na nějakém portu, na doméně .test</value>
+        <value>Obsluhovat vlastní server, např. vývojový server Node.js na nějakém portu, na doméně .test</value>
     </data>
     <data name="Sites_AddSite" xml:space="preserve">
         <value>Přidat web…</value>
@@ -1494,7 +1494,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>{0} (alias)</value>
     </data>
     <data name="Sites_BoostAdd" xml:space="preserve">
-        <value>Přidat Flock do jeho pokynů…</value>
+        <value>Přidat Flock do pokynů…</value>
     </data>
     <data name="Sites_BoostAddQuestion" xml:space="preserve">
         <value>Přidat Flock do pokynů Boost webu {0}?</value>
@@ -1503,7 +1503,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Zapíše .ai\guidelines\flock.md do {0} a spustí php artisan boost:update, aby AI agenti věděli, že aplikaci obsluhuje Flock a vybírá její verzi PHP. Commitněte ho se zbytkem .ai\guidelines. Tím se změní soubory ve vašem projektu.</value>
     </data>
     <data name="Sites_BoostMissing" xml:space="preserve">
-        <value>Projekt používá Laravel Boost. Přidáním Flocku do jeho pokynů se AI agenti dozví, že aplikaci obsluhuje Flock a vybírá její verzi PHP.</value>
+        <value>Projekt používá Laravel Boost. Přidáním Flocku do jeho pokynů se AI agenti dozvědí, že aplikaci obsluhuje Flock a vybírá její verzi PHP.</value>
     </data>
     <data name="Sites_BoostOutdated" xml:space="preserve">
         <value>Pokyn Flocku v pokynech Boost projektu je zastaralý.</value>
@@ -1542,7 +1542,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Vyberte složku v projektu</value>
     </data>
     <data name="Sites_ChooseFolderInProjectDetails" xml:space="preserve">
-        <value>{0} není v {1}. Kořenová složka webu musí být složkou v projektu.</value>
+        <value>{0} není ve složce {1}. Kořenová složka webu musí být složkou v projektu.</value>
     </data>
     <data name="Sites_Classic" xml:space="preserve">
         <value>Klasický</value>
@@ -1569,13 +1569,13 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>PHP {0} z Flocku ho neobsahuje</value>
     </data>
     <data name="Sites_ExtensionRequiredBy" xml:space="preserve">
-        <value>Vyžaduje {0}</value>
+        <value>Vyžadováno balíčky: {0}</value>
     </data>
     <data name="Sites_ExtensionUsed" xml:space="preserve">
         <value>Není vyžadováno, ale používá se: {0}</value>
     </data>
     <data name="Sites_ExtensionsFootnote" xml:space="preserve">
-        <value>Když rozšíření uvedete jako požadavek v composer.json, composer install odmítne server, kde chybí, místo aby tam aplikace selhala.</value>
+        <value>Když je rozšíření vyžadované v composer.json, composer install odmítne server, který ho nemá, místo aby tam aplikace selhala.</value>
     </data>
     <data name="Sites_ExtensionsLaravel" xml:space="preserve">
         <value>PHP {0} · aplikace v Laravelu</value>
@@ -1665,7 +1665,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Proxy</value>
     </data>
     <data name="Sites_ProxyFootnote" xml:space="preserve">
-        <value>Každý požadavek se předá cíli i s hlavičkou Host, včetně upgradů na WebSocket (hot reload). Flock server nespouští, spusťte ho tedy jako obvykle. Dokud neodpovídá, {0} zobrazí stránku, která to oznamuje.</value>
+        <value>Každý požadavek se předá cíli i s hlavičkou Host, včetně přechodu na WebSocket (hot reload). Flock server nespouští, takže ho spusťte jako obvykle. Dokud neodpovídá, {0} zobrazuje stránku s touto informací.</value>
     </data>
     <data name="Sites_ProxyName" xml:space="preserve">
         <value>Název</value>
@@ -1683,13 +1683,13 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Odebrat web</value>
     </data>
     <data name="Sites_RemoveSiteDetails" xml:space="preserve">
-        <value>{0} přestane být dostupný. Soubory projektu zůstanou, kde jsou.</value>
+        <value>{0} se přestane obsluhovat. Soubory projektu zůstanou, kde jsou.</value>
     </data>
     <data name="Sites_Require" xml:space="preserve">
         <value>Vyžadovat</value>
     </data>
     <data name="Sites_RequireTooltip" xml:space="preserve">
-        <value>Spustí composer require ext-{0}:* v {1}, což změní composer.json a composer.lock. Commitněte je s projektem.</value>
+        <value>Spustí composer require ext-{0}:* ve složce {1}, což změní composer.json a composer.lock. Commitněte je s projektem.</value>
     </data>
     <data name="Sites_RestartFrankenPhpTooltip" xml:space="preserve">
         <value>Restartovat FrankenPHP, např. aby workery Octane načetly změněný kód</value>
@@ -1719,7 +1719,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Vyberte složku se souborem index.php aplikace, nebo vytvořte {0}.</value>
     </data>
     <data name="Sites_RootNoIndex" xml:space="preserve">
-        <value>{0} neobsahuje index.php ani index.html, takže Flock do té doby místo webu zobrazuje informační stránku.</value>
+        <value>{0} neobsahuje index.php ani index.html, takže Flock místo webu zobrazuje informační stránku, dokud tam nebudou.</value>
     </data>
     <data name="Sites_RootNotFound" xml:space="preserve">
         <value>Nebyla nalezena žádná složka public\, www\, web\ ani webroot\ se souborem index.php, takže Flock místo webu zobrazuje informační stránku. Vyberte složku se souborem index.php aplikace.</value>
@@ -1752,10 +1752,10 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Web</value>
     </data>
     <data name="Sites_SubdomainsOnlyHere" xml:space="preserve">
-        <value>Subdomény fungují, jen když je přidáte zde: {0}.</value>
+        <value>Subdomény fungují, jen když je přidáte sem: {0}.</value>
     </data>
     <data name="Sites_Subtitle" xml:space="preserve">
-        <value>Weby přidané jednotlivě a všechny složky uvnitř vašich složek projektů.</value>
+        <value>Weby přidané jednotlivě a každá složka uvnitř vašich složek projektů.</value>
     </data>
     <data name="Sites_Unpin" xml:space="preserve">
         <value>Odepnout</value>
@@ -1803,7 +1803,7 @@ Podrobnosti najdete v %LocalAppData%\Flock\tray.log.</value>
         <value>Podle {0} ({1})</value>
     </data>
     <data name="Sites_VersionDefault" xml:space="preserve">
-        <value>Web používá výchozí verzi {0} Flocku.</value>
+        <value>Web se řídí výchozí verzí {0} ve Flocku.</value>
     </data>
     <data name="Sites_VersionIsolated" xml:space="preserve">
         <value>{0} je pro tento web nastaveno na tomto počítači (izolovaně).</value>
@@ -1961,7 +1961,7 @@ Můžete v terminálu spustit `flock install`, nebo Flock znovu nainstalovat.</v
         <value>Nastavit jako výchozí</value>
     </data>
     <data name="Versions_NewBuild" xml:space="preserve">
-        <value>Je k dispozici nové sestavení</value>
+        <value>K dispozici je nové sestavení</value>
     </data>
     <data name="Versions_NotChecked" xml:space="preserve">
         <value>Zatím nezkontrolováno</value>
@@ -1997,7 +1997,7 @@ Můžete v terminálu spustit `flock install`, nebo Flock znovu nainstalovat.</v
         <value>Připraveno na {0}</value>
     </data>
     <data name="WorktreeJob_SeeLog" xml:space="preserve">
-        <value>podívejte se do logu</value>
+        <value>viz log</value>
     </data>
     <data name="WorktreeJob_SetupFailed" xml:space="preserve">
         <value>Příprava selhala: {0}</value>
@@ -2042,7 +2042,7 @@ Můžete v terminálu spustit `flock install`, nebo Flock znovu nainstalovat.</v
         <value>Smazat databázi {0}?</value>
     </data>
     <data name="Worktree_Explanation" xml:space="preserve">
-        <value>Každý git worktree projektu je dostupný na &lt;větev&gt;.{0} s vlastními závislostmi a souborem .env.</value>
+        <value>Každý git worktree projektu se obsluhuje na &lt;větev&gt;.{0} s vlastními závislostmi a souborem .env.</value>
     </data>
     <data name="Worktree_GiveCopyDetails" xml:space="preserve">
         <value>Flock zkopíruje databázi webu a spustí na ní nové migrace z větve.</value>
@@ -2090,7 +2090,7 @@ Můžete v terminálu spustit `flock install`, nebo Flock znovu nainstalovat.</v
         <value>Vlastní databáze: {0}</value>
     </data>
     <data name="Worktree_ProjectDefault" xml:space="preserve">
-        <value>Výchozí pro projekt</value>
+        <value>Výchozí podle projektu</value>
     </data>
     <data name="Worktree_Remove" xml:space="preserve">
         <value>Odebrat worktree</value>
@@ -2111,7 +2111,7 @@ Můžete v terminálu spustit `flock install`, nebo Flock znovu nainstalovat.</v
         <value>Zkopírovat, co chybí, nainstalovat, připravit databázi a znovu spustit hooky</value>
     </data>
     <data name="Worktree_SeeLog" xml:space="preserve">
-        <value>podívejte se do logu</value>
+        <value>viz jeho log</value>
     </data>
     <data name="Worktree_SetUpAction" xml:space="preserve">
         <value>Připravit</value>
@@ -2123,7 +2123,7 @@ Můžete v terminálu spustit `flock install`, nebo Flock znovu nainstalovat.</v
         <value>Připravuje se…</value>
     </data>
     <data name="Worktree_SettingUpTitle" xml:space="preserve">
-        <value>Příprava {0}</value>
+        <value>Připravuje se {0}</value>
     </data>
     <data name="Worktree_Settings" xml:space="preserve">
         <value>Nastavení</value>
@@ -2138,7 +2138,7 @@ Můžete v terminálu spustit `flock install`, nebo Flock znovu nainstalovat.</v
         <value>Příprava selhala.</value>
     </data>
     <data name="Worktree_SetupFailedTitle" xml:space="preserve">
-        <value>Příprava {0} selhala</value>
+        <value>Příprava {0} se nezdařila</value>
     </data>
     <data name="Worktree_SetupLogTitle" xml:space="preserve">
         <value>Příprava {0}</value>
@@ -2147,13 +2147,13 @@ Můžete v terminálu spustit `flock install`, nebo Flock znovu nainstalovat.</v
         <value>S databází webu změní migrace spuštěné ve worktree i databázi webu.</value>
     </data>
     <data name="Worktree_StillServed" xml:space="preserve">
-        <value>Worktree je dál dostupný.</value>
+        <value>Worktree se dál obsluhuje.</value>
     </data>
     <data name="Worktree_Switch" xml:space="preserve">
         <value>Přepnout</value>
     </data>
     <data name="Worktree_SwitchingDatabase" xml:space="preserve">
-        <value>Přepínání databáze worktree {0}</value>
+        <value>Přepíná se databáze worktree {0}</value>
     </data>
     <data name="Worktree_UsesSiteSettings" xml:space="preserve">
         <value>Používá nastavení webu {0}: PHP, Node.js, HTTPS a kořenovou složku (platí i verze připnuté ve větvi). Změníte je u webu {0}.</value>

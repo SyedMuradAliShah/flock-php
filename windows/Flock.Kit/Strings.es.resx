@@ -65,7 +65,7 @@
         <value>Flock respondió con HTTP {0}</value>
     </data>
     <data name="Client_NotRunning" xml:space="preserve">
-        <value>Flock no se está ejecutando</value>
+        <value>Flock no está en ejecución</value>
     </data>
     <data name="Client_OutcomeUnknown" xml:space="preserve">
         <value>La conexión falló. Es posible que el cambio se haya completado; actualiza su estado antes de volver a intentarlo.</value>
@@ -137,10 +137,10 @@
         <value>No hay ninguna compilación para este equipo, o el enlace es para una versión más reciente de Flock.</value>
     </data>
     <data name="InstallLink_PurposeNode" xml:space="preserve">
-        <value>Los proyectos que la usan obtienen node, npm y npx en cuanto esté instalada.</value>
+        <value>Los proyectos que lo usan obtienen node, npm y npx en cuanto se instale.</value>
     </data>
     <data name="InstallLink_PurposePhp" xml:space="preserve">
-        <value>Los sitios que la usan se sirven en cuanto esté instalada.</value>
+        <value>Los sitios que lo usan se sirven en cuanto se instale.</value>
     </data>
     <data name="InstallLink_PurposeService" xml:space="preserve">
         <value>Se ejecuta en 127.0.0.1 para tus sitios.</value>
