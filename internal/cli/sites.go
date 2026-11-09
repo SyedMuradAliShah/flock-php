@@ -62,6 +62,9 @@ func newLinkCommand() *cobra.Command {
 			if existing, ok := s.cfg.FindSite(name); ok && !existing.Parked {
 				site.Node, site.Domains = existing.Node, existing.Domains
 				if existing.Path == cwd {
+					site.Type = existing.Type // another folder gets the type it suggests
+				}
+				if existing.Path == cwd {
 					site.Root = existing.Root // relative to the project, so only for the same folder
 				}
 				if phpVersion == "" {
