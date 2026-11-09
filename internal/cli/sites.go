@@ -87,7 +87,9 @@ func newLinkCommand() *cobra.Command {
 				scheme = "https"
 			}
 			cmd.Printf("linked %s → %s://%s\n", cwd, scheme, s.cfg.Domain(site))
-			if r := project.RootFor(&site); r.State != "" {
+			if stored, _ := s.cfg.FindSite(site.Name); stored.Kind() == config.TypeNode {
+				cmd.Printf("%s is a Node.js app: Flock starts its dev server (npm run dev) on the first visit\n", site.Name)
+			} else if r := project.RootFor(&site); r.State != "" {
 				printRoot(cmd, site.Name, site.Path, r)
 			}
 			return nil
