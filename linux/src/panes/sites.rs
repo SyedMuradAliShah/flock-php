@@ -1653,7 +1653,11 @@ impl Inner {
         };
         let group = group("Proxy", &footer);
         match &proxy.command {
-            Some(command) => group.add(&self.command_state_row(&proxy.name, command)),
+            Some(command) => {
+                let row = self.command_state_row(&proxy.name, command);
+                row.add_prefix(&proxy_dot(proxy));
+                group.add(&row);
+            }
             None => {
                 let server = info_row("Server", &proxy.server_text());
                 server.add_prefix(&status_dot(proxy.running));
@@ -1700,7 +1704,6 @@ impl Inner {
             subtitle.push_str(note);
         }
         let row = adw::ActionRow::builder().title("Server").subtitle(glib::markup_escape_text(&subtitle)).build();
-        row.add_prefix(&state_dot(&command.state));
         let (this, name) = (self.clone(), name.to_owned());
         let action = if command.can_start() {
             button("Start", false, move || {
@@ -2064,7 +2067,8 @@ impl Output {
     }
 }
 
-/// A site's suffixes in the list: what it warns about, its share and its lock.
+/// A site's suffixes in the list: what it warns about, its dev server's state (a Node.js site's),
+/// its share and its lock.
 fn site_suffixes(site: &SiteStatus) -> Vec<gtk::Widget> {
     let mut widgets: Vec<gtk::Widget> = Vec::new();
     if let Some(problem) = problem(site) {
@@ -2072,6 +2076,11 @@ fn site_suffixes(site: &SiteStatus) -> Vec<gtk::Widget> {
         warning.add_css_class("warning");
         warning.set_tooltip_text(Some(&problem));
         widgets.push(warning.upcast());
+    }
+    if let Some(server) = site.node_server.as_ref().filter(|_| site.is_node()) {
+        let dot = state_dot(&server.state);
+        dot.set_tooltip_text(Some(&server.text()));
+        widgets.push(dot.upcast());
     }
     if site.shared() {
         widgets.push(badge("Shared", "success").upcast());
@@ -2141,17 +2150,14 @@ fn slug(branch: &str) -> String {
     out.trim_matches('-').to_owned()
 }
 
-/// What a site's list row warns about: the site, its document root, a domain, its dev server, or
-/// its FrankenPHP.
+/// What a site's list row warns about: the site, its document root, a domain, or its FrankenPHP. A
+/// dev server that failed shows in its dot.
 fn problem(site: &SiteStatus) -> Option<String> {
     if let Some(p) = site.problem.clone().or_else(|| site.notice.clone()) {
         return Some(p);
     }
     if let Some(domain) = site.domains.iter().flatten().find(|d| d.problem.is_some()) {
         return Some(format!("{}: {}", domain.host, domain.problem.clone().unwrap_or_default()));
-    }
-    if let Some(server) = site.node_server.as_ref().filter(|s| site.is_node() && s.state == "failed") {
-        return Some(server.text());
     }
     site.frankenphp
         .as_ref()
@@ -2169,18 +2175,8 @@ fn proxy_suffixes(proxy: &ProxyStatus) -> Vec<gtk::Widget> {
         warning.set_tooltip_text(Some(problem));
         widgets.push(warning.upcast());
     }
-    let dot = match &proxy.command {
-        Some(command) => {
-            let dot = state_dot(&command.state);
-            dot.set_tooltip_text(Some(&command.text()));
-            dot
-        }
-        None => {
-            let dot = status_dot(proxy.running);
-            dot.set_tooltip_text(Some(&proxy.server_text()));
-            dot
-        }
-    };
+    let dot = proxy_dot(proxy);
+    dot.set_tooltip_text(Some(&proxy.command.as_ref().map_or_else(|| proxy.server_text(), ProxyCommand::text)));
     widgets.push(dot.upcast());
     if proxy.secured {
         let lock = gtk::Image::from_icon_name("channel-secure-symbolic");
@@ -2189,6 +2185,15 @@ fn proxy_suffixes(proxy: &ProxyStatus) -> Vec<gtk::Widget> {
         widgets.push(lock.upcast());
     }
     widgets
+}
+
+/// A proxy's dot: its command's state while that starts, stops or failed (amber, red), else
+/// whether something answers at its upstream (green, grey).
+fn proxy_dot(proxy: &ProxyStatus) -> gtk::Label {
+    match proxy.command.as_ref().map(|c| c.state.as_str()) {
+        Some(state @ ("starting" | "stopping" | "failed")) => state_dot(state),
+        _ => status_dot(proxy.running),
+    }
 }
 
 /// Why the site isn't served from its root, or a root set here over the project's.
