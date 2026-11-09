@@ -1,0 +1,6 @@
+# Generated from the catalogs in i18n/ by tools/i18n (i18n/README.md): collapsed in diffs.
+macos/Resources/Localizable.xcstrings linguist-generated
+windows/Flock.Kit/Strings*.resx linguist-generated
+windows/Flock.Tray/Strings*.resx linguist-generated
+windows/installer/Strings.iss linguist-generated
+linux/po/*.po linguist-generated

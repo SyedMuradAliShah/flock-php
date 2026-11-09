@@ -31,3 +31,10 @@ needs an approved issue like any other.
 
 The website shows the documentation of released versions only, so a change appears there with the
 next release. A pull request that adds or changes a feature should update its documentation too.
+
+## Translations
+
+The apps are in English, Czech and Spanish, from one set of catalogs in [`i18n/`](i18n): a text the
+apps share has one translation. A pull request that adds or changes a text in an app adds it there
+with its Czech and Spanish translations and runs `make i18n`, which generates each app's files;
+[`i18n/README.md`](i18n/README.md) describes the format.

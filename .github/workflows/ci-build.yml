@@ -170,6 +170,11 @@ jobs:
                 if: env.CODE == 'true' && matrix.name == 'macOS'
                 run: go run ./tools/notices -check
 
+            # The apps' translation files are what i18n/ generates; run `make i18n` after editing it.
+            -   name: Translations
+                if: env.CODE == 'true' && matrix.name == 'macOS'
+                run: go run ./tools/i18n -check
+
     # Tools run on Linux when their source or shared Go module metadata changes. Product-only PRs do
     # not need to run these tests, but non-PR builds run the full suite.
     tool-test:

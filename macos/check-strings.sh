@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Checks that every text the app's code marks for translation (Text("…"), String(localized: "…"),
 # …) is in Resources/Localizable.xcstrings: the compiler lists them (-emit-localized-strings).
-# LocalizationTests checks that the catalog's texts are translated. Add a new text with its Czech
-# and Spanish translations to the catalog (Xcode opens it), then run this again.
+# LocalizationTests checks that the catalog's texts are translated. The catalog is generated from
+# i18n/: add a new text there with its Czech and Spanish translations (i18n/README.md), run
+# go run ./tools/i18n, then run this again.
 set -euo pipefail
 
 cd "$(dirname "$0")"

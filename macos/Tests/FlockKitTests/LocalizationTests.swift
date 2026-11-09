@@ -1,8 +1,8 @@
 import Foundation
 import Testing
 
-/// Resources/Localizable.xcstrings, which build-app.sh compiles into the app: every text is
-/// translated into each language, with the same placeholders.
+/// Resources/Localizable.xcstrings, which tools/i18n generates from i18n/ and build-app.sh compiles
+/// into the app: every text is translated into each language, with the same placeholders.
 private let catalogURL = URL(fileURLWithPath: #filePath)
     .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
     .appendingPathComponent("Resources/Localizable.xcstrings")

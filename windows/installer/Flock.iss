@@ -55,20 +55,8 @@ Name: "en"; MessagesFile: "compiler:Default.isl"
 Name: "cs"; MessagesFile: "compiler:Languages\Czech.isl"
 Name: "es"; MessagesFile: "compiler:Languages\Spanish.isl"
 
-[CustomMessages]
-en.OpenFlock=Open Flock
-cs.OpenFlock=Otevřít Flock
-es.OpenFlock=Abrir Flock
-en.PrivilegedFailed=the steps that need administrator permission failed
-cs.PrivilegedFailed=kroky, které vyžadují oprávnění správce, selhaly
-es.PrivilegedFailed=fallaron los pasos que necesitan permiso de administrador
-en.PrivilegedDeclined=Flock needs administrator permission to update its DNS rule, hosts helper or certificate authority. The update was not installed; Flock stays at its current version.
-cs.PrivilegedDeclined=Flock potřebuje oprávnění správce, aby mohl aktualizovat své DNS pravidlo, pomocníka pro soubor hosts nebo certifikační autoritu. Aktualizace nebyla nainstalována; Flock zůstává ve své současné verzi.
-es.PrivilegedDeclined=Flock necesita permiso de administrador para actualizar su regla DNS, el asistente de hosts o la autoridad de certificación. La actualización no se instaló; Flock se queda en su versión actual.
-; %1: why (the CLI's English error, or PrivilegedFailed)
-en.UpdateNotInstalled=The update was not installed: %1
-cs.UpdateNotInstalled=Aktualizace nebyla nainstalována: %1
-es.UpdateNotInstalled=La actualización no se instaló: %1
+; Setup's own messages in each language, generated from i18n/ (tools/i18n).
+#include "Strings.iss"
 
 [Files]
 Source: "..\dist\FlockTray-{#Arch}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs

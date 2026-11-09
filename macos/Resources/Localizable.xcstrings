@@ -120,6 +120,7 @@
       "shouldTranslate" : false
     },
     "%@ (alias)" : {
+      "comment" : "{domain}: the domain",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -136,6 +137,7 @@
       }
     },
     "%@ (current)" : {
+      "comment" : "{name}: the branch",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -152,6 +154,7 @@
       }
     },
     "%@ (default)" : {
+      "comment" : "{name}: the branch",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -167,7 +170,24 @@
         }
       }
     },
+    "%@ Port" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Port služby %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puerto de %@"
+          }
+        }
+      }
+    },
     "%@ and %@" : {
+      "comment" : "The last two items of a list",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -216,6 +236,7 @@
       }
     },
     "%@ are installed as soon as Flock can download them." : {
+      "comment" : "{0}: \"PHP 8.5 and Node.js 24\"",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -232,6 +253,7 @@
       }
     },
     "%@ available" : {
+      "comment" : "{0}: the version",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -264,6 +286,7 @@
       }
     },
     "%@ exists, so the worktree checks it out. Flock creates it next to %@, sets it up and serves it at %@." : {
+      "comment" : "{branch}: the branch, {site}: the site, {address}: the address",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -296,6 +319,7 @@
       }
     },
     "%@ has no index.php or index.html, so Flock shows a page instead of the site until it does." : {
+      "comment" : "{root}: the folder",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -312,6 +336,7 @@
       }
     },
     "%@ install log" : {
+      "comment" : "{name}: the service",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -328,6 +353,7 @@
       }
     },
     "%@ is already being installed" : {
+      "comment" : "{name}: the name and version (\"PHP 8.4\")",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -344,6 +370,7 @@
       }
     },
     "%@ is already installed" : {
+      "comment" : "{name}: the name and version (\"PHP 8.4\")",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -360,6 +387,7 @@
       }
     },
     "%@ is already secured" : {
+      "comment" : "{site}: the site",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -376,6 +404,7 @@
       }
     },
     "%@ is available" : {
+      "comment" : "{0}: the service and version",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -392,6 +421,7 @@
       }
     },
     "%@ is installed as soon as Flock can download it." : {
+      "comment" : "{0}: PHP or Node.js with its version",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -424,6 +454,7 @@
       }
     },
     "%@ is set for this site on this machine." : {
+      "comment" : "{0}: the folder",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -440,6 +471,7 @@
       }
     },
     "%@ is set here; the project sets %@ in .flockrc." : {
+      "comment" : "{root}: the folder set here, {pinned}: the project's",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -456,6 +488,7 @@
       }
     },
     "%@ isn't available on this computer" : {
+      "comment" : "{name}: the service",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -472,6 +505,7 @@
       }
     },
     "%@ isn't in %@. The document root must be a folder in the project." : {
+      "comment" : "{folder}: the chosen folder, {project}: the project",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -520,6 +554,7 @@
       }
     },
     "%@ on 127.0.0.1:%@" : {
+      "comment" : "{0}: the version, {1}: the port",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -531,22 +566,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ en 127.0.0.1:%2$@"
-          }
-        }
-      }
-    },
-    "%@ Port" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Port služby %@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Puerto de %@"
           }
         }
       }
@@ -642,12 +661,6 @@
         "cs" : {
           "variations" : {
             "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld dump"
-                }
-              },
               "few" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -658,6 +671,12 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "%lld dumpu"
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld dump"
                 }
               },
               "other" : {
@@ -712,12 +731,6 @@
         "cs" : {
           "variations" : {
             "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld událost"
-                }
-              },
               "few" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -728,6 +741,12 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "%lld události"
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld událost"
                 }
               },
               "other" : {
@@ -877,6 +896,7 @@
       }
     },
     ".flockrc's Node %@ wins over %@." : {
+      "comment" : "{pinned}: the version, {other}: the file it wins over",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -989,6 +1009,7 @@
       }
     },
     "A link asked Flock to secure %@. It gets a certificate this computer already trusts." : {
+      "comment" : "{domain}: the site's domain",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -1000,22 +1021,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Un enlace ha pedido a Flock que proteja %@. Recibirá un certificado en el que este equipo ya confía."
-          }
-        }
-      }
-    },
-    "a name like brave-otter" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "název jako brave-otter"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "un nombre como brave-otter"
           }
         }
       }
@@ -1132,6 +1137,38 @@
         }
       }
     },
+    "AI" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IA"
+          }
+        }
+      }
+    },
+    "AI clients" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI klienti"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clientes de IA"
+          }
+        }
+      }
+    },
     "About" : {
       "localizations" : {
         "cs" : {
@@ -1180,54 +1217,6 @@
         }
       }
     },
-    "Add a domain to %@" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Přidat doménu k webu %@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Añadir un dominio a %@"
-          }
-        }
-      }
-    },
-    "Add a proxy" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Přidat proxy"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Añadir un proxy"
-          }
-        }
-      }
-    },
-    "Add a single site here, or add a project folder in General." : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Přidejte sem jednotlivý web, nebo v Obecných přidejte složku s projekty."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Añade aquí un sitio suelto o añade una carpeta de proyectos en General."
-          }
-        }
-      }
-    },
     "Add Domain…" : {
       "localizations" : {
         "cs" : {
@@ -1245,6 +1234,7 @@
       }
     },
     "Add Flock to %@'s Boost guidelines?" : {
+      "comment" : "{site}: the site",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -1304,6 +1294,55 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Añadir sitio…"
+          }
+        }
+      }
+    },
+    "Add a domain to %@" : {
+      "comment" : "{site}: the site",
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Přidat doménu k webu %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir un dominio a %@"
+          }
+        }
+      }
+    },
+    "Add a proxy" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Přidat proxy"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir un proxy"
+          }
+        }
+      }
+    },
+    "Add a single site here, or add a project folder in General." : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Přidejte sem jednotlivý web, nebo v Obecných přidejte složku s projekty."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añade aquí un sitio suelto o añade una carpeta de proyectos en General."
           }
         }
       }
@@ -1404,38 +1443,6 @@
         }
       }
     },
-    "AI" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "AI"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "IA"
-          }
-        }
-      }
-    },
-    "AI clients" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "AI klienti"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Clientes de IA"
-          }
-        }
-      }
-    },
     "All" : {
       "localizations" : {
         "cs" : {
@@ -1469,6 +1476,7 @@
       }
     },
     "Also delete its databases (%@)" : {
+      "comment" : "{0}: their size",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -1548,22 +1556,6 @@
         }
       }
     },
-    "attachment" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "příloha"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "adjunto"
-          }
-        }
-      }
-    },
     "Auto-refresh" : {
       "localizations" : {
         "cs" : {
@@ -1597,6 +1589,7 @@
       }
     },
     "Automatic (%@)" : {
+      "comment" : "{root}: the folder found",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -1709,6 +1702,7 @@
       }
     },
     "Cache & Queue" : {
+      "comment" : "A service category from the daemon (\"Cache & Queue\")",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -1725,6 +1719,7 @@
       }
     },
     "Caddy serves every site over HTTPS (https://app.%@) with certificates from Flock's local certificate authority, which `flock install` trusts." : {
+      "comment" : "{tld}: the TLD",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -1788,6 +1783,22 @@
         }
       }
     },
+    "Capture Options" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Možnosti zachytávání"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opciones de captura"
+          }
+        }
+      }
+    },
     "Capture dumps & queries" : {
       "localizations" : {
         "cs" : {
@@ -1832,22 +1843,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La captura está desactivada: actívala con el botón de la antena para recoger aquí dumps, consultas, registros, vistas y jobs."
-          }
-        }
-      }
-    },
-    "Capture Options" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Možnosti zachytávání"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Opciones de captura"
           }
         }
       }
@@ -1949,6 +1944,7 @@
       }
     },
     "Change the upstream of %@" : {
+      "comment" : "{proxy}: the proxy",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -2125,6 +2121,7 @@
       }
     },
     "Choose the folder with the app's index.php, or create %@." : {
+      "comment" : "{root}: the configured folder",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -2205,6 +2202,7 @@
       }
     },
     "Clear the log of %@?" : {
+      "comment" : "{site}: the site",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -2251,9 +2249,6 @@
           }
         }
       }
-    },
-    "colleague@acme.com, *@client.com" : {
-      "shouldTranslate" : false
     },
     "Commits stay." : {
       "localizations" : {
@@ -2368,6 +2363,7 @@
       }
     },
     "Core" : {
+      "comment" : "A service category from the daemon",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -2432,6 +2428,7 @@
       }
     },
     "Could not run %@: %@" : {
+      "comment" : "{0}: the program, {1}: the error",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -2464,6 +2461,7 @@
       }
     },
     "Couldn't check for updates: %@" : {
+      "comment" : "{error}: the error",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -2496,6 +2494,7 @@
       }
     },
     "Couldn't remove %@" : {
+      "comment" : "{name}: the worktree",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -2591,22 +2590,6 @@
         }
       }
     },
-    "data kept" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "data zachována"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "datos conservados"
-          }
-        }
-      }
-    },
     "Database" : {
       "localizations" : {
         "cs" : {
@@ -2626,16 +2609,16 @@
     "Database category" : {
       "comment" : "The Services list's heading for database services (MySQL, PostgreSQL…).",
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Database"
-          }
-        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Databáze"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Database"
           }
         },
         "es" : {
@@ -2726,54 +2709,6 @@
         }
       }
     },
-    "dd() always shows in the page too, as it ends the request." : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "dd() se vždy zobrazí i ve stránce, protože ukončí požadavek."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "dd() siempre se muestra también en la página, porque termina la solicitud."
-          }
-        }
-      }
-    },
-    "dd() always shows in the page too, as it ends the request. PHP %@ only capture dumps: their builds have no agent extension yet." : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "dd() se vždy zobrazí i ve stránce, protože ukončí požadavek. PHP %@ zachytávají jen dumpy: jejich buildy zatím nemají rozšíření agenta."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "dd() siempre se muestra también en la página, porque termina la solicitud. PHP %@ solo capturan dumps: sus compilaciones aún no tienen la extensión del agente."
-          }
-        }
-      }
-    },
-    "dd() always shows in the page too, as it ends the request. PHP %@ only captures dumps: its build has no agent extension yet." : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "dd() se vždy zobrazí i ve stránce, protože ukončí požadavek. PHP %@ zachytává jen dumpy: jeho build zatím nemá rozšíření agenta."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "dd() siempre se muestra también en la página, porque termina la solicitud. PHP %@ solo captura dumps: su compilación aún no tiene la extensión del agente."
-          }
-        }
-      }
-    },
     "Debug mode is on: visitors see stack traces" : {
       "localizations" : {
         "cs" : {
@@ -2807,6 +2742,7 @@
       }
     },
     "Debugging" : {
+      "comment" : "A service category from the daemon",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -3047,6 +2983,7 @@
       }
     },
     "Don't link" : {
+      "comment" : "The editor choice that opens no editor",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -3078,22 +3015,6 @@
         }
       }
     },
-    "down" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "nefunguje"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "caído"
-          }
-        }
-      }
-    },
     "Downloading %@…" : {
       "localizations" : {
         "cs" : {
@@ -3111,6 +3032,7 @@
       }
     },
     "Downloading FrankenPHP for PHP %@…" : {
+      "comment" : "{version}: PHP version",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -3131,18 +3053,19 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stahuje se FrankenPHP pro PHP %@… %lld %%"
+            "value" : "Stahuje se FrankenPHP pro PHP %1$@… %2$lld %%"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Descargando FrankenPHP para PHP %@… %lld %%"
+            "value" : "Descargando FrankenPHP para PHP %1$@… %2$lld %%"
           }
         }
       }
     },
     "Downloading Node.js %@…" : {
+      "comment" : "{version}: the version",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -3270,38 +3193,6 @@
         }
       }
     },
-    "Downloads a ready-made build (%@)." : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Stáhne hotový build (%@)."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Descarga una compilación lista para usar (%@)."
-          }
-        }
-      }
-    },
-    "Downloads a ready-made build." : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Stáhne hotový build."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Descarga una compilación lista para usar."
-          }
-        }
-      }
-    },
     "Downloads FrankenPHP for PHP %@" : {
       "localizations" : {
         "cs" : {
@@ -3323,13 +3214,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stáhne FrankenPHP pro PHP %@ (%lld MB)"
+            "value" : "Stáhne FrankenPHP pro PHP %1$@ (%2$lld MB)"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Descarga FrankenPHP para PHP %@ (%lld MB)"
+            "value" : "Descarga FrankenPHP para PHP %1$@ (%2$lld MB)"
           }
         }
       }
@@ -3371,13 +3262,13 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stáhne PHP %@ (%lld MB)"
+            "value" : "Stáhne PHP %1$@ (%2$lld MB)"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Descarga PHP %@ (%lld MB)"
+            "value" : "Descarga PHP %1$@ (%2$lld MB)"
           }
         }
       }
@@ -3394,6 +3285,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Descarga PostgreSQL %@"
+          }
+        }
+      }
+    },
+    "Downloads a ready-made build (%@)." : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stáhne hotový build (%@)."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Descarga una compilación lista para usar (%@)."
+          }
+        }
+      }
+    },
+    "Downloads a ready-made build." : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stáhne hotový build."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Descarga una compilación lista para usar."
           }
         }
       }
@@ -3426,22 +3349,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Descarga la versión más reciente de PostgreSQL %@"
-          }
-        }
-      }
-    },
-    "dump() and dd() output, queries, logs, views and jobs from your sites and artisan commands appear here." : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zde se zobrazí výstup dump() a dd(), dotazy, logy, views a joby z vašich webů a příkazů artisan."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aquí aparecen la salida de dump() y dd(), las consultas, registros, vistas y jobs de tus sitios y comandos artisan."
           }
         }
       }
@@ -3511,6 +3418,7 @@
       }
     },
     "Ends at %@" : {
+      "comment" : "{time}: the time",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -3591,6 +3499,7 @@
       }
     },
     "Every folder inside a project folder is served as <folder>.%@ — the same as `flock park`." : {
+      "comment" : "{tld}: the TLD (\"test\")",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -3639,6 +3548,7 @@
       }
     },
     "Every request passes to the upstream with its Host header, WebSocket upgrades (hot reload) included. Flock doesn't start the server, so start it as usual. Until it answers, %@ shows a page saying so." : {
+      "comment" : "{domain}: the domain",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -3659,28 +3569,28 @@
         "cs" : {
           "variations" : {
             "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Každá subdoména až %lld úroveň pod webem už funguje. Pro alias přidejte celé jméno jako %@, nebo přidejte subdoménu (tenant1, a.b), aby byla uvedená zde a překládala se i na počítačích s Windows bez zástupného DNS."
-                }
-              },
               "few" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Každá subdoména až %lld úrovně pod webem už funguje. Pro alias přidejte celé jméno jako %@, nebo přidejte subdoménu (tenant1, a.b), aby byla uvedená zde a překládala se i na počítačích s Windows bez zástupného DNS."
+                  "value" : "Každá subdoména až %1$lld úrovně pod webem už funguje. Pro alias přidejte celé jméno jako %2$@, nebo přidejte subdoménu (tenant1, a.b), aby byla uvedená zde a překládala se i na počítačích s Windows bez zástupného DNS."
                 }
               },
               "many" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Každá subdoména až %lld úrovně pod webem už funguje. Pro alias přidejte celé jméno jako %@, nebo přidejte subdoménu (tenant1, a.b), aby byla uvedená zde a překládala se i na počítačích s Windows bez zástupného DNS."
+                  "value" : "Každá subdoména až %1$lld úrovně pod webem už funguje. Pro alias přidejte celé jméno jako %2$@, nebo přidejte subdoménu (tenant1, a.b), aby byla uvedená zde a překládala se i na počítačích s Windows bez zástupného DNS."
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Každá subdoména až %1$lld úroveň pod webem už funguje. Pro alias přidejte celé jméno jako %2$@, nebo přidejte subdoménu (tenant1, a.b), aby byla uvedená zde a překládala se i na počítačích s Windows bez zástupného DNS."
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Každá subdoména až %lld úrovní pod webem už funguje. Pro alias přidejte celé jméno jako %@, nebo přidejte subdoménu (tenant1, a.b), aby byla uvedená zde a překládala se i na počítačích s Windows bez zástupného DNS."
+                  "value" : "Každá subdoména až %1$lld úrovní pod webem už funguje. Pro alias přidejte celé jméno jako %2$@, nebo přidejte subdoménu (tenant1, a.b), aby byla uvedená zde a překládala se i na počítačích s Windows bez zástupného DNS."
                 }
               }
             }
@@ -3692,13 +3602,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Every subdomain up to %lld level below the site already works. Add a full name like %@ for an alias, or a subdomain (tenant1, a.b) so it is listed here and also resolves on Windows machines without wildcard DNS."
+                  "value" : "Every subdomain up to %1$lld level below the site already works. Add a full name like %2$@ for an alias, or a subdomain (tenant1, a.b) so it is listed here and also resolves on Windows machines without wildcard DNS."
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Every subdomain up to %lld levels below the site already works. Add a full name like %@ for an alias, or a subdomain (tenant1, a.b) so it is listed here and also resolves on Windows machines without wildcard DNS."
+                  "value" : "Every subdomain up to %1$lld levels below the site already works. Add a full name like %2$@ for an alias, or a subdomain (tenant1, a.b) so it is listed here and also resolves on Windows machines without wildcard DNS."
                 }
               }
             }
@@ -3710,13 +3620,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Cualquier subdominio de hasta %lld nivel por debajo del sitio ya funciona. Añade un nombre completo como %@ para un alias, o un subdominio (tenant1, a.b) para que aparezca aquí y también se resuelva en equipos Windows sin DNS comodín."
+                  "value" : "Cualquier subdominio de hasta %1$lld nivel por debajo del sitio ya funciona. Añade un nombre completo como %2$@ para un alias, o un subdominio (tenant1, a.b) para que aparezca aquí y también se resuelva en equipos Windows sin DNS comodín."
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Cualquier subdominio de hasta %lld niveles por debajo del sitio ya funciona. Añade un nombre completo como %@ para un alias, o un subdominio (tenant1, a.b) para que aparezca aquí y también se resuelva en equipos Windows sin DNS comodín."
+                  "value" : "Cualquier subdominio de hasta %1$lld niveles por debajo del sitio ya funciona. Añade un nombre completo como %2$@ para un alias, o un subdominio (tenant1, a.b) para que aparezca aquí y también se resuelva en equipos Windows sin DNS comodín."
                 }
               }
             }
@@ -3808,6 +3718,7 @@
       "shouldTranslate" : false
     },
     "Flock %@ is available" : {
+      "comment" : "{0}: the version",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -3823,7 +3734,40 @@
         }
       }
     },
+    "Flock Docs" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dokumentace Flocku"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Documentación de Flock"
+          }
+        }
+      }
+    },
+    "Flock Settings" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nastavení Flocku"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajustes de Flock"
+          }
+        }
+      }
+    },
     "Flock answered with HTTP %@" : {
+      "comment" : "{status}: the HTTP status code",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -3936,6 +3880,7 @@
       }
     },
     "Flock creates the worktree next to %@ on a new branch with a name of its own, sets it up and serves it at its own address." : {
+      "comment" : "{site}: the site",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -3952,6 +3897,7 @@
       }
     },
     "Flock creates the worktree next to %@ on the new branch %@, sets it up and serves it at %@." : {
+      "comment" : "{branch}: the branch, {site}: the site, {address}: the address",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -3967,23 +3913,8 @@
         }
       }
     },
-    "Flock Docs" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dokumentace Flocku"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Documentación de Flock"
-          }
-        }
-      }
-    },
     "Flock doesn't offer %@" : {
+      "comment" : "{name}: the service, with the version when the link names one",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -4016,6 +3947,7 @@
       }
     },
     "Flock has no site called %@" : {
+      "comment" : "{site}: the site",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -4240,6 +4172,7 @@
       }
     },
     "Flock runs its before_delete hook and deletes %@ and its database %@." : {
+      "comment" : "{path}: the folder, {database}: the database",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -4256,6 +4189,7 @@
       }
     },
     "Flock runs its before_delete hook and deletes %@." : {
+      "comment" : "{path}: the folder",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -4288,6 +4222,7 @@
       }
     },
     "Flock serves <name>.%@ from a server of its own, e.g. a Next.js, Nuxt or Vite dev server. A port means 127.0.0.1." : {
+      "comment" : "{tld}: the TLD",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -4315,22 +4250,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Flock sirve la primera de public/, www/, web/ y webroot/ que tenga un index.php; si no, la carpeta del proyecto."
-          }
-        }
-      }
-    },
-    "Flock Settings" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nastavení Flocku"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ajustes de Flock"
           }
         }
       }
@@ -4368,6 +4287,7 @@
       }
     },
     "Flock stops serving %@. The server at %@ keeps running." : {
+      "comment" : "{domain}: the domain, {upstream}: the upstream",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -4447,6 +4367,23 @@
         }
       }
     },
+    "Flock's PHP %@ doesn't include it" : {
+      "comment" : "{0}: PHP version",
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PHP %@ z Flocku ho neobsahuje"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El PHP %@ de Flock no la incluye"
+          }
+        }
+      }
+    },
     "Flock's guideline in the project's Boost guidelines is outdated." : {
       "localizations" : {
         "cs" : {
@@ -4459,22 +4396,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La directriz de Flock en las directrices de Boost del proyecto está desactualizada."
-          }
-        }
-      }
-    },
-    "Flock's PHP %@ doesn't include it" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "PHP %@ z Flocku ho neobsahuje"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El PHP %@ de Flock no la incluye"
           }
         }
       }
@@ -4627,6 +4548,7 @@
       }
     },
     "Give %@ a copy of %@'s database?" : {
+      "comment" : "{0}: the worktree, {1}: the site",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -4658,21 +4580,8 @@
         }
       }
     },
-    "has data" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "obsahuje data"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "tiene datos"
-          }
-        }
-      }
+    "HTTPS" : {
+      "shouldTranslate" : false
     },
     "Headers" : {
       "localizations" : {
@@ -4737,9 +4646,6 @@
           }
         }
       }
-    },
-    "HTTPS" : {
-      "shouldTranslate" : false
     },
     "In a Laravel project, run `flock link`: the site is then at http://<folder>.test. `flock secure` adds HTTPS." : {
       "localizations" : {
@@ -4806,6 +4712,7 @@
       }
     },
     "Install %@" : {
+      "comment" : "{0}: the service",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -4838,6 +4745,7 @@
       }
     },
     "Install %@ %@?" : {
+      "comment" : "{name}: the name, {version}: the version line",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -4950,6 +4858,7 @@
       }
     },
     "Installing %@" : {
+      "comment" : "{0}: the service and version",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -4966,6 +4875,7 @@
       }
     },
     "Installing %@…" : {
+      "comment" : "{names}: what is installed",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -5062,6 +4972,7 @@
       }
     },
     "Installs %@ in place of %@. Your databases stay." : {
+      "comment" : "{0}: new version, {1}: installed version",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -5190,6 +5101,7 @@
       }
     },
     "It's served at https://%@." : {
+      "comment" : "{domain}: the site's domain",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -5254,6 +5166,7 @@
       }
     },
     "Its global npm packages are removed too. Projects and sites that use Node %@ fall back to the default version until you install it again." : {
+      "comment" : "{version}: the major",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -5270,6 +5183,7 @@
       }
     },
     "Its own database: %@" : {
+      "comment" : "{database}: the database",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -5302,6 +5216,7 @@
       }
     },
     "Its php.ini is removed too. Sites pinned to PHP %@ stop working until you pick another version." : {
+      "comment" : "{version}: the version",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -5372,6 +5287,7 @@
       "shouldTranslate" : false
     },
     "Last checked %@" : {
+      "comment" : "{0}: a relative time (\"3 minutes ago\")",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -5563,70 +5479,6 @@
         }
       }
     },
-    "macOS asks for your password in a moment, and then once more." : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "macOS si za chvilku vyžádá heslo a potom ještě jednou."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "macOS te pedirá la contraseña en un momento, y después una vez más."
-          }
-        }
-      }
-    },
-    "macOS asks for your password twice: once to resolve *.test through Flock (/etc/resolver), once to trust Flock's certificate." : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "macOS si dvakrát vyžádá heslo: jednou kvůli překladu *.test přes Flock (/etc/resolver), podruhé kvůli důvěře v certifikát Flocku."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "macOS te pide la contraseña dos veces: una para resolver *.test a través de Flock (/etc/resolver) y otra para confiar en el certificado de Flock."
-          }
-        }
-      }
-    },
-    "macOS sends every name under .%@ here (/etc/resolver/%@, set up by `flock install`), so any subdomain of a site works (tenant1.app.%@, a.b.app.%@) without adding it." : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "macOS sem posílá každé jméno pod .%1$@ (/etc/resolver/%2$@, nastavuje `flock install`), takže libovolná subdoména webu funguje (tenant1.app.%3$@, a.b.app.%4$@), aniž byste ji museli přidávat."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "macOS envía aquí cada nombre bajo .%1$@ (/etc/resolver/%2$@, lo configura `flock install`), así que cualquier subdominio de un sitio funciona (tenant1.app.%3$@, a.b.app.%4$@) sin añadirlo."
-          }
-        }
-      }
-    },
-    "Mail" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pošta"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Correo"
-          }
-        }
-      }
-    },
     "MAIL_USERNAME picks the inbox, so every project gets its own." : {
       "localizations" : {
         "cs" : {
@@ -5639,6 +5491,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "MAIL_USERNAME elige la bandeja, así que cada proyecto tiene la suya."
+          }
+        }
+      }
+    },
+    "Mail" : {
+      "comment" : "A service category from the daemon",
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pošta"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correo"
           }
         }
       }
@@ -5787,23 +5656,8 @@
         }
       }
     },
-    "new build available" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "k dispozici je nový build"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "nueva compilación disponible"
-          }
-        }
-      }
-    },
     "New Worktree of %@" : {
+      "comment" : "{site}: the site",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -5851,22 +5705,6 @@
         }
       }
     },
-    "No database or cache installed" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Žádná databáze ani cache není nainstalovaná"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No hay ninguna base de datos ni caché instalada"
-          }
-        }
-      }
-    },
     "No HTML part" : {
       "localizations" : {
         "cs" : {
@@ -5879,6 +5717,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sin parte HTML"
+          }
+        }
+      }
+    },
+    "No Node.js versions to show yet." : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zatím nejsou k zobrazení žádné verze Node.js."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún no hay versiones de Node.js que mostrar."
+          }
+        }
+      }
+    },
+    "No database or cache installed" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Žádná databáze ani cache není nainstalovaná"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay ninguna base de datos ni caché instalada"
           }
         }
       }
@@ -5975,22 +5845,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No hay ningún mensaje seleccionado"
-          }
-        }
-      }
-    },
-    "No Node.js versions to show yet." : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zatím nejsou k zobrazení žádné verze Node.js."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aún no hay versiones de Node.js que mostrar."
           }
         }
       }
@@ -6125,22 +5979,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Node %1$@ está aislado aquí; el proyecto fija %2$@ en %3$@."
-          }
-        }
-      }
-    },
-    "node, npm and npx follow the project's .nvmrc / .node-version, then the site's version, then the default." : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "node, npm a npx se řídí souborem .nvmrc / .node-version projektu, pak verzí webu a nakonec výchozí verzí."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "node, npm y npx siguen el .nvmrc / .node-version del proyecto, después la versión del sitio y, por último, la predeterminada."
           }
         }
       }
@@ -6309,6 +6147,7 @@
       }
     },
     "Not required, but used: %@" : {
+      "comment" : "{hint}: where (from the daemon)",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -6340,22 +6179,6 @@
         }
       }
     },
-    "not running" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "neběží"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "no está en ejecución"
-          }
-        }
-      }
-    },
     "Not set up" : {
       "localizations" : {
         "cs" : {
@@ -6373,6 +6196,7 @@
       }
     },
     "Nothing answers at %@ yet." : {
+      "comment" : "{upstream}: the upstream",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -6389,6 +6213,7 @@
       }
     },
     "Nothing answers at %@. Start the server there." : {
+      "comment" : "{0}: the upstream address",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -6436,18 +6261,18 @@
         }
       }
     },
-    "npm %@ available" : {
+    "OK" : {
       "localizations" : {
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "k dispozici npm %@"
+            "value" : "OK"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "npm %@ disponible"
+            "value" : "Aceptar"
           }
         }
       }
@@ -6471,23 +6296,8 @@
         }
       }
     },
-    "OK" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "OK"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aceptar"
-          }
-        }
-      }
-    },
     "Only for: %@" : {
+      "comment" : "{emails}: email addresses",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -6536,6 +6346,7 @@
       }
     },
     "Open %@" : {
+      "comment" : "{site}: a URL or domain",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -6547,22 +6358,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Abrir %@"
-          }
-        }
-      }
-    },
-    "Open a new terminal" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Otevřete nový terminál"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abre una terminal nueva"
           }
         }
       }
@@ -6599,22 +6394,6 @@
         }
       }
     },
-    "Open files in" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Otevírat soubory v"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrir archivos en"
-          }
-        }
-      }
-    },
     "Open Flock at login" : {
       "localizations" : {
         "cs" : {
@@ -6647,22 +6426,6 @@
         }
       }
     },
-    "Open in Browser" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Otevřít v prohlížeči"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrir en el navegador"
-          }
-        }
-      }
-    },
     "Open Mail" : {
       "localizations" : {
         "cs" : {
@@ -6675,22 +6438,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Abrir correo"
-          }
-        }
-      }
-    },
-    "Open php.ini" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Otevřít php.ini"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrir php.ini"
           }
         }
       }
@@ -6723,6 +6470,70 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Abrir el código en"
+          }
+        }
+      }
+    },
+    "Open a new terminal" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otevřete nový terminál"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre una terminal nueva"
+          }
+        }
+      }
+    },
+    "Open files in" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otevírat soubory v"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir archivos en"
+          }
+        }
+      }
+    },
+    "Open in Browser" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otevřít v prohlížeči"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir en el navegador"
+          }
+        }
+      }
+    },
+    "Open php.ini" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otevřít php.ini"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir php.ini"
           }
         }
       }
@@ -6862,6 +6673,7 @@
       }
     },
     "PHP %@ · Laravel app" : {
+      "comment" : "{version}: PHP version",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -6910,6 +6722,7 @@
       }
     },
     "PHP extensions of %@" : {
+      "comment" : "{site}: the site",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -6921,22 +6734,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Extensiones de PHP de %@"
-          }
-        }
-      }
-    },
-    "php, composer and node in your terminal" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "php, composer a node v terminálu"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "php, composer y node en tu terminal"
           }
         }
       }
@@ -7025,6 +6822,7 @@
       }
     },
     "Pin Document Root (%@) to Project…" : {
+      "comment" : "{root}: the folder",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -7041,6 +6839,7 @@
       }
     },
     "Pin Node %@ to %@?" : {
+      "comment" : "{version}: version, {site}: the site",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -7057,6 +6856,7 @@
       }
     },
     "Pin Node %@ to Project…" : {
+      "comment" : "{version}: major version",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -7073,6 +6873,7 @@
       }
     },
     "Pin PHP %@ to %@?" : {
+      "comment" : "{version}: version, {site}: the site",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -7089,6 +6890,7 @@
       }
     },
     "Pin PHP %@ to Project…" : {
+      "comment" : "{version}: version",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -7105,6 +6907,7 @@
       }
     },
     "Pin the document root %@ to %@?" : {
+      "comment" : "{root}: the folder, {site}: the site",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -7153,6 +6956,7 @@
       }
     },
     "Port %@" : {
+      "comment" : "{port}: the port",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -7168,23 +6972,8 @@
         }
       }
     },
-    "port %@ (%@)" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "port %1$@ (%2$@)"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "el puerto %1$@ (%2$@)"
-          }
-        }
-      }
-    },
     "Port %@ is taken, so Flock suggests %@." : {
+      "comment" : "{0}: the usual port, {1}: the suggested port",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -7539,22 +7328,6 @@
         }
       }
     },
-    "psql, pg_dump and the other command-line tools come with PostgreSQL. In Terminal, Flock uses those of the newest installed version, which work with every version above and with remote servers." : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "psql, pg_dump a další nástroje příkazové řádky jsou součástí PostgreSQL. V Terminálu Flock používá ty z nejnovější nainstalované verze, které fungují se všemi verzemi výše i se vzdálenými servery."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "psql, pg_dump y las demás herramientas de línea de comandos vienen con PostgreSQL. En Terminal, Flock usa las de la versión instalada más reciente, que funcionan con todas las versiones de arriba y con servidores remotos."
-          }
-        }
-      }
-    },
     "QR code of %@" : {
       "localizations" : {
         "cs" : {
@@ -7588,6 +7361,7 @@
       }
     },
     "Quit %@" : {
+      "comment" : "{app}: the program to quit",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -7700,6 +7474,7 @@
       }
     },
     "Ready at %@" : {
+      "comment" : "{url}: the URL",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -7764,6 +7539,7 @@
       }
     },
     "Reinstall %@" : {
+      "comment" : "{version}: the version",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -7828,6 +7604,7 @@
       }
     },
     "Remove %@" : {
+      "comment" : "{domain}: what is removed",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -7844,6 +7621,7 @@
       }
     },
     "Remove %@ from project folders?" : {
+      "comment" : "{name}: the folder",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -7860,6 +7638,7 @@
       }
     },
     "Remove %@?" : {
+      "comment" : "{name}: what is removed",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -8052,6 +7831,7 @@
       }
     },
     "Required by %@" : {
+      "comment" : "{packages}: packages",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -8196,6 +7976,7 @@
       }
     },
     "Root" : {
+      "comment" : "The document root",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -8244,6 +8025,7 @@
       }
     },
     "Running FrankenPHP %@ with PHP %@" : {
+      "comment" : "{version}: FrankenPHP version, {php}: PHP version",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -8276,6 +8058,7 @@
       }
     },
     "Runs composer require ext-%@:* in %@, which changes composer.json and composer.lock. Commit them with the project." : {
+      "comment" : "{name}: the extension, {path}: the project folder",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -8355,6 +8138,22 @@
         }
       }
     },
+    "SMTP server" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server SMTP"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servidor SMTP"
+          }
+        }
+      }
+    },
     "Save" : {
       "localizations" : {
         "cs" : {
@@ -8404,6 +8203,7 @@
       }
     },
     "Search" : {
+      "comment" : "A service category from the daemon",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -8467,38 +8267,6 @@
         }
       }
     },
-    "see its log" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "viz jeho log"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "consulta su registro"
-          }
-        }
-      }
-    },
-    "see the log" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "viz log"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "consulta el registro"
-          }
-        }
-      }
-    },
     "Send dump() and dd() output, queries, logs, views and jobs to Flock instead of the page or terminal — no changes to your projects." : {
       "localizations" : {
         "cs" : {
@@ -8516,6 +8284,7 @@
       }
     },
     "Serve %@ over HTTPS?" : {
+      "comment" : "{site}: the site",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -8580,6 +8349,7 @@
       }
     },
     "Services" : {
+      "comment" : "The Settings pane",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -8591,22 +8361,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Servicios"
-          }
-        }
-      }
-    },
-    "Set a breakpoint in PhpStorm and listen for debug connections, use the Xdebug browser extension, or add `?XDEBUG_TRIGGER=1` to the URL. On the command line, run `flock debug artisan …`." : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nastavte breakpoint v PhpStormu a zapněte naslouchání ladicím připojením, použijte rozšíření prohlížeče pro Xdebug, nebo přidejte k URL `?XDEBUG_TRIGGER=1`. Na příkazové řádce spusťte `flock debug artisan …`."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pon un punto de interrupción en PhpStorm y escucha las conexiones de depuración, usa la extensión de Xdebug para el navegador o añade `?XDEBUG_TRIGGER=1` a la URL. En la línea de comandos, ejecuta `flock debug artisan …`."
           }
         }
       }
@@ -8643,22 +8397,6 @@
         }
       }
     },
-    "Set up" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Připraveno"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preparado"
-          }
-        }
-      }
-    },
     "Set Up Flock" : {
       "localizations" : {
         "cs" : {
@@ -8691,6 +8429,55 @@
         }
       }
     },
+    "Set a breakpoint in PhpStorm and listen for debug connections, use the Xdebug browser extension, or add `?XDEBUG_TRIGGER=1` to the URL. On the command line, run `flock debug artisan …`." : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nastavte breakpoint v PhpStormu a zapněte naslouchání ladicím připojením, použijte rozšíření prohlížeče pro Xdebug, nebo přidejte k URL `?XDEBUG_TRIGGER=1`. Na příkazové řádce spusťte `flock debug artisan …`."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pon un punto de interrupción en PhpStorm y escucha las conexiones de depuración, usa la extensión de Xdebug para el navegador o añade `?XDEBUG_TRIGGER=1` a la URL. En la línea de comandos, ejecuta `flock debug artisan …`."
+          }
+        }
+      }
+    },
+    "Set up" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Připraveno"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preparado"
+          }
+        }
+      }
+    },
+    "Setting Up %@" : {
+      "comment" : "{worktree}: the worktree",
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Připravuje se %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preparando %@"
+          }
+        }
+      }
+    },
     "Setting up" : {
       "localizations" : {
         "cs" : {
@@ -8707,23 +8494,8 @@
         }
       }
     },
-    "Setting Up %@" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Připravuje se %@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preparando %@"
-          }
-        }
-      }
-    },
     "Setting up %@ failed" : {
+      "comment" : "{worktree}: the worktree's branch",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -8820,6 +8592,7 @@
       }
     },
     "Setup failed: %@" : {
+      "comment" : "{error}: why",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -8852,6 +8625,7 @@
       }
     },
     "Share %@" : {
+      "comment" : "{site}: the site",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -8907,6 +8681,7 @@
       }
     },
     "Shared at %@" : {
+      "comment" : "{0}: the public URL",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -8982,6 +8757,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mostrar %@"
+          }
+        }
+      }
+    },
+    "Show Last Install Log" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zobrazit poslední log instalace"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar el último registro de instalación"
+          }
+        }
+      }
+    },
+    "Show Last Log" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zobrazit poslední log"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar el último registro"
+          }
+        }
+      }
+    },
+    "Show Log" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zobrazit log"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar registro"
           }
         }
       }
@@ -9071,12 +8894,6 @@
         "cs" : {
           "variations" : {
             "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Zobrazit jeho worktree"
-                }
-              },
               "few" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -9087,6 +8904,12 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "Zobrazit jeho %lld worktrees"
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Zobrazit jeho worktree"
                 }
               },
               "other" : {
@@ -9148,54 +8971,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mostrar su worktree"
-          }
-        }
-      }
-    },
-    "Show Last Install Log" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zobrazit poslední log instalace"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrar el último registro de instalación"
-          }
-        }
-      }
-    },
-    "Show Last Log" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zobrazit poslední log"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrar el último registro"
-          }
-        }
-      }
-    },
-    "Show Log" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zobrazit log"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrar registro"
           }
         }
       }
@@ -9345,6 +9120,7 @@
       }
     },
     "Sites use ports %@ (HTTP) and %@ (HTTPS), set in config.json, so their addresses include the port." : {
+      "comment" : "{http}: the HTTP port, {https}: the HTTPS port",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -9372,22 +9148,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Los sitios que añadiste uno a uno, más cada carpeta dentro de tus carpetas de proyectos."
-          }
-        }
-      }
-    },
-    "SMTP server" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server SMTP"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Servidor SMTP"
           }
         }
       }
@@ -9440,22 +9200,6 @@
         }
       }
     },
-    "Start a session" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Spuštění ladění"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Iniciar una sesión"
-          }
-        }
-      }
-    },
     "Start Capturing" : {
       "localizations" : {
         "cs" : {
@@ -9484,6 +9228,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Iniciar Flock"
+          }
+        }
+      }
+    },
+    "Start a session" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spuštění ladění"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar una sesión"
           }
         }
       }
@@ -9617,6 +9377,7 @@
       }
     },
     "Stop %@?" : {
+      "comment" : "{service}: the service",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -9628,22 +9389,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "¿Detener %@?"
-          }
-        }
-      }
-    },
-    "Stop capturing dumps, queries, logs, views and jobs" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zastavit zachytávání dumpů, dotazů, logů, views a jobů"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dejar de capturar dumps, consultas, registros, vistas y jobs"
           }
         }
       }
@@ -9664,6 +9409,22 @@
         }
       }
     },
+    "Stop capturing dumps, queries, logs, views and jobs" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zastavit zachytávání dumpů, dotazů, logů, views a jobů"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dejar de capturar dumps, consultas, registros, vistas y jobs"
+          }
+        }
+      }
+    },
     "Stopped" : {
       "localizations" : {
         "cs" : {
@@ -9676,22 +9437,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Detenido"
-          }
-        }
-      }
-    },
-    "stopped" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "zastaveno"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "detenido"
           }
         }
       }
@@ -9745,6 +9490,7 @@
       }
     },
     "Storage" : {
+      "comment" : "A service category from the daemon",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -9760,23 +9506,8 @@
         }
       }
     },
-    "storage/logs of %@ is empty." : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "storage/logs webu %@ je prázdné."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "storage/logs de %@ está vacío."
-          }
-        }
-      }
-    },
     "Subdomains only work when you add them here: %@." : {
+      "comment" : "{problem}: why wildcard DNS does not work (from the daemon)",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -9873,6 +9604,7 @@
       }
     },
     "Switching %@'s Database" : {
+      "comment" : "{worktree}: the worktree",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -9955,22 +9687,6 @@
     "TablePlus" : {
       "shouldTranslate" : false
     },
-    "tenant1, a.b or %@-2.%@" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "tenant1, a.b nebo %1$@-2.%2$@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "tenant1, a.b o %1$@-2.%2$@"
-          }
-        }
-      }
-    },
     "Terminals that were already open still have the old PATH." : {
       "localizations" : {
         "cs" : {
@@ -10003,7 +9719,40 @@
         }
       }
     },
+    "The Flock daemon runs your sites, PHP and services in the background." : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Démon Flocku provozuje na pozadí vaše weby, PHP a služby."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El daemon de Flock ejecuta en segundo plano tus sitios, PHP y los servicios."
+          }
+        }
+      }
+    },
+    "The Flock daemon serves your sites and services, and starts whenever you log in." : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Démon Flocku obsluhuje vaše weby a služby a spouští se po každém přihlášení."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El daemon de Flock sirve tus sitios y servicios, y se inicia cada vez que inicias sesión."
+          }
+        }
+      }
+    },
     "The branch %@ stays." : {
+      "comment" : "{branch}: the branch",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -10067,22 +9816,6 @@
         }
       }
     },
-    "the DNS server isn't running" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "DNS server neběží"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "el servidor DNS no está en ejecución"
-          }
-        }
-      }
-    },
     "The download failed." : {
       "localizations" : {
         "cs" : {
@@ -10095,38 +9828,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La descarga ha fallado."
-          }
-        }
-      }
-    },
-    "The Flock daemon runs your sites, PHP and services in the background." : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Démon Flocku provozuje na pozadí vaše weby, PHP a služby."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El daemon de Flock ejecuta en segundo plano tus sitios, PHP y los servicios."
-          }
-        }
-      }
-    },
-    "The Flock daemon serves your sites and services, and starts whenever you log in." : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Démon Flocku obsluhuje vaše weby a služby a spouští se po každém přihlášení."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El daemon de Flock sirve tus sitios y servicios, y se inicia cada vez que inicias sesión."
           }
         }
       }
@@ -10276,6 +9977,7 @@
       }
     },
     "The project sets %@ in .flockrc." : {
+      "comment" : "{0}: the folder",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -10324,6 +10026,7 @@
       }
     },
     "The site follows Flock's default %@ version." : {
+      "comment" : "{tool}: PHP or Node",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -10403,6 +10106,22 @@
         }
       }
     },
+    "This Flock daemon doesn't know %@. Update Flock, then try again." : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tento démon Flocku %@ nezná. Aktualizujte Flock a zkuste to znovu."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este daemon de Flock no conoce %@. Actualiza Flock y vuelve a intentarlo."
+          }
+        }
+      }
+    },
     "This build of Flock has no bundled CLI — run `flock install` in a terminal." : {
       "localizations" : {
         "cs" : {
@@ -10436,6 +10155,7 @@
       }
     },
     "This build was withdrawn: %@" : {
+      "comment" : "{0}: why (from the manifest)",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -10495,22 +10215,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Esta copia de la app no está en una carpeta Aplicaciones, así que se queda donde está; elimínala tú. Abre una terminal nueva: Flock ya no está en su PATH."
-          }
-        }
-      }
-    },
-    "This Flock daemon doesn't know %@. Update Flock, then try again." : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tento démon Flocku %@ nezná. Aktualizujte Flock a zkuste to znovu."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Este daemon de Flock no conoce %@. Actualiza Flock y vuelve a intentarlo."
           }
         }
       }
@@ -10659,38 +10363,6 @@
         }
       }
     },
-    "Uninstall and Delete" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Odinstalovat a smazat"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desinstalar y eliminar"
-          }
-        }
-      }
-    },
-    "Uninstall and Delete Data" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Odinstalovat a smazat data"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desinstalar y eliminar los datos"
-          }
-        }
-      }
-    },
     "Uninstall Flock?" : {
       "localizations" : {
         "cs" : {
@@ -10724,6 +10396,7 @@
       }
     },
     "Uninstall FrankenPHP for PHP %@?" : {
+      "comment" : "{version}: the PHP version",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -10803,6 +10476,38 @@
         }
       }
     },
+    "Uninstall and Delete" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Odinstalovat a smazat"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desinstalar y eliminar"
+          }
+        }
+      }
+    },
+    "Uninstall and Delete Data" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Odinstalovat a smazat data"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desinstalar y eliminar los datos"
+          }
+        }
+      }
+    },
     "Uninstall, Keep Data" : {
       "localizations" : {
         "cs" : {
@@ -10815,22 +10520,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Desinstalar y conservar los datos"
-          }
-        }
-      }
-    },
-    "Uninstalling didn't finish" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Odinstalace nebyla dokončena"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La desinstalación no ha terminado"
           }
         }
       }
@@ -10863,6 +10552,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Desinstalando PostgreSQL %@…"
+          }
+        }
+      }
+    },
+    "Uninstalling didn't finish" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Odinstalace nebyla dokončena"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La desinstalación no ha terminado"
           }
         }
       }
@@ -10932,6 +10637,7 @@
       }
     },
     "Unpin Node (%@)…" : {
+      "comment" : "{file}: the file",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -10948,6 +10654,7 @@
       }
     },
     "Unpin Node from %@?" : {
+      "comment" : "{site}: the site",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -10964,6 +10671,7 @@
       }
     },
     "Unpin PHP (%@)…" : {
+      "comment" : "{file}: the file",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -10980,6 +10688,7 @@
       }
     },
     "Unpin PHP from %@?" : {
+      "comment" : "{site}: the site",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -10996,6 +10705,7 @@
       }
     },
     "Unpin the document root from %@?" : {
+      "comment" : "{site}: the site",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -11007,38 +10717,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "¿Desfijar la carpeta raíz de %@?"
-          }
-        }
-      }
-    },
-    "up" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "běží"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "activo"
-          }
-        }
-      }
-    },
-    "up (restarted %lld×)" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "běží (restartováno %lld×)"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "activo (reiniciado %lld×)"
           }
         }
       }
@@ -11059,22 +10737,6 @@
         }
       }
     },
-    "up to date" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "aktuální"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "actualizado"
-          }
-        }
-      }
-    },
     "Update" : {
       "localizations" : {
         "cs" : {
@@ -11091,6 +10753,23 @@
         }
       }
     },
+    "Update Flock's guideline in %@?" : {
+      "comment" : "{site}: the site",
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktualizovat guideline Flocku v projektu %@?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Actualizar la directriz de Flock en %@?"
+          }
+        }
+      }
+    },
     "Update available" : {
       "localizations" : {
         "cs" : {
@@ -11103,22 +10782,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Actualización disponible"
-          }
-        }
-      }
-    },
-    "Update Flock's guideline in %@?" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aktualizovat guideline Flocku v projektu %@?"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¿Actualizar la directriz de Flock en %@?"
           }
         }
       }
@@ -11156,6 +10819,7 @@
       }
     },
     "Update to %@" : {
+      "comment" : "{version}: the version",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -11267,22 +10931,6 @@
         }
       }
     },
-    "Updating npm to %@…" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aktualizuje se npm na %@…"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Actualizando npm a %@…"
-          }
-        }
-      }
-    },
     "Updating PostgreSQL %@…" : {
       "localizations" : {
         "cs" : {
@@ -11295,6 +10943,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Actualizando PostgreSQL %@…"
+          }
+        }
+      }
+    },
+    "Updating npm to %@…" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktualizuje se npm na %@…"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizando npm a %@…"
           }
         }
       }
@@ -11316,6 +10980,7 @@
       }
     },
     "Upstream" : {
+      "comment" : "Where a proxy passes requests to",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -11332,6 +10997,7 @@
       }
     },
     "Use %@" : {
+      "comment" : "{file}: a file (.flockrc)",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -11444,6 +11110,7 @@
       }
     },
     "Version %@" : {
+      "comment" : "{0}: the version",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -11556,6 +11223,7 @@
       }
     },
     "Web" : {
+      "comment" : "The web server",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -11636,6 +11304,7 @@
       }
     },
     "Withdrawn: %@" : {
+      "comment" : "{reason}: why (from the manifest)",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -11652,6 +11321,7 @@
       }
     },
     "Withdrawn: %@ — update to replace it" : {
+      "comment" : "{reason}: why (from the manifest)",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -11679,22 +11349,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Trabaja en otra rama en su propia dirección, p. ej. feature.%@."
-          }
-        }
-      }
-    },
-    "worker mode" : {
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "režim workerů"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "modo worker"
           }
         }
       }
@@ -11847,6 +11501,7 @@
       }
     },
     "You'll find it in Settings → %@." : {
+      "comment" : "{pane}: the Settings pane",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -11927,6 +11582,7 @@
       }
     },
     "Your sites' settings and your PostgreSQL and Redis databases stay in %@, so reinstalling picks up where you left off — unless you also delete them:" : {
+      "comment" : "{0}: the data folder",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -11954,6 +11610,489 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tuya"
+          }
+        }
+      }
+    },
+    "a name like brave-otter" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "název jako brave-otter"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "un nombre como brave-otter"
+          }
+        }
+      }
+    },
+    "attachment" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "příloha"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "adjunto"
+          }
+        }
+      }
+    },
+    "colleague@acme.com, *@client.com" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kolega@acme.com, *@klient.cz"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "colega@acme.com, *@cliente.com"
+          }
+        }
+      }
+    },
+    "data kept" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "data zachována"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "datos conservados"
+          }
+        }
+      }
+    },
+    "dd() always shows in the page too, as it ends the request." : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dd() se vždy zobrazí i ve stránce, protože ukončí požadavek."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dd() siempre se muestra también en la página, porque termina la solicitud."
+          }
+        }
+      }
+    },
+    "dd() always shows in the page too, as it ends the request. PHP %@ only capture dumps: their builds have no agent extension yet." : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dd() se vždy zobrazí i ve stránce, protože ukončí požadavek. PHP %@ zachytávají jen dumpy: jejich buildy zatím nemají rozšíření agenta."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dd() siempre se muestra también en la página, porque termina la solicitud. PHP %@ solo capturan dumps: sus compilaciones aún no tienen la extensión del agente."
+          }
+        }
+      }
+    },
+    "dd() always shows in the page too, as it ends the request. PHP %@ only captures dumps: its build has no agent extension yet." : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dd() se vždy zobrazí i ve stránce, protože ukončí požadavek. PHP %@ zachytává jen dumpy: jeho build zatím nemá rozšíření agenta."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dd() siempre se muestra también en la página, porque termina la solicitud. PHP %@ solo captura dumps: su compilación aún no tiene la extensión del agente."
+          }
+        }
+      }
+    },
+    "down" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "nefunguje"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "caído"
+          }
+        }
+      }
+    },
+    "dump() and dd() output, queries, logs, views and jobs from your sites and artisan commands appear here." : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zde se zobrazí výstup dump() a dd(), dotazy, logy, views a joby z vašich webů a příkazů artisan."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aquí aparecen la salida de dump() y dd(), las consultas, registros, vistas y jobs de tus sitios y comandos artisan."
+          }
+        }
+      }
+    },
+    "has data" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "obsahuje data"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "tiene datos"
+          }
+        }
+      }
+    },
+    "macOS asks for your password in a moment, and then once more." : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "macOS si za chvilku vyžádá heslo a potom ještě jednou."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "macOS te pedirá la contraseña en un momento, y después una vez más."
+          }
+        }
+      }
+    },
+    "macOS asks for your password twice: once to resolve *.test through Flock (/etc/resolver), once to trust Flock's certificate." : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "macOS si dvakrát vyžádá heslo: jednou kvůli překladu *.test přes Flock (/etc/resolver), podruhé kvůli důvěře v certifikát Flocku."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "macOS te pide la contraseña dos veces: una para resolver *.test a través de Flock (/etc/resolver) y otra para confiar en el certificado de Flock."
+          }
+        }
+      }
+    },
+    "macOS sends every name under .%@ here (/etc/resolver/%@, set up by `flock install`), so any subdomain of a site works (tenant1.app.%@, a.b.app.%@) without adding it." : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "macOS sem posílá každé jméno pod .%1$@ (/etc/resolver/%2$@, nastavuje `flock install`), takže libovolná subdoména webu funguje (tenant1.app.%3$@, a.b.app.%4$@), aniž byste ji museli přidávat."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "macOS envía aquí cada nombre bajo .%1$@ (/etc/resolver/%2$@, lo configura `flock install`), así que cualquier subdominio de un sitio funciona (tenant1.app.%3$@, a.b.app.%4$@) sin añadirlo."
+          }
+        }
+      }
+    },
+    "new build available" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "k dispozici je nový build"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "nueva compilación disponible"
+          }
+        }
+      }
+    },
+    "node, npm and npx follow the project's .nvmrc / .node-version, then the site's version, then the default." : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "node, npm a npx se řídí souborem .nvmrc / .node-version projektu, pak verzí webu a nakonec výchozí verzí."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "node, npm y npx siguen el .nvmrc / .node-version del proyecto, después la versión del sitio y, por último, la predeterminada."
+          }
+        }
+      }
+    },
+    "not running" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "neběží"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "no está en ejecución"
+          }
+        }
+      }
+    },
+    "npm %@ available" : {
+      "comment" : "{0}: the version",
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "k dispozici npm %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "npm %@ disponible"
+          }
+        }
+      }
+    },
+    "php, composer and node in your terminal" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "php, composer a node v terminálu"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "php, composer y node en tu terminal"
+          }
+        }
+      }
+    },
+    "port %@ (%@)" : {
+      "comment" : "{port}: the port, {service}: what Flock needs it for (\"HTTP\")",
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "port %1$@ (%2$@)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "el puerto %1$@ (%2$@)"
+          }
+        }
+      }
+    },
+    "psql, pg_dump and the other command-line tools come with PostgreSQL. In Terminal, Flock uses those of the newest installed version, which work with every version above and with remote servers." : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "psql, pg_dump a další nástroje příkazové řádky jsou součástí PostgreSQL. V Terminálu Flock používá ty z nejnovější nainstalované verze, které fungují se všemi verzemi výše i se vzdálenými servery."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "psql, pg_dump y las demás herramientas de línea de comandos vienen con PostgreSQL. En Terminal, Flock usa las de la versión instalada más reciente, que funcionan con todas las versiones de arriba y con servidores remotos."
+          }
+        }
+      }
+    },
+    "see its log" : {
+      "comment" : "Instead of the error, when there is none",
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "viz jeho log"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "consulta su registro"
+          }
+        }
+      }
+    },
+    "see the log" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "viz log"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "consulta el registro"
+          }
+        }
+      }
+    },
+    "stopped" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "zastaveno"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "detenido"
+          }
+        }
+      }
+    },
+    "storage/logs of %@ is empty." : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "storage/logs webu %@ je prázdné."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "storage/logs de %@ está vacío."
+          }
+        }
+      }
+    },
+    "tenant1, a.b or %@-2.%@" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "tenant1, a.b nebo %1$@-2.%2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "tenant1, a.b o %1$@-2.%2$@"
+          }
+        }
+      }
+    },
+    "the DNS server isn't running" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DNS server neběží"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "el servidor DNS no está en ejecución"
+          }
+        }
+      }
+    },
+    "up" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "běží"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "activo"
+          }
+        }
+      }
+    },
+    "up (restarted %lld×)" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "běží (restartováno %lld×)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "activo (reiniciado %lld×)"
+          }
+        }
+      }
+    },
+    "up to date" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "aktuální"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "actualizado"
+          }
+        }
+      }
+    },
+    "worker mode" : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "režim workerů"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "modo worker"
           }
         }
       }

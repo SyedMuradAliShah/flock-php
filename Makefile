@@ -1,7 +1,7 @@
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 LDFLAGS := -s -w -X flock/internal/cli.Version=$(VERSION)
 
-.PHONY: build build-all test lint notices app dmg windows windows-test
+.PHONY: build build-all test lint notices i18n app dmg windows windows-test
 
 build:
 	go build -ldflags "$(LDFLAGS)" -o bin/flock ./cmd/flock
@@ -20,6 +20,10 @@ lint:
 # THIRD_PARTY_NOTICES, after changing dependencies (CI fails while it's out of date).
 notices:
 	go run ./tools/notices
+
+# The apps' translation files, from the catalogs in i18n/ (CI fails while they're out of date).
+i18n:
+	go run ./tools/i18n
 
 # build/macos/Flock.app (with the flock CLI inside) and build/macos/Flock.dmg.
 app:
