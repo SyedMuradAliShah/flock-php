@@ -423,10 +423,10 @@ private struct SiteRow: View {
                     Badge(text: "Shared", color: .green)
                         .help(site.share?.url ?? "")
                 }
-                if site.server == .frankenphp {
+                if !site.isNode, site.server == .frankenphp {
                     Badge(text: site.worker == .octane ? "Octane" : "FrankenPHP", color: .secondary)
                 }
-                Text("PHP \(site.php)")
+                Text(site.isNode ? "Node.js \(site.node ?? "")" : "PHP \(site.php)")
                     .font(.caption2.monospacedDigit())
                     .foregroundStyle(.secondary)
             }

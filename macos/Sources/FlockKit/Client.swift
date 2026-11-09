@@ -115,9 +115,15 @@ public actor FlockClient {
         try await decode(Status.self, "PATCH", "/v1/sites/\(escape(name))", body: try JSONEncoder().encode(change))
     }
 
-    /// Restarts a FrankenPHP site's process, e.g. so Octane's workers load changed code.
+    /// Restarts a FrankenPHP site's process, e.g. so Octane's workers load changed code, or a
+    /// Node.js site's dev server (starting it when it sleeps).
     public func restartSite(_ name: String) async throws -> Status {
         try await decode(Status.self, "POST", "/v1/sites/\(escape(name))/restart", timeout: Self.siteRestartTimeout)
+    }
+
+    /// Puts a Node.js site's dev server to sleep until the site's next request.
+    public func stopSite(_ name: String) async throws -> Status {
+        try await decode(Status.self, "POST", "/v1/sites/\(escape(name))/stop", timeout: Self.siteRestartTimeout)
     }
 
     public func unlinkSite(_ name: String) async throws -> Status {
@@ -134,6 +140,21 @@ public actor FlockClient {
     /// Serves a proxy over HTTPS (on) or plain HTTP.
     public func secureProxy(_ name: String, _ on: Bool) async throws -> Status {
         try await decode(Status.self, "PATCH", "/v1/proxies/\(escape(name))", body: try JSONEncoder().encode(["secured": on]))
+    }
+
+    /// Changes a proxy's settings, e.g. the command that starts its server.
+    public func updateProxy(_ name: String, _ change: ProxyChange) async throws -> Status {
+        try await decode(Status.self, "PATCH", "/v1/proxies/\(escape(name))", body: try JSONEncoder().encode(change), timeout: Self.siteRestartTimeout)
+    }
+
+    /// Runs a proxy's command, which starts its server.
+    public func startProxy(_ name: String) async throws -> Status {
+        try await decode(Status.self, "POST", "/v1/proxies/\(escape(name))/start")
+    }
+
+    /// Stops a proxy's server that Flock started; waits for it to exit.
+    public func stopProxy(_ name: String) async throws -> Status {
+        try await decode(Status.self, "POST", "/v1/proxies/\(escape(name))/stop", timeout: Self.siteRestartTimeout)
     }
 
     /// Stops serving a proxy.
@@ -549,6 +570,11 @@ public actor FlockClient {
     public func serviceLog(_ name: String, lines: Int = 300) async throws -> String {
         let data = try await send("GET", "/v1/logs/services/\(escape(name))", query: [URLQueryItem(name: "lines", value: String(lines))])
         return String(decoding: data, as: UTF8.self)
+    }
+
+    /// Empties a service's log, e.g. the output of a proxy's command.
+    public func clearServiceLog(_ name: String) async throws {
+        _ = try await send("DELETE", "/v1/logs/services/\(escape(name))")
     }
 
     public func siteLog(_ name: String, limit: Int = 200) async throws -> [LogEntry] {
