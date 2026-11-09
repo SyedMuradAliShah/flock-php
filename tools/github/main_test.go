@@ -138,7 +138,7 @@ func TestRunPullRequestEventClaimsApprovedIssue(t *testing.T) {
 		Number: 87, State: "open", BaseRef: "main", Body: "Fixes #73", Author: github_issue.User{Login: "contributor", Type: "User"},
 	}, linkedIssues: []github_pr.LinkedIssue{{Number: 73, MilestoneNumber: &milestone}}, calls: &calls}
 	issues := &pullRequestIssueFake{issue: &github_issue.Issue{Number: 73, State: "open", Labels: []github_issue.Label{{Name: "help wanted"}}}, calls: &calls}
-	if err := runPullRequestEvent(pullRequests, issues, issues, "flock-php", "flock", []byte(`{"action":"opened","pull_request":{"number":87,"user":{"login":"contributor"}}}`)); err != nil {
+	if err := runPullRequestEvent(newPullRequestEventDependencies(pullRequests, issues), "flock-php", "flock", []byte(`{"action":"opened","pull_request":{"number":87,"user":{"login":"contributor"}}}`)); err != nil {
 		t.Fatal(err)
 	}
 	if issues.assignee != "contributor" || !issues.removed {
@@ -156,7 +156,7 @@ func TestRunPullRequestEventSkipsCrossRepositoryAssignmentAndMilestoneTransfer(t
 		Number: 87, State: "open", BaseRef: "main", Body: "Fixes flock-php/binaries#73", Author: github_issue.User{Login: "contributor", Type: "User"},
 	}, calls: &calls}
 	issues := &pullRequestIssueFake{issue: &github_issue.Issue{Number: 73, State: "open", Labels: []github_issue.Label{{Name: "help wanted"}}}, calls: &calls}
-	if err := runPullRequestEvent(pullRequests, issues, issues, "flock-php", "flock", []byte(`{"action":"opened","pull_request":{"number":87,"user":{"login":"contributor"}}}`)); err != nil {
+	if err := runPullRequestEvent(newPullRequestEventDependencies(pullRequests, issues), "flock-php", "flock", []byte(`{"action":"opened","pull_request":{"number":87,"user":{"login":"contributor"}}}`)); err != nil {
 		t.Fatal(err)
 	}
 	want := []string{"pr:get", "issue:get"}
@@ -173,7 +173,7 @@ func TestRunPullRequestEventClosesIssueClaimedByAnotherContributor(t *testing.T)
 	issues := &pullRequestIssueFake{issue: &github_issue.Issue{
 		Number: 73, State: "open", Assignees: []github_issue.User{{Login: "other-contributor"}}, Labels: []github_issue.Label{{Name: "help wanted"}},
 	}, calls: &calls}
-	if err := runPullRequestEvent(pullRequests, issues, issues, "flock-php", "flock", []byte(`{"action":"opened","pull_request":{"number":87,"user":{"login":"contributor"}}}`)); err != nil {
+	if err := runPullRequestEvent(newPullRequestEventDependencies(pullRequests, issues), "flock-php", "flock", []byte(`{"action":"opened","pull_request":{"number":87,"user":{"login":"contributor"}}}`)); err != nil {
 		t.Fatal(err)
 	}
 	want := []string{"pr:get", "issue:get", "issue:get", "repository:role", "pr:get", "pr:create-comment", "pr:set-state"}
@@ -199,7 +199,7 @@ func TestRunPullRequestEventReevaluatesWhenIssueApprovalIsWithdrawn(t *testing.T
 		},
 		calls: &calls,
 	}
-	if err := runPullRequestEvent(pullRequests, issues, issues, "flock-php", "flock", []byte(`{"action":"edited","changes":{"body":{}},"pull_request":{"number":87,"user":{"login":"contributor"}}}`)); err != nil {
+	if err := runPullRequestEvent(newPullRequestEventDependencies(pullRequests, issues), "flock-php", "flock", []byte(`{"action":"edited","changes":{"body":{}},"pull_request":{"number":87,"user":{"login":"contributor"}}}`)); err != nil {
 		t.Fatal(err)
 	}
 	if !strings.Contains(pullRequests.comment, "Flock takes pull requests only for issues a maintainer has approved") {
@@ -231,7 +231,7 @@ func TestRunPullRequestEventProcessesReplacementApprovedIssue(t *testing.T) {
 		},
 		calls: &calls,
 	}
-	if err := runPullRequestEvent(pullRequests, issues, issues, "flock-php", "flock", []byte(`{"action":"opened","pull_request":{"number":87,"user":{"login":"contributor"}}}`)); err != nil {
+	if err := runPullRequestEvent(newPullRequestEventDependencies(pullRequests, issues), "flock-php", "flock", []byte(`{"action":"opened","pull_request":{"number":87,"user":{"login":"contributor"}}}`)); err != nil {
 		t.Fatal(err)
 	}
 	want := []string{
@@ -261,7 +261,7 @@ func TestRunPullRequestEventBoundsApprovalRetries(t *testing.T) {
 		},
 		calls: &calls,
 	}
-	err := runPullRequestEvent(pullRequests, issues, issues, "flock-php", "flock", []byte(`{"action":"opened","pull_request":{"number":87,"user":{"login":"contributor"}}}`))
+	err := runPullRequestEvent(newPullRequestEventDependencies(pullRequests, issues), "flock-php", "flock", []byte(`{"action":"opened","pull_request":{"number":87,"user":{"login":"contributor"}}}`))
 	if err == nil || !strings.Contains(err.Error(), "issue approval changed repeatedly") {
 		t.Fatalf("runPullRequestEvent() error = %v, want bounded-retry error", err)
 	}
@@ -283,7 +283,7 @@ func TestRunPullRequestEventStopsOnErrors(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := runPullRequestEvent(tt.pullRequests, tt.issues, tt.issues, "flock-php", "flock", []byte(tt.data)); err == nil {
+			if err := runPullRequestEvent(newPullRequestEventDependencies(tt.pullRequests, tt.issues), "flock-php", "flock", []byte(tt.data)); err == nil {
 				t.Fatal("runPullRequestEvent() returned nil error")
 			}
 		})
@@ -372,6 +372,16 @@ type pullRequestEventFake struct {
 	comment          string
 	gateClosed       bool
 	transferredIssue int
+}
+
+func newPullRequestEventDependencies(pullRequests *pullRequestEventFake, issues *pullRequestIssueFake) pullRequestEventDependencies {
+	return pullRequestEventDependencies{
+		PullRequestGate:       pullRequests,
+		PullRequestMilestones: pullRequests,
+		IssueReader:           issues,
+		IssueClaimer:          issues,
+		Repositories:          issues,
+	}
 }
 
 func (f *pullRequestEventFake) Get(string, string, int) (*github_pr.PullRequest, error) {

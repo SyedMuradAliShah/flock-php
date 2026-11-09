@@ -64,7 +64,11 @@ func Execute(pullRequests PullRequestGateService, issues IssueReader, owner, rep
 			if err != nil || !closedByGate {
 				return Result{}, err
 			}
-			if issue, approved := firstApprovedIssue(issues, owner, pr); approved {
+			issue, approved, err := firstApprovedIssue(issues, owner, pr)
+			if err != nil {
+				return Result{}, err
+			}
+			if approved {
 				if err := pullRequests.SetState(owner, repository, pr.Number, "open"); err != nil {
 					return Result{}, err
 				}
@@ -81,7 +85,11 @@ func Execute(pullRequests PullRequestGateService, issues IssueReader, owner, rep
 		if pr.BaseRef != "main" {
 			return Result{}, closePullRequest(pullRequests, owner, repository, pr, closeWrongBase)
 		}
-		if issue, approved := firstApprovedIssue(issues, owner, pr); approved {
+		issue, approved, err := firstApprovedIssue(issues, owner, pr)
+		if err != nil {
+			return Result{}, err
+		}
+		if approved {
 			return approvedResult(issue), nil
 		}
 		files, err := pullRequests.ListFiles(owner, repository, pr.Number)
@@ -124,14 +132,17 @@ func evaluate(files []github_pr.File) action {
 	return closeUnapproved
 }
 
-func firstApprovedIssue(issues IssueReader, owner string, pr *github_pr.PullRequest) (issue_reference.Reference, bool) {
+func firstApprovedIssue(issues IssueReader, owner string, pr *github_pr.PullRequest) (issue_reference.Reference, bool, error) {
 	for _, reference := range issue_reference.Parse(pr.Body, "flock") {
 		issue, err := issues.Get(owner, reference.Repository, reference.Number)
-		if err == nil && isApproved(issue, pr.Author.Login) {
-			return reference, true
+		if err != nil {
+			return issue_reference.Reference{}, false, err
+		}
+		if isApproved(issue, pr.Author.Login) {
+			return reference, true, nil
 		}
 	}
-	return issue_reference.Reference{}, false
+	return issue_reference.Reference{}, false, nil
 }
 
 func closePullRequest(pullRequests PullRequestGateService, owner, repository string, pr *github_pr.PullRequest, decision action) error {

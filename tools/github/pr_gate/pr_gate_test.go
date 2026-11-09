@@ -25,7 +25,7 @@ func TestRunReopensOnlyGateClosedPullRequests(t *testing.T) {
 				gateClosed:  tt.gateClosed,
 				issue:       approvedIssue(),
 			}
-			result, err := Execute(api, &fakeIssueService{api}, "flock-php", "flock", Event{Action: "edited", Number: 87, BodyEdited: true})
+			result, err := Execute(api, &fakeIssueService{api: api}, "flock-php", "flock", Event{Action: "edited", Number: 87, BodyEdited: true})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -47,7 +47,7 @@ func TestRunReopensOnlyGateClosedPullRequests(t *testing.T) {
 
 func TestRunClosesUnapprovedPullRequest(t *testing.T) {
 	api := &fakeService{pullRequest: pullRequest("open", "Fixes #73"), files: []github_pr.File{{Filename: "internal/site.go"}}, issue: &github_issue.Issue{State: "open"}}
-	if _, err := Execute(api, &fakeIssueService{api}, "flock-php", "flock", Event{Action: "synchronize", Number: 87}); err != nil {
+	if _, err := Execute(api, &fakeIssueService{api: api}, "flock-php", "flock", Event{Action: "synchronize", Number: 87}); err != nil {
 		t.Fatal(err)
 	}
 	if api.state != "closed" || !api.commented {
@@ -57,7 +57,7 @@ func TestRunClosesUnapprovedPullRequest(t *testing.T) {
 
 func TestRunDoesNotListFilesForApprovedIssue(t *testing.T) {
 	api := &fakeService{pullRequest: pullRequest("open", "Fixes #73"), issue: approvedIssue()}
-	result, err := Execute(api, &fakeIssueService{api}, "flock-php", "flock", Event{Action: "opened", Number: 87})
+	result, err := Execute(api, &fakeIssueService{api: api}, "flock-php", "flock", Event{Action: "opened", Number: 87})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -74,7 +74,7 @@ func TestRunAllowsDocsOnlyPullRequestsWithoutAnApprovedIssue(t *testing.T) {
 		pullRequest: pullRequest("open", ""),
 		files:       []github_pr.File{{Filename: "docs/contributing.md"}},
 	}
-	if _, err := Execute(api, &fakeIssueService{api}, "flock-php", "flock", Event{Action: "opened", Number: 87}); err != nil {
+	if _, err := Execute(api, &fakeIssueService{api: api}, "flock-php", "flock", Event{Action: "opened", Number: 87}); err != nil {
 		t.Fatal(err)
 	}
 	if api.filesCalls != 1 {
@@ -89,7 +89,7 @@ func TestRunBypassesMaintainersWithoutCheckingIssuesOrFiles(t *testing.T) {
 	pr := pullRequest("open", "")
 	pr.AuthorAssociation = "MEMBER"
 	api := &fakeService{pullRequest: pr}
-	if _, err := Execute(api, &fakeIssueService{api}, "flock-php", "flock", Event{Action: "opened", Number: 87}); err != nil {
+	if _, err := Execute(api, &fakeIssueService{api: api}, "flock-php", "flock", Event{Action: "opened", Number: 87}); err != nil {
 		t.Fatal(err)
 	}
 	if api.issueCalls != 0 || api.filesCalls != 0 {
@@ -101,7 +101,7 @@ func TestRunClosesWrongBaseWithCommentBeforeClosing(t *testing.T) {
 	api := &fakeService{pullRequest: &github_pr.PullRequest{
 		Number: 87, State: "open", BaseRef: "release", Author: github_issue.User{Login: "contributor", Type: "User"},
 	}}
-	if _, err := Execute(api, &fakeIssueService{api}, "flock-php", "flock", Event{Action: "opened", Number: 87}); err != nil {
+	if _, err := Execute(api, &fakeIssueService{api: api}, "flock-php", "flock", Event{Action: "opened", Number: 87}); err != nil {
 		t.Fatal(err)
 	}
 	want := []string{"pr:get", "pr:create-comment", "pr:set-state"}
@@ -112,7 +112,7 @@ func TestRunClosesWrongBaseWithCommentBeforeClosing(t *testing.T) {
 
 func TestRunRetriesNewUnapprovedPullRequestsBeforeClosing(t *testing.T) {
 	api := &fakeService{pullRequest: pullRequest("open", ""), files: []github_pr.File{{Filename: "internal/site.go"}}}
-	if _, err := Execute(api, &fakeIssueService{api}, "flock-php", "flock", Event{Action: "opened", Number: 87}); err != nil {
+	if _, err := Execute(api, &fakeIssueService{api: api}, "flock-php", "flock", Event{Action: "opened", Number: 87}); err != nil {
 		t.Fatal(err)
 	}
 	if api.getCalls != 3 {
@@ -137,7 +137,7 @@ func TestRunSkipsIneligibleClosedAndEditedPullRequests(t *testing.T) {
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			api := &fakeService{pullRequest: tt.pr}
-			if _, err := Execute(api, &fakeIssueService{api}, "flock-php", "flock", tt.event); err != nil {
+			if _, err := Execute(api, &fakeIssueService{api: api}, "flock-php", "flock", tt.event); err != nil {
 				t.Fatal(err)
 			}
 			if !reflect.DeepEqual(api.calls, []string{"pr:get"}) {
@@ -165,6 +165,17 @@ func TestRunReturnsPullRequestServiceErrors(t *testing.T) {
 				t.Fatal("Execute() returned nil error")
 			}
 		})
+	}
+}
+
+func TestRunReturnsIssueServiceErrors(t *testing.T) {
+	api := &fakeService{pullRequest: pullRequest("open", "Fixes #73")}
+	issues := &fakeIssueService{api: api, err: errors.New("issue")}
+	if _, err := Execute(api, issues, "flock-php", "flock", Event{Action: "synchronize", Number: 87}); err == nil {
+		t.Fatal("Execute() returned nil error")
+	}
+	if api.state != "" || api.commented {
+		t.Fatalf("state = %q, commented = %t; want no gate action", api.state, api.commented)
 	}
 }
 
@@ -211,12 +222,15 @@ func (f *fakeService) SetState(_ string, _ string, _ int, state string) error {
 	return f.stateErr
 }
 
-type fakeIssueService struct{ api *fakeService }
+type fakeIssueService struct {
+	api *fakeService
+	err error
+}
 
 func (f *fakeIssueService) Get(string, string, int) (*github_issue.Issue, error) {
 	f.api.issueCalls++
 	f.api.calls = append(f.api.calls, "issue:get")
-	return f.api.issue, nil
+	return f.api.issue, f.err
 }
 
 func pullRequest(state, body string) *github_pr.PullRequest {

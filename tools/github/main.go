@@ -44,7 +44,12 @@ func main() {
 
 	switch os.Args[1] {
 	case "pr":
-		err = runPullRequestEvent(github_pr.New(client), github_issue.New(client), github_repository.New(client), owner, repo, event)
+		service := PullRequestEventService{
+			PullRequests: github_pr.New(client),
+			Issues:       github_issue.New(client),
+			Repositories: github_repository.New(client),
+		}
+		err = service.Run(owner, repo, event)
 	case "issue":
 		err = runIssueEvent(github_issue.New(client), github_repository.New(client), owner, repo, event)
 	case "merge":
@@ -55,24 +60,39 @@ func main() {
 	}
 }
 
-type pullRequestEventPullRequestService interface {
-	pr_gate.PullRequestGateService
-	milestone_transfer.PullRequestMilestoneService
-}
-
-type pullRequestEventIssueService interface {
-	pr_assignment.IssueClaimer
-	pr_gate.IssueReader
-}
-
 const maxApprovalRetries = 3
 
-func runPullRequestEvent(pullRequests pullRequestEventPullRequestService, issues pullRequestEventIssueService, repositories pr_assignment.UserRoleReader, owner, repository string, data []byte) error {
+// PullRequestEventService coordinates contribution policies for pull request events.
+type PullRequestEventService struct {
+	PullRequests *github_pr.Service
+	Issues       *github_issue.Service
+	Repositories *github_repository.Service
+}
+
+func (s PullRequestEventService) Run(owner, repository string, data []byte) error {
+	return runPullRequestEvent(pullRequestEventDependencies{
+		PullRequestGate:       s.PullRequests,
+		PullRequestMilestones: s.PullRequests,
+		IssueReader:           s.Issues,
+		IssueClaimer:          s.Issues,
+		Repositories:          s.Repositories,
+	}, owner, repository, data)
+}
+
+type pullRequestEventDependencies struct {
+	PullRequestGate       pr_gate.PullRequestGateService
+	PullRequestMilestones milestone_transfer.PullRequestMilestoneService
+	IssueReader           pr_gate.IssueReader
+	IssueClaimer          pr_assignment.IssueClaimer
+	Repositories          pr_assignment.UserRoleReader
+}
+
+func runPullRequestEvent(dependencies pullRequestEventDependencies, owner, repository string, data []byte) error {
 	event, err := github_pr.ParseEvent(data)
 	if err != nil {
 		return err
 	}
-	result, err := pr_gate.Execute(pullRequests, issues, owner, repository, pr_gate.Event{
+	result, err := pr_gate.Execute(dependencies.PullRequestGate, dependencies.IssueReader, owner, repository, pr_gate.Event{
 		Action: event.Action, Number: event.Number, BodyEdited: event.BodyEdited, BaseEdited: event.BaseEdited,
 	})
 	if err != nil {
@@ -81,7 +101,7 @@ func runPullRequestEvent(pullRequests pullRequestEventPullRequestService, issues
 	for retries := 0; result.ApprovedIssue != nil; {
 		approvedIssue := *result.ApprovedIssue
 		if approvedIssue.Repository == repository {
-			assignment, err := pr_assignment.Execute(issues, repositories, owner, approvedIssue, event.Author)
+			assignment, err := pr_assignment.Execute(dependencies.IssueClaimer, dependencies.Repositories, owner, approvedIssue, event.Author)
 			if err != nil {
 				return err
 			}
@@ -90,7 +110,7 @@ func runPullRequestEvent(pullRequests pullRequestEventPullRequestService, issues
 					return fmt.Errorf("issue approval changed repeatedly while processing pull request #%d", event.Number)
 				}
 				retries++
-				result, err = pr_gate.Execute(pullRequests, issues, owner, repository, pr_gate.Event{
+				result, err = pr_gate.Execute(dependencies.PullRequestGate, dependencies.IssueReader, owner, repository, pr_gate.Event{
 					Action: "synchronize", Number: event.Number,
 				})
 				if err != nil {
@@ -99,10 +119,10 @@ func runPullRequestEvent(pullRequests pullRequestEventPullRequestService, issues
 				continue
 			}
 			if assignment.ClaimedBy != "" {
-				return pr_gate.CloseClaimedIssue(pullRequests, owner, repository, event.Number, approvedIssue, assignment.ClaimedBy)
+				return pr_gate.CloseClaimedIssue(dependencies.PullRequestGate, owner, repository, event.Number, approvedIssue, assignment.ClaimedBy)
 			}
 		}
-		return milestone_transfer.Execute(pullRequests, owner, repository, event.Number, approvedIssue)
+		return milestone_transfer.Execute(dependencies.PullRequestMilestones, owner, repository, event.Number, approvedIssue)
 	}
 	return nil
 }
