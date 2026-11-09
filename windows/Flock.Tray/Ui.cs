@@ -251,6 +251,21 @@ internal static class Ui
         VerticalAlignment = VerticalAlignment.Center,
     };
 
+    /// <summary>A server's state: green running, amber on its way, red failed, gray stopped.</summary>
+    public static Ellipse StateDot(Tone tone) => new()
+    {
+        Width = 8,
+        Height = 8,
+        Fill = tone switch
+        {
+            Tone.Success => Success,
+            Tone.Caution => Caution,
+            Tone.Critical => Critical,
+            _ => Brush("ControlStrongFillColorDisabledBrush"),
+        },
+        VerticalAlignment = VerticalAlignment.Center,
+    };
+
     public enum Tone { Accent, Neutral, Caution, Critical, Success }
 
     /// <summary>A small capsule label such as "Default".</summary>
