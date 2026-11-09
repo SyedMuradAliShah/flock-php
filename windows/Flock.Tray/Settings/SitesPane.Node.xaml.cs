@@ -70,7 +70,7 @@ internal sealed partial class SitesPane
             buttons.Children.Add(Ui.Button("Restart", () => Start(site.Name, () => Restart(site.Name))));
         }
         section.Children.Add(buttons);
-        section.Children.Add(Output(server.Log, server.State is Status.NodeServerState.Starting or Status.NodeServerState.Running));
+        Output(section, server.Log, server.State is Status.NodeServerState.Starting or Status.NodeServerState.Running);
         section.Children.Add(Ui.Caption(
             "Flock runs the project's dev script with its Node.js version when the site is visited, and stops it after 30 minutes without visits.",
             Ui.TertiaryText));
@@ -116,8 +116,8 @@ internal sealed partial class SitesPane
         }
         buttons.Children.Add(Ui.Button("Change…", () => Start(proxy.Name, () => ChangeCommandAsync(proxy))));
         section.Children.Add(buttons);
-        section.Children.Add(Output(command.Log,
-            command.State is Status.ProxyState.Starting or Status.ProxyState.Running or Status.ProxyState.Stopping));
+        Output(section, command.Log,
+            command.State is Status.ProxyState.Starting or Status.ProxyState.Running or Status.ProxyState.Stopping);
         section.Children.Add(Ui.Caption(CommandHelp, Ui.TertiaryText));
         return section;
     }
@@ -133,12 +133,12 @@ internal sealed partial class SitesPane
         return line;
     }
 
-    /// <summary>The output panel for log, read every second while live; one panel moves between the details.</summary>
-    private StackPanel Output(string log, bool live)
+    /// <summary>Puts the output panel for log into section, read every second while live; one panel moves between the details.</summary>
+    private void Output(Panel section, string log, bool live)
     {
         outputShown = true;
         output ??= new OutputPanel(Model.Sites);
-        return output.Show(log, live && active);
+        output.ShowIn(section, log, live && active);
     }
 
     /// <summary>Asks for a proxy's command, its folder and its stop command; an empty command removes them.</summary>

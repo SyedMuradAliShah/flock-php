@@ -53,16 +53,19 @@ internal sealed class OutputPanel
 
     public StackPanel Root { get; }
 
+    // The panel Root was put in last. Root.Parent can't be relied on to find it, and WinUI refuses
+    // (0x800F1000) an element that is still another panel's child.
+    private Panel? owner;
+
     /// <summary>
-    ///     The panel for logName, detached from the detail it was in: it reads the log now, and every
-    ///     second while live (the server starts or runs).
+    ///     Moves the panel for logName into the panel into (out of the detail it was in), and reads
+    ///     the log now, and every second while live (the server starts or runs).
     /// </summary>
-    public StackPanel Show(string logName, bool isLive)
+    public void ShowIn(Panel into, string logName, bool isLive)
     {
-        if (Root.Parent is Panel parent)
-        {
-            parent.Children.Remove(Root);
-        }
+        owner?.Children.Remove(Root);
+        into.Children.Add(Root);
+        owner = into;
         var changed = logName != log;
         log = logName;
         if (changed)
@@ -74,7 +77,6 @@ internal sealed class OutputPanel
             live = isLive;
             Restart();
         }
-        return Root;
     }
 
     /// <summary>Stops reading, while the pane is hidden or shows something without output.</summary>
