@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="design/logo/flock-app-icon.svg" alt="Flock" width="96" height="96">
+  <img src="design/logo/flock-app-icon.svg" alt="Flock app icon" width="96" height="96">
 </p>
 
 <h1 align="center">Flock</h1>
@@ -13,7 +13,8 @@
 <p align="center">
   <a href="https://flockphp.com">Website</a> ·
   <a href="https://flockphp.com/docs/quick-start">Documentation</a> ·
-  <a href="https://flockphp.com/download">Download</a>
+  <a href="https://flockphp.com/download">Download</a> ·
+  <a href="https://flockphp.com/compare">Compare</a>
 </p>
 
 <p align="center">
@@ -22,23 +23,21 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-blue?style=flat-square" alt="License: AGPL-3.0"></a>
 </p>
 
+**Flock is a free, open-source local development environment for PHP and Laravel on macOS, Windows and Linux.** It runs PHP, Node.js, your databases and the web server as native processes, so there's no Docker and no virtual machine. You drive it from a menu bar app on macOS, a tray app on Windows, a window with a top bar icon on Linux, or the `flock` command line. There's no paid tier and no account.
+
 https://github.com/user-attachments/assets/ac36d8eb-2522-4ad7-851b-052e74e759e7
-
-Flock runs PHP, Node.js, your databases and the web server as native processes, from a menu bar app on macOS, a tray app on Windows and a window with a top bar icon on Linux, or from the `flock` command line. It's free and open source, with no paid tier and no account.
-
-## Documentation
-
-The full documentation is at [flockphp.com/docs](https://flockphp.com/docs/quick-start). Start with the [Quick start](https://flockphp.com/docs/quick-start).
 
 ## Features
 
-- **.test domains with real HTTPS.** Park a folder, or link one project, and every app gets its own `.test` domain, subdomains included. HTTPS works without browser warnings.
-- **A PHP version per project.** PHP 8.1 to 8.5 run side by side, and each project picks its own. Node.js too.
-- **Databases in one click.** PostgreSQL, MySQL, MariaDB, MongoDB, Valkey, Meilisearch and RustFS (plus Typesense on macOS and Linux, and Redis on macOS) run as native processes that start with your computer.
-- **Every email, caught.** Mail your apps send lands in a local inbox, one per app, and never reaches real people.
-- **`dump()` without the mess.** `dump()` and `dd()` output, queries, logs and views show up in a timeline grouped by request, with links to your editor. No code changes needed.
-- **Step debugging, only when you need it.** Xdebug slows every request, so it stays off until you turn it on.
-- **Made for AI agents.** A built-in MCP server lets coding agents read your sites, mail, dumps and errors.
+- **.test domains with real HTTPS.** Park a folder, or link one project, and every app gets its own `.test` domain, subdomains included. HTTPS works without browser warnings. See [Domains](https://flockphp.com/docs/domains) and [HTTPS](https://flockphp.com/docs/https).
+- **A PHP version per project.** PHP 8.1 to 8.5 run side by side, and each project picks its own. Node.js too, from `.nvmrc`. See [PHP](https://flockphp.com/docs/php) and [Node.js](https://flockphp.com/docs/node).
+- **Databases in one click.** PostgreSQL, MySQL, MariaDB, MongoDB, Valkey, Meilisearch and RustFS (plus Typesense on macOS and Linux, and Redis on macOS) run as native processes that start with your computer. See [Services](https://flockphp.com/docs/services).
+- **Every email, caught.** Mail your apps send lands in a local inbox, one per app, and never reaches real people. See [Mail](https://flockphp.com/docs/mail).
+- **`dump()` without the mess.** `dump()` and `dd()` output, queries, logs and views show up in a timeline grouped by request, with links to your editor. No code changes needed. See [Dumps](https://flockphp.com/docs/dumps).
+- **Step debugging, only when you need it.** Xdebug slows every request, so it stays off until you turn it on. See [Xdebug](https://flockphp.com/docs/xdebug).
+- **Git worktrees, served on their own.** Each worktree gets its own domain and is set up automatically, database included. See [Worktrees](https://flockphp.com/docs/worktrees).
+- **Share a site in one command.** Send a public link to a local site through a Cloudflare tunnel. See [Sharing](https://flockphp.com/docs/sharing).
+- **Made for AI agents.** A built-in MCP server lets coding agents like Claude Code and Cursor read your sites, mail, dumps and errors. See [AI](https://flockphp.com/docs/ai).
 
 Flock works with any PHP project, not only Laravel.
 
@@ -105,7 +104,30 @@ flock services install postgres
 flock services create-db postgres acme
 ```
 
-Then open [https://acme.test](https://acme.test). The [Quick start](https://flockphp.com/docs/quick-start) goes through it step by step, including the `.env` settings for the database and mail.
+Then open [https://acme.test](https://acme.test). The [Quick start](https://flockphp.com/docs/quick-start) goes through it step by step, including the `.env` settings for the database and mail. Every command is listed in the [CLI reference](https://flockphp.com/docs/cli).
+
+## How Flock compares
+
+Flock covers the same ground as Laravel Herd, Laragon and XAMPP, but it's free on every system, runs natively on macOS, Windows and Linux, and includes mail, dumps and Xdebug without a paid tier. The comparison pages go through it feature by feature:
+
+- [Flock vs Laravel Herd](https://flockphp.com/vs/laravel-herd)
+- [Flock vs Laragon](https://flockphp.com/vs/laragon)
+- [Flock vs XAMPP](https://flockphp.com/vs/xampp)
+- [Flock vs ServBay](https://flockphp.com/vs/servbay), [FlyEnv](https://flockphp.com/vs/flyenv), [Local](https://flockphp.com/vs/localwp) and [AppServ](https://flockphp.com/vs/appserv)
+
+## FAQ
+
+**Is Flock free?**
+Yes. Flock is free and open source under the AGPL-3.0. There's no paid tier and no account.
+
+**Does Flock use Docker?**
+No. PHP, Node.js, the databases and the web server run as native processes on your machine, with no containers and no virtual machine.
+
+**Does Flock only work with Laravel?**
+No. It's built with Laravel in mind, but any PHP project works: WordPress, Symfony, Statamic or plain PHP.
+
+**Can I switch from Herd, Valet or Laragon?**
+Yes. Stop the other environment so ports 80 and 443 are free, then install Flock and park your projects folder. See [Installation](https://flockphp.com/docs/installation).
 
 ## Building from source
 
