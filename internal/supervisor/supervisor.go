@@ -27,6 +27,12 @@ type Spec struct {
 	LogFile    string    // stdout+stderr are appended here
 	StopSignal os.Signal // graceful stop signal; ignored on Windows (see Stop)
 
+	// Tree stops the process's whole tree with it, for launchers (sh, npm) whose children do the
+	// work and hold the port: on unix its process group gets StopSignal, on Windows the job object
+	// it runs in is terminated. What's left of the tree after it exits is stopped too, so a restart
+	// finds the port free.
+	Tree bool
+
 	// Stop, when set, asks the process to exit instead of StopSignal, for processes signals can't
 	// reach (Windows). It returns once the request is made; the supervisor then waits for the exit
 	// as usual. When it fails, the process gets StopSignal (unix) or is killed (Windows).
@@ -186,6 +192,9 @@ func (p *proc) once() error {
 	cmd.Stdout = log
 	cmd.Stderr = log
 	configure(cmd)
+	if p.spec.Tree {
+		suspend(cmd)
+	}
 
 	fmt.Fprintf(log, "\n[flock] %s starting %s\n", time.Now().Format(time.RFC3339), p.spec.Name)
 	if err := cmd.Start(); err != nil {
@@ -193,6 +202,17 @@ func (p *proc) once() error {
 		return err
 	}
 	started(cmd)
+
+	var t *tree
+	if p.spec.Tree {
+		var err error
+		if t, err = newTree(cmd); err != nil {
+			fmt.Fprintf(log, "[flock] the child processes of %s can't be tracked: %v\n", p.spec.Name, err)
+			t = nil
+		} else {
+			defer t.close()
+		}
+	}
 
 	exited := make(chan error, 1)
 	go func() { exited <- cmd.Wait() }()
@@ -204,22 +224,33 @@ func (p *proc) once() error {
 	select {
 	case err := <-exited:
 		fmt.Fprintf(log, "[flock] %s exited: %v\n", p.spec.Name, err)
+		if t != nil && !t.empty() {
+			t.signal(p.spec.StopSignal)
+			settle(t)
+		}
 		return err
 	case <-p.stop:
-		p.terminate(cmd, log)
+		p.terminate(cmd, t, log)
 		select {
 		case <-exited:
 		case <-time.After(10 * time.Second):
+			if t != nil {
+				t.kill()
+			}
 			_ = cmd.Process.Kill()
 			<-exited
+		}
+		if t != nil {
+			settle(t)
 		}
 		fmt.Fprintf(log, "[flock] %s stopped\n", p.spec.Name)
 		return errStopped
 	}
 }
 
-// terminate asks cmd to exit: through Spec.Stop when set, falling back to the platform's way.
-func (p *proc) terminate(cmd *exec.Cmd, log io.Writer) {
+// terminate asks cmd to exit: through Spec.Stop when set, falling back to the platform's way
+// (for its whole tree when it has one).
+func (p *proc) terminate(cmd *exec.Cmd, t *tree, log io.Writer) {
 	if p.spec.Stop != nil {
 		err := p.spec.Stop()
 		if err == nil {
@@ -227,7 +258,26 @@ func (p *proc) terminate(cmd *exec.Cmd, log io.Writer) {
 		}
 		fmt.Fprintf(log, "[flock] graceful stop of %s failed: %v\n", p.spec.Name, err)
 	}
+	if t != nil {
+		t.signal(p.spec.StopSignal)
+		return
+	}
 	terminate(cmd, p.spec.StopSignal)
+}
+
+// treeGrace is how long the rest of a tree gets to exit after its root did, before it's killed.
+const treeGrace = 5 * time.Second
+
+// settle waits for the rest of a stopping tree to exit, and kills what's left after treeGrace.
+func settle(t *tree) {
+	deadline := time.Now().Add(treeGrace)
+	for !t.empty() {
+		if time.Now().After(deadline) {
+			t.kill()
+			return
+		}
+		time.Sleep(50 * time.Millisecond)
+	}
 }
 
 // lastLine returns the last meaningful line the process logged (Flock's own markers skipped),
