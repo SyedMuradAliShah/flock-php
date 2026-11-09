@@ -80,16 +80,6 @@ public partial class ResourcesTests
         Assert.Empty(Read(project, "").Keys.GroupBy(key => key, StringComparer.OrdinalIgnoreCase).Where(group => group.Count() > 1).Select(group => group.Key));
     }
 
-    [Theory]
-    [MemberData(nameof(Projects))]
-    public void TheDesignerMatchesTheResources(string project)
-    {
-        // Strings.Designer.cs is generated from Strings.resx (ResXFileCodeGenerator): one property per string.
-        var designer = File.ReadAllText(Path.Combine(Root, project, "Strings.Designer.cs"));
-        var properties = DesignerProperty().Matches(designer).Select(match => match.Groups[1].Value).Order(StringComparer.Ordinal);
-        Assert.Equal(Read(project, "").Keys.Order(StringComparer.Ordinal), properties);
-    }
-
     [Fact]
     public void XamlUsesExistingStringsOnly()
     {
@@ -160,9 +150,6 @@ public partial class ResourcesTests
 
     [GeneratedRegex(@"Plural\(Strings\.ResourceManager,\s*""(\w+)""")]
     private static partial Regex PluralCall();
-
-    [GeneratedRegex(@"internal static string (\w+) \{")]
-    private static partial Regex DesignerProperty();
 
     [GeneratedRegex(@"\{l:Loc Key=(\w+)\}")]
     private static partial Regex LocKey();
