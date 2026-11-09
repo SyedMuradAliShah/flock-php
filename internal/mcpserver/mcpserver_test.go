@@ -507,6 +507,7 @@ func TestUpdateSiteActions(t *testing.T) {
 		{map[string]any{"action": "pin", "tool": "php"}, `pin ["shop","php",""]`},
 		{map[string]any{"action": "unsecure"}, `update ["shop",{"secured":false}]`},
 		{map[string]any{"action": "set_server", "server": "frankenphp", "worker": "octane"}, `update ["shop",{"server":"frankenphp","worker":"octane"}]`},
+		{map[string]any{"action": "set_type", "type": "node"}, `update ["shop",{"type":"node"}]`},
 		{map[string]any{"action": "add_domain", "domain": "tenant2"}, `domain ["shop","tenant2"]`},
 		{map[string]any{"action": "restart", "site": "shop.test"}, `restart ["shop"]`},
 	} {

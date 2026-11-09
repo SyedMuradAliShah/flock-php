@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -101,6 +102,7 @@ type daemon struct {
 	proxies  []api.ProxyStatus
 	probe    serverProbe // what answers at the proxies' upstreams
 	runs     proxyRuns   // the proxies' commands Flock started (see StartProxy)
+	node     nodeRuns    // the Node.js sites' dev servers (see wakeNode)
 	warnings []string
 	problems map[string]string // why an installed catalog service isn't running, by id
 	// breakpoints finds PhpStorm breakpoints; breakpointSites is what the last reload found, by site path.
@@ -653,6 +655,12 @@ func (d *daemon) reload() error {
 
 	sites := cfg.AllSites()
 	extras := cfg.DomainsBySite(sites)
+	// The Node.js sites' dev servers and ports; takenPorts are Flock's own and those given out.
+	nodeSpecs, nodePorts := map[string]supervisor.Spec{}, map[string]int{}
+	takenPorts := map[int]bool{}
+	for port := range cfg.UsedPorts("") {
+		takenPorts[port] = true
+	}
 	for _, site := range sites {
 		domain := cfg.Domain(site)
 		phpVersion, nodeVersion := project.PHPFor(cfg, &site, site.Path), project.NodeFor(cfg, &site, site.Path)
@@ -683,6 +691,32 @@ func (d *daemon) reload() error {
 				}
 			}
 			status.Domains = append(status.Domains, sd)
+		}
+
+		status.Type = site.Kind()
+		if site.Kind() == config.TypeNode {
+			// Served by its dev server, which the first request starts (see wakeNode).
+			port := d.nodePort(site.Name, takenPorts)
+			takenPorts[port] = true
+			spec := d.nodeSpec(cfg, site, port, aliases)
+			nodeSpecs[site.Name], nodePorts[site.Name] = spec, port
+			status.Server, status.Worker, status.OctaneAvailable, status.PHP = "", "", false, ""
+			status.NodeServer = &api.SiteNodeServer{State: api.NodeSleeping, Port: port, Command: spec.Shell, Log: spec.Name, Problem: nodeSiteProblem(site)}
+			if d.node.isAwake(site.Name) && !runningAsRoot() {
+				d.procs.Ensure(spec)
+				keep[spec.Name] = true
+			}
+			ws := web.Site{Domain: domain, Aliases: aliases, Proxy: "localhost:" + strconv.Itoa(port), Node: site.Name}
+			if site.Secured {
+				if ws.CertFile, ws.KeyFile, err = ca.SiteCert(domain); err != nil {
+					return fmt.Errorf("certificate for %s: %w", domain, err)
+				}
+			}
+			status.URL = scheme + "://" + domain + portSuffix(scheme, cfg)
+			webSites = append(webSites, ws)
+			domains = append(append(domains, domain), served...)
+			statuses = append(statuses, status)
+			continue
 		}
 
 		root := project.RootFor(&site)
@@ -774,6 +808,8 @@ func (d *daemon) reload() error {
 		domains = append(append(domains, domain), served...)
 		statuses = append(statuses, status)
 	}
+
+	d.node.keep(nodeSpecs, nodePorts)
 
 	// Proxied names pass every request to their own server. A site's name wins over a proxy's: they
 	// can only clash through a parked directory or a config edited by hand.
@@ -972,6 +1008,7 @@ func (d *daemon) applyWeb(cfg *config.Config, bind string, sites []web.Site, wai
 		Shares:     shares,
 		TLD:        cfg.TLD,
 		Issue:      func(name string) (*tls.Certificate, error) { return d.leaves.Get(ca, name) },
+		Wake:       d.wakeNode,
 	})
 	if err != nil {
 		return err
@@ -1104,6 +1141,7 @@ func (d *daemon) Status() api.Status {
 		Processes: d.procs.Status(),
 		Warnings:  d.warnings,
 	}
+	d.liveNodeSites(st.Sites)
 	if d.mail != nil {
 		st.Mail = d.mail.Addr()
 	}

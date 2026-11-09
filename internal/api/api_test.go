@@ -647,6 +647,29 @@ func TestProxyCommandEndpoints(t *testing.T) {
 	}
 }
 
+func TestSwitchingASitesType(t *testing.T) {
+	b := &fakeBackend{root: t.TempDir()}
+	cfg := config.Default()
+	cfg.Upsert(config.Site{Name: "app", Path: t.TempDir()})
+	if err := cfg.Save(b.root); err != nil {
+		t.Fatal(err)
+	}
+	srv := serve(t, b, "")
+
+	if resp, body := call(t, "PATCH", srv.URL+"/v1/sites/app", "", `{"type":"node"}`); resp.StatusCode != http.StatusOK {
+		t.Fatalf("to node: %d %s", resp.StatusCode, body)
+	}
+	if s, _ := b.config(t).FindSite("app"); s.Type != config.TypeNode {
+		t.Fatalf("type: %q", s.Type)
+	}
+	if resp, _ := call(t, "PATCH", srv.URL+"/v1/sites/app", "", `{"server":"frankenphp"}`); resp.StatusCode != http.StatusBadRequest {
+		t.Errorf("a Node.js site got a PHP server: %d", resp.StatusCode)
+	}
+	if resp, _ := call(t, "PATCH", srv.URL+"/v1/sites/app", "", `{"type":"ruby"}`); resp.StatusCode != http.StatusBadRequest {
+		t.Errorf("an unknown type was taken: %d", resp.StatusCode)
+	}
+}
+
 func TestClearingAServiceLog(t *testing.T) {
 	b := &fakeBackend{root: t.TempDir()}
 	srv := serve(t, b, "")

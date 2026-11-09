@@ -31,6 +31,9 @@ func (d *daemon) StartShare(name string, allow []string, debug bool) error {
 	if !ok {
 		return fmt.Errorf("no site named %s", name)
 	}
+	if site.Kind() == config.TypeNode {
+		return fmt.Errorf("%s is a Node.js app, which can't be shared yet", name)
+	}
 	for _, s := range sites {
 		if s.Name == name && s.URL == "" {
 			return fmt.Errorf("%s isn't served: %s", name, s.Problem)

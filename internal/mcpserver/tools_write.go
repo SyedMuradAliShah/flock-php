@@ -88,10 +88,12 @@ func (s *server) addWriteTools(srv *mcp.Server) {
 			"working on the project gets it); pin without a version pins the one the site uses now.\n" +
 			"- add_domain (domain): an extra domain, a subdomain (\"tenant1\" → tenant1.<site>.test) or an alias (\"my-app-2.test\").\n" +
 			"- set_server (server, worker): run PHP through FastCGI (PHP-FPM) or FrankenPHP, optionally in Octane's worker mode.\n" +
-			"- restart: restart a FrankenPHP site's process, e.g. so Octane workers load changed code.",
+			"- set_type (type): serve it as a php site or as a node app, whose dev server (npm run dev) Flock starts on the first visit.\n" +
+			"- restart: restart a FrankenPHP site's process, e.g. so Octane workers load changed code, or a Node.js app's dev server.",
 		Annotations: additive(false),
 		InputSchema: schema[updateSiteIn](map[string][]any{
-			"action": {"secure", "unsecure", "isolate", "unisolate", "pin", "unpin", "add_domain", "set_server", "restart"},
+			"action": {"secure", "unsecure", "isolate", "unisolate", "pin", "unpin", "add_domain", "set_server", "set_type", "restart"},
+			"type":   {"php", "node"},
 			"tool":   {"php", "node"},
 			"server": {"fastcgi", "frankenphp"},
 			"worker": {"classic", "octane"},
@@ -743,6 +745,7 @@ type updateSiteIn struct {
 	Domain  string `json:"domain,omitempty" jsonschema:"add_domain: a subdomain (tenant1) or an alias (my-app-2.test)"`
 	Server  string `json:"server,omitempty" jsonschema:"set_server: fastcgi or frankenphp"`
 	Worker  string `json:"worker,omitempty" jsonschema:"set_server with frankenphp: classic (the default) or octane (Laravel Octane's worker mode)"`
+	Type    string `json:"type,omitempty" jsonschema:"set_type: php or node"`
 }
 
 func (s *server) updateSite(ctx context.Context, _ *mcp.CallToolRequest, in updateSiteIn) (*mcp.CallToolResult, siteActionOut, error) {
@@ -813,6 +816,12 @@ func (s *server) updateSite(ctx context.Context, _ *mcp.CallToolRequest, in upda
 		}
 		st, err = s.Daemon.UpdateSite(ctx, site.Name, change)
 		msg = fmt.Sprintf("%s now runs on %s.", site.Name, in.Server)
+	case "set_type":
+		if in.Type != config.TypePHP && in.Type != config.TypeNode {
+			return nil, siteActionOut{}, errors.New("set_type needs type: php or node")
+		}
+		st, err = s.Daemon.UpdateSite(ctx, site.Name, api.SiteChange{Type: &in.Type})
+		msg = fmt.Sprintf("%s is served as a %s site.", site.Name, config.TypeName(in.Type))
 	case "restart":
 		st, err = s.Daemon.RestartSite(ctx, site.Name)
 		msg = fmt.Sprintf("Restarted %s.", site.Name)

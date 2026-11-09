@@ -196,6 +196,10 @@ type SiteStatus struct {
 	// FrankenPHP is the state of the site's FrankenPHP process, when Server is "frankenphp". Until
 	// it runs, the site is served through FastCGI.
 	FrankenPHP *SiteFrankenPHP `json:"frankenphp,omitempty"`
+	// Type is what the site is: "php" or "node" (see config.Site.Type). A Node.js site has
+	// NodeServer instead of the PHP settings (PHP, Root, Server, FrankenPHP).
+	Type       string          `json:"type"`
+	NodeServer *SiteNodeServer `json:"node_server,omitempty"`
 	// Boost is whether the project uses Laravel Boost and has Flock's guideline (see package boost):
 	// "" (no Boost), "missing", "current", "outdated" or "custom".
 	Boost string `json:"boost,omitempty"`
@@ -209,6 +213,24 @@ const (
 	FrankenPHPInstalling  = "installing"  // the build for the site's PHP version is downloading
 	FrankenPHPFailed      = "failed"      // see Problem; the site is served through FastCGI
 	FrankenPHPUnavailable = "unavailable" // no build for this platform or PHP version; see Problem
+)
+
+// SiteNodeServer is the dev server of a Node.js site. Flock starts it on the site's first request.
+type SiteNodeServer struct {
+	State   string `json:"state"` // NodeSleeping, NodeStarting, NodeRunning or NodeFailed
+	Port    int    `json:"port"`  // the loopback port it gets (PORT and --port), "localhost" for both IPv4 and IPv6
+	Command string `json:"command"`
+	Problem string `json:"problem,omitempty"` // why it failed or can't start
+	Log     string `json:"log"`               // name for /v1/logs/services/{name}: its output
+}
+
+// States of a SiteNodeServer: not running until a request comes, starting (it runs but doesn't
+// answer yet), running, or exited (it's started again after a while).
+const (
+	NodeSleeping = "sleeping"
+	NodeStarting = "starting"
+	NodeRunning  = "running"
+	NodeFailed   = "failed"
 )
 
 // SiteFrankenPHP is a site's FrankenPHP process.

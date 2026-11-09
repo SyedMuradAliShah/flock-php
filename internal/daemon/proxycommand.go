@@ -81,12 +81,17 @@ func proxyCommandStatus(p config.Proxy) *api.ProxyCommand {
 
 // commandEnv is the environment Flock runs a server's command with: its shims and the default
 // Node.js version's global packages first on PATH (so the project's PHP and Node.js are used),
-// PORT when the server is expected on a port of this machine, the domain for Vite's allowed hosts
-// (it refuses other Host headers), and Flock's CA for Node.js's HTTPS requests to other sites.
-func (d *daemon) commandEnv(domain, upstream string) []string {
+// PORT when the server is expected on a port of this machine, the domains for Vite's allowed hosts
+// (it refuses other Host headers; ".app.test" allows app.test and its subdomains), and Flock's CA
+// for Node.js's HTTPS requests to other sites.
+func (d *daemon) commandEnv(domains []string, upstream string) []string {
 	path := strings.Join([]string{filepath.Join(d.root, "bin"), node.GlobalBin(node.CurrentGlobalDir(d.root)), os.Getenv("PATH")},
 		string(os.PathListSeparator))
-	env := []string{"PATH=" + path, "__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS=." + domain}
+	hosts := make([]string, len(domains))
+	for i, domain := range domains {
+		hosts[i] = "." + domain
+	}
+	env := []string{"PATH=" + path, "__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS=" + strings.Join(hosts, ",")}
 	if u, err := url.Parse(upstream); err == nil && u.Port() != "" && isLoopback(u.Hostname()) {
 		env = append(env, "PORT="+u.Port())
 	}
@@ -106,7 +111,7 @@ func exists(path string) bool {
 func (d *daemon) proxySpec(cfg *config.Config, p config.Proxy) supervisor.Spec {
 	return supervisor.Spec{
 		Name: proxyProcess(p.Name), Shell: p.Command, Dir: p.Dir, Tree: true,
-		Env:     d.commandEnv(cfg.ProxyDomain(p), p.Upstream),
+		Env:     d.commandEnv([]string{cfg.ProxyDomain(p)}, p.Upstream),
 		LogFile: filepath.Join(d.root, "log", proxyProcess(p.Name)+".log"),
 	}
 }
@@ -124,7 +129,7 @@ func (d *daemon) commandProxy(name string) (*config.Config, config.Proxy, error)
 	case !ok:
 		return nil, p, fmt.Errorf("%w: no proxy named %s", api.ErrInvalidRequest, name)
 	case p.Command == "":
-		return nil, p, fmt.Errorf("%w: %s has no command — give it the command that starts its server", api.ErrInvalidRequest, name)
+		return nil, p, fmt.Errorf("%w: %s has no command â€” give it the command that starts its server", api.ErrInvalidRequest, name)
 	}
 	return cfg, p, nil
 }
@@ -137,6 +142,9 @@ func (d *daemon) StartProxy(name string) error {
 	}
 	if info, err := os.Stat(p.Dir); err != nil || !info.IsDir() {
 		return fmt.Errorf("%w: %s's folder %s doesn't exist", api.ErrInvalidRequest, name, p.Dir)
+	}
+	if runningAsRoot() {
+		return fmt.Errorf("%w: Flock runs as root here, and doesn't run a project's commands with root's rights", api.ErrConflict)
 	}
 
 	r := &d.runs
@@ -152,7 +160,7 @@ func (d *daemon) StartProxy(name string) error {
 		return nil
 	}
 	if !d.procUp(proxyProcess(name)) && answers(p.Upstream) {
-		return fmt.Errorf("%w: something already answers at %s — stop it first", api.ErrConflict, p.Upstream)
+		return fmt.Errorf("%w: something already answers at %s â€” stop it first", api.ErrConflict, p.Upstream)
 	}
 
 	r.mu.Lock()
@@ -176,6 +184,9 @@ func (d *daemon) StopProxy(name string) error {
 	cfg, p, err := d.commandProxy(name)
 	if err != nil {
 		return err
+	}
+	if p.Background() && runningAsRoot() {
+		return fmt.Errorf("%w: Flock runs as root here, and doesn't run a project's commands with root's rights", api.ErrConflict)
 	}
 
 	r := &d.runs
@@ -233,7 +244,7 @@ func (d *daemon) runCommand(cfg *config.Config, p config.Proxy, command string) 
 	defer cancel()
 	cmd := supervisor.ShellCommand(command)
 	cmd.Dir, cmd.Stdout, cmd.Stderr = p.Dir, log, log
-	cmd.Env = envutil.Merge(os.Environ(), d.commandEnv(cfg.ProxyDomain(p), p.Upstream))
+	cmd.Env = envutil.Merge(os.Environ(), d.commandEnv([]string{cfg.ProxyDomain(p)}, p.Upstream))
 	supervisor.Configure(cmd)
 
 	fmt.Fprintf(log, "\n[flock] %s $ %s\n", time.Now().Format(time.RFC3339), command)
@@ -252,7 +263,7 @@ func (d *daemon) runCommand(cfg *config.Config, p config.Proxy, command string) 
 	}
 	if err != nil {
 		fmt.Fprintf(log, "[flock] failed: %v\n", err)
-		return fmt.Errorf("`%s` failed: %v — see its output", command, err)
+		return fmt.Errorf("`%s` failed: %v â€” see its output", command, err)
 	}
 	fmt.Fprintf(log, "[flock] done\n")
 	return nil
@@ -293,7 +304,7 @@ func (d *daemon) liveProxyCommands(proxies []api.ProxyStatus) {
 			case started && !since.IsZero():
 				c.State = api.ProxyStarting
 				if time.Since(since) > proxyStartGrace {
-					c.Problem = fmt.Sprintf("nothing answers at %s yet — does the command start the server there?", ps.Upstream)
+					c.Problem = fmt.Sprintf("nothing answers at %s yet â€” does the command start the server there?", ps.Upstream)
 				}
 			default:
 				delete(r.started, ps.Name)
@@ -311,7 +322,7 @@ func (d *daemon) liveProxyCommands(proxies []api.ProxyStatus) {
 			default:
 				c.State = api.ProxyStarting
 				if time.Since(since) > proxyStartGrace {
-					c.Problem = fmt.Sprintf("nothing answers at %s yet — does the command start the server there?", ps.Upstream)
+					c.Problem = fmt.Sprintf("nothing answers at %s yet â€” does the command start the server there?", ps.Upstream)
 				}
 			}
 		}
@@ -324,7 +335,7 @@ func (d *daemon) liveProxyCommands(proxies []api.ProxyStatus) {
 // background, which needs a stop command.
 func exitProblem(lastErr string) string {
 	if rest, ok := strings.CutPrefix(lastErr, "<nil>"); ok {
-		return "the command exited" + rest + " — if it starts the server in the background, give the proxy a stop command"
+		return "the command exited" + rest + " â€” if it starts the server in the background, give the proxy a stop command"
 	}
 	return "the command exited: " + lastErr
 }

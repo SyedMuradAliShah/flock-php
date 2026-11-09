@@ -275,6 +275,7 @@ func registerConfig(mux *http.ServeMux, b Backend) {
 
 	mux.HandleFunc("PATCH /v1/sites/{name}", func(w http.ResponseWriter, r *http.Request) {
 		var body struct {
+			Type    *string `json:"type"` // "php" or "node"
 			Secured *bool   `json:"secured"`
 			PHP     *string `json:"php"`
 			Node    *string `json:"node"`
@@ -293,6 +294,11 @@ func registerConfig(mux *http.ServeMux, b Backend) {
 			site, ok := cfg.FindSite(r.PathValue("name"))
 			if !ok {
 				return invalid("no site named %s", r.PathValue("name"))
+			}
+			if body.Type != nil {
+				if err := cfg.SetType(&site, *body.Type); err != nil {
+					return invalid("%v", err)
+				}
 			}
 			if body.Secured != nil {
 				site.Secured = *body.Secured
@@ -621,6 +627,7 @@ func registerConfig(mux *http.ServeMux, b Backend) {
 
 // SiteChange is a PATCH /v1/sites/{name} body; nil fields stay as they are.
 type SiteChange struct {
+	Type    *string `json:"type,omitempty"` // "php" or "node"
 	Secured *bool   `json:"secured,omitempty"`
 	PHP     *string `json:"php,omitempty"`
 	Node    *string `json:"node,omitempty"`
