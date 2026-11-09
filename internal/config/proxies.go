@@ -9,9 +9,10 @@ import (
 	"strings"
 )
 
-// Proxy is a name served by a server of its own rather than by PHP, e.g. a Node.js dev server or
-// an object store: <name>.<tld> and its subdomains (up to MaxDepth levels) are passed to Upstream,
-// WebSocket upgrades included. The Host header passes unchanged.
+// Proxy is a name served by a server that isn't a site (a Node.js app in the projects is one, see
+// TypeNode), e.g. an object store, a dashboard or a Docker container: <name>.<tld> and its
+// subdomains (up to MaxDepth levels) are passed to Upstream, WebSocket upgrades included. The Host
+// header passes unchanged.
 type Proxy struct {
 	Name     string `json:"name"`
 	Upstream string `json:"upstream"` // as NormalizeUpstream returns it, e.g. "http://127.0.0.1:3000"
@@ -98,7 +99,7 @@ func (c *Config) FindProxy(name string) (Proxy, bool) {
 
 // UpsertProxy adds or replaces a proxy by name. Its name can't be a linked site's: the domain
 // would be served twice. A directory of the same name in a parked path is served by the proxy
-// instead (see AllSites), as a Node.js app in the projects folder usually is.
+// instead (see AllSites), e.g. a project whose server the proxy starts with its command.
 func (c *Config) UpsertProxy(p Proxy) error {
 	if !hostLabel.MatchString(p.Name) {
 		return fmt.Errorf("%q is not a valid name: it may only contain a-z, 0-9 and inner hyphens", p.Name)

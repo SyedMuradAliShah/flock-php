@@ -356,7 +356,7 @@ footer code { font-family: var(--mono); font-size: 0.75rem; color: var(--ink-sof
             <div class="host"><span class="scheme">{{if .Req.TLS}}https{{else}}http{{end}}://</span><span class="name">{{html .Host}}</span><span class="code">502</span></div>
             <p class="lead">
                 <strong>{{html $downSite}}</strong> is a proxy to <code>{{html $downUpstream}}</code>, but no server answers there.
-                Flock only passes requests on and doesn&rsquo;t start the server itself, so start your app the way you usually do.
+                Start it the way you usually do, or give the proxy its start command in Flock to start it from there.
             </p>
             <p class="waiting" data-wait>Your app shows here as soon as it answers&hellip;</p>
 {{else if eq $phpState "installing"}}

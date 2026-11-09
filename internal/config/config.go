@@ -38,7 +38,7 @@ type Config struct {
 	Channel string   `json:"channel,omitempty"`
 	Parked  []string `json:"parked"`
 	Sites   []Site   `json:"sites"`
-	// Proxies are names served by a server of their own, e.g. a Node.js dev server (see Proxy).
+	// Proxies are names served by a server of their own, e.g. a dashboard or a Docker container (see Proxy).
 	Proxies []Proxy `json:"proxies,omitempty"`
 
 	// Worktrees are the git worktrees Flock sets up (see package worktree). WorktreesSince is when

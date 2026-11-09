@@ -59,7 +59,7 @@ type Status struct {
 	Defaults *DefaultsStatus `json:"defaults,omitempty"`
 }
 
-// ProxyStatus is a name served by a server of its own, e.g. a Node.js dev server (see config.Proxy).
+// ProxyStatus is a name served by a server of its own, e.g. a dashboard or a Docker container (see config.Proxy).
 type ProxyStatus struct {
 	Name     string `json:"name"`
 	Domain   string `json:"domain"`
