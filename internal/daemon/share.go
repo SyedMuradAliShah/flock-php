@@ -31,13 +31,20 @@ func (d *daemon) StartShare(name string, allow []string, debug bool) error {
 	if !ok {
 		return fmt.Errorf("no site named %s", name)
 	}
-	if site.Kind() == config.TypeNode {
-		return fmt.Errorf("%s is a Node.js app, which can't be shared yet", name)
-	}
 	for _, s := range sites {
 		if s.Name == name && s.URL == "" {
 			return fmt.Errorf("%s isn't served: %s", name, s.Problem)
 		}
+	}
+	if site.Kind() == config.TypeNode {
+		// Visitors reach the dev server: it runs while the share does (see sleepNodeSites).
+		if state, problem, done := d.wakeNode(name); done != nil {
+			done()
+		} else if state == api.NodeFailed {
+			return fmt.Errorf("%s's dev server can't run: %s", name, problem)
+		}
+		return d.shares.Start(share.Request{Site: name, Allow: allow, Debug: debug,
+			Warning: "Visitors reach the app's dev server, so they see its error overlay and source maps when something breaks."})
 	}
 	req := share.Request{Site: name, Allow: allow, Debug: debug}
 	if !debug && share.ConfigCached(site.Path) {

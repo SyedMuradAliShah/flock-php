@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strconv"
@@ -255,6 +256,59 @@ func TestStoppingANodeSitePutsItToSleep(t *testing.T) {
 	}
 	if _, err := client.StopSite(context.Background(), "missing"); err == nil {
 		t.Fatal("stopped a site that doesn't exist")
+	}
+}
+
+func TestANodeSitesWorktreeRunsADevServerOfItsOwn(t *testing.T) {
+	if _, err := exec.LookPath("git"); err != nil {
+		t.Skip("git is not installed")
+	}
+	parked := t.TempDir()
+	repo := filepath.Join(parked, "app")
+	if err := os.Mkdir(repo, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	git := func(args ...string) {
+		t.Helper()
+		cmd := exec.Command("git", append([]string{"-C", repo, "-c", "user.name=Flock", "-c", "user.email=flock@example.test"}, args...)...)
+		if out, err := cmd.CombinedOutput(); err != nil {
+			t.Fatalf("git %v: %v\n%s", args, err, out)
+		}
+	}
+	git("init", "-q")
+	writeFile(t, filepath.Join(repo, "package.json"), `{"scripts": {"dev": "vite"}}`)
+	git("add", ".")
+	git("commit", "-q", "-m", "init")
+	// Made before Flock looked for worktrees: served, not set up (no npm install).
+	git("worktree", "add", "-q", "-b", "feature", filepath.Join(parked, "app-feature"))
+
+	root, cfg := testRoot(t, func(c *config.Config) { c.Parked = []string{parked} })
+	fakeNpm(t, root, "flock-test-server")
+	client := startDaemon(t, root)
+
+	wt := siteStatus(t, client, "feature.app")
+	parent := siteStatus(t, client, "app")
+	if wt.Type != config.TypeNode || wt.NodeServer == nil || wt.NodeServer.Port == parent.NodeServer.Port || wt.NodeServer.Log != "node-feature.app" {
+		t.Fatalf("worktree %+v %+v, site %+v", wt, wt.NodeServer, parent.NodeServer)
+	}
+
+	getPage(t, cfg, "feature.app.test")
+	deadline := time.Now().Add(20 * time.Second)
+	for {
+		if code, _, body := getPage(t, cfg, "feature.app.test"); code == http.StatusOK {
+			if body != "dev server for feature.app.test" {
+				t.Fatalf("got %q", body)
+			}
+			break
+		}
+		if time.Now().After(deadline) {
+			t.Fatalf("the worktree's dev server didn't answer:\n%s", readLog(t, root, "node-feature.app"))
+		}
+		time.Sleep(100 * time.Millisecond)
+	}
+	// Only the worktree's dev server runs: the site's own sleeps until it's visited.
+	if s := siteStatus(t, client, "app").NodeServer.State; s != api.NodeSleeping {
+		t.Fatalf("the site's dev server: %s", s)
 	}
 }
 

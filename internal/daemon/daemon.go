@@ -650,8 +650,9 @@ func (d *daemon) reload() error {
 		return debugPools[version]
 	}
 
-	// shareable are the served sites a share can serve: their document root and PHP version.
-	type shareable struct{ root, version string }
+	// shareable are the served sites a share can serve: their document root and PHP version, or a
+	// Node.js app's dev server and the origin it's served at.
+	type shareable struct{ root, version, node, domain, origin string }
 	shareables := map[string]shareable{}
 
 	sites := cfg.AllSites()
@@ -714,6 +715,7 @@ func (d *daemon) reload() error {
 				}
 			}
 			status.URL = scheme + "://" + domain + portSuffix(scheme, cfg)
+			shareables[site.Name] = shareable{node: ws.Proxy, domain: domain, origin: scheme + "://" + domain + portSuffix(scheme, cfg)}
 			webSites = append(webSites, ws)
 			domains = append(append(domains, domain), served...)
 			statuses = append(statuses, status)
@@ -865,6 +867,10 @@ func (d *daemon) reload() error {
 		for _, s := range d.shares.Serving() {
 			info, ok := shareables[s.Site]
 			if !ok {
+				continue
+			}
+			if info.node != "" {
+				shares = append(shares, web.Share{Port: s.Port, Proxy: info.node, Domain: info.domain, Origin: info.origin})
 				continue
 			}
 			upstreams, err := pool(info.version)
