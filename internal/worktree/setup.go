@@ -36,7 +36,8 @@ type Job struct {
 
 	// DBMode is the database mode (Shared, Copy, Fresh); Database the worktree's own database
 	// from an earlier setup, which is kept. Servers finds the database server Flock runs for an
-	// engine on a port (nil: none). OnDatabase is told the database the worktree ends up with.
+	// engine on a port, or on any port for port 0 (nil: none). OnDatabase is told the database
+	// the worktree ends up with.
 	DBMode     string
 	Database   Database
 	Servers    func(engine string, port int) Server

@@ -918,11 +918,12 @@ func (d *daemon) reload() error {
 	}
 
 	d.mu.Lock()
+	prev := d.cfg
 	d.cfg, d.sites, d.proxies, d.warnings, d.problems, d.breakpointSites = cfg, statuses, proxies, warnings, problems, breakpoints
 	d.mu.Unlock()
 
 	go d.checkWildcard()
-	d.syncWorktrees(cfg)
+	d.syncWorktrees(prev, cfg)
 	// Until there are defaults: one may be installed now (the first run's, or one the user installed).
 	if cfg.DefaultPHP == "" || cfg.DefaultNode == "" {
 		go d.ensureDefaults()

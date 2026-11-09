@@ -163,3 +163,25 @@ func TestSQLiteDatabases(t *testing.T) {
 		t.Errorf("dropped, the file is still there: %v", err)
 	}
 }
+
+// Without the site's .env (the site is unlinked, or its folder gone), the database is dropped from
+// the server Flock runs for its engine, whatever its port.
+func TestDropDatabaseWithoutTheSite(t *testing.T) {
+	for _, site := range []string{"", t.TempDir()} {
+		server := &fakeServer{dbs: []string{"acme_feature_auth"}}
+		j := Job{Site: site, Path: filepath.Join(t.TempDir(), "gone"),
+			Database: Database{Engine: "pgsql", Name: "acme_feature_auth"},
+			Servers: func(engine string, port int) Server {
+				if engine == "pgsql" && port == 0 {
+					return server
+				}
+				return nil
+			}}
+		if err := j.DropDatabase(context.Background(), io.Discard); err != nil {
+			t.Fatalf("site %q: %v", site, err)
+		}
+		if len(server.dbs) != 0 {
+			t.Errorf("site %q: not dropped: %v", site, server.dbs)
+		}
+	}
+}

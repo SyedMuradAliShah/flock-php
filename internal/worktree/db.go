@@ -277,14 +277,17 @@ func (j Job) DropDatabase(ctx context.Context, log io.Writer) error {
 		}
 		return nil
 	}
-	// The site's .env says where the server is: the worktree may be gone.
+	// The site's .env says where the server is: the worktree may be gone. Without it (the site is
+	// unlinked, or its folder gone) port 0 asks for the server Flock runs for the engine.
 	d := &dbEnv{connection: db.Engine}
-	if site, err := ReadDotenv(filepath.Join(j.Site, ".env")); err == nil {
-		d.host = site.Get("DB_HOST")
-		d.port, _ = strconv.Atoi(site.Get("DB_PORT"))
-	}
-	if d.port == 0 {
-		d.port = map[string]int{"pgsql": 5432, "mysql": 3306, "mariadb": 3306}[db.Engine]
+	if j.Site != "" {
+		if site, err := ReadDotenv(filepath.Join(j.Site, ".env")); err == nil {
+			d.host = site.Get("DB_HOST")
+			d.port, _ = strconv.Atoi(site.Get("DB_PORT"))
+			if d.port == 0 {
+				d.port = map[string]int{"pgsql": 5432, "mysql": 3306, "mariadb": 3306}[db.Engine]
+			}
+		}
 	}
 	server := j.server(d, db.Engine)
 	if server == nil {

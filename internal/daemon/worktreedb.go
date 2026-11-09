@@ -19,17 +19,17 @@ import (
 )
 
 // dbServers finds the database server Flock runs for an engine of a .env ("pgsql", "mysql",
-// "mariadb") on port: the active PostgreSQL, or MySQL or MariaDB, whichever has the port.
+// "mariadb") on port (any, for 0): the active PostgreSQL, or MySQL or MariaDB, whichever has the port.
 func (d *daemon) dbServers(cfg *config.Config) func(engine string, port int) worktree.Server {
 	return func(engine string, port int) worktree.Server {
 		switch engine {
 		case "pgsql":
-			if cfg.Services.Postgres != "" && cfg.Services.Running("postgres") && port == cfg.Ports.Postgres {
+			if cfg.Services.Postgres != "" && cfg.Services.Running("postgres") && (port == 0 || port == cfg.Ports.Postgres) {
 				return pgServer{bin: postgres.BinDir(d.root, cfg.Services.Postgres), port: port}
 			}
 		case "mysql", "mariadb":
 			for _, id := range []string{"mysql", "mariadb"} {
-				if x, ok := cfg.Services.Extra(id); ok && cfg.Services.Running(id) && x.Port == port {
+				if x, ok := cfg.Services.Extra(id); ok && cfg.Services.Running(id) && (port == 0 || x.Port == port) {
 					return mysqlServer{root: d.root, id: id, version: x.Version, port: port}
 				}
 			}

@@ -34,8 +34,9 @@ func (d *daemon) markWorktreesSince() {
 
 // syncWorktrees starts the setup of worktrees that need one, and forgets those that are gone,
 // however they went (git, an agent app, deleting the folder), dropping the database Flock made for
-// them. It runs after every reload and never waits: a setup saves config.json, which reloads.
-func (d *daemon) syncWorktrees(cfg *config.Config) {
+// them (also when their site was unlinked: prev is the config before the reload, which still has
+// it). It runs after every reload and never waits: a setup saves config.json, which reloads.
+func (d *daemon) syncWorktrees(prev, cfg *config.Config) {
 	if d.worktrees == nil {
 		return
 	}
@@ -85,7 +86,7 @@ func (d *daemon) syncWorktrees(cfg *config.Config) {
 	}
 	for _, e := range cfg.Worktrees {
 		if !current[filepath.Clean(e.Path)] && d.forgetting(e.Path) {
-			go d.forgetGone(cfg, e)
+			go d.forgetGone(prev, cfg, e)
 		}
 	}
 }
@@ -106,19 +107,30 @@ func (d *daemon) forgetting(path string) bool {
 }
 
 // forgetGone drops the database Flock made for a worktree that is gone and forgets it. When the
-// database can't be dropped (its server is stopped), the next reload tries again.
-func (d *daemon) forgetGone(cfg *config.Config, e config.WorktreeEntry) {
+// database can't be dropped (its server is stopped), the next reload tries again. Its site may be
+// gone too (unlinked): the database is then found without the site's .env, unless prev has it.
+func (d *daemon) forgetGone(prev, cfg *config.Config, e config.WorktreeEntry) {
 	defer func() {
 		d.pendingMu.Lock()
 		delete(d.gone, filepath.Clean(e.Path))
 		d.pendingMu.Unlock()
 	}()
 	if e.Database != "" {
-		job, err := d.worktreeJob(cfg, e.Site, e.Path, config.Site{})
-		if err == nil {
-			err = job.DropDatabase(context.Background(), io.Discard)
+		job := worktree.Job{
+			Path:     e.Path,
+			Database: worktree.Database{Engine: e.Engine, Name: e.Database},
+			Servers:  d.dbServers(cfg),
 		}
-		if err != nil {
+		for _, c := range []*config.Config{cfg, prev} {
+			if c == nil {
+				continue
+			}
+			if parent, ok := c.FindSite(e.Site); ok {
+				job.Site = parent.Path
+				break
+			}
+		}
+		if err := job.DropDatabase(context.Background(), io.Discard); err != nil {
 			d.setWarnings(append(d.currentWarnings(), fmt.Sprintf("worktree %s: %v", e.Path, err)))
 			return
 		}
