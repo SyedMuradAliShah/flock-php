@@ -13,6 +13,8 @@ func configure(cmd *exec.Cmd) {
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 }
 
+func shellCommand(line string) *exec.Cmd { return exec.Command("/bin/sh", "-c", line) }
+
 func terminate(cmd *exec.Cmd, sig os.Signal) {
 	if sig == nil {
 		sig = syscall.SIGTERM

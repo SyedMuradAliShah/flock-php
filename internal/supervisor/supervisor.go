@@ -19,9 +19,12 @@ import (
 
 // Spec describes a process to keep running. Two specs with equal fields are the same process.
 type Spec struct {
-	Name       string
-	Path       string
-	Args       []string
+	Name string
+	Path string
+	Args []string
+	// Shell, when set, is a command line run through the platform's shell (see ShellCommand)
+	// instead of Path and Args.
+	Shell      string
 	Env        []string // added to the daemon's environment
 	Dir        string
 	LogFile    string    // stdout+stderr are appended here
@@ -187,6 +190,9 @@ func (p *proc) once() error {
 	defer log.Close()
 
 	cmd := exec.Command(p.spec.Path, p.spec.Args...)
+	if p.spec.Shell != "" {
+		cmd = ShellCommand(p.spec.Shell)
+	}
 	cmd.Dir = p.spec.Dir
 	cmd.Env = envutil.Merge(os.Environ(), p.spec.Env)
 	cmd.Stdout = log
@@ -314,6 +320,10 @@ func openLog(path string) (io.WriteCloser, error) {
 type nopCloser struct{ io.Writer }
 
 func (nopCloser) Close() error { return nil }
+
+// ShellCommand runs a command line through the platform's shell: /bin/sh -c on unix, cmd.exe on
+// Windows, which gets the line as typed (Go's quoting of arguments isn't cmd's).
+func ShellCommand(line string) *exec.Cmd { return shellCommand(line) }
 
 // Configure prepares a command the way the supervisor starts its own children (a process group of
 // its own on unix, no console window on Windows), for processes Flock runs outside the supervisor.

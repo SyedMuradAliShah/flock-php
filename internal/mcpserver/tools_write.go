@@ -65,11 +65,19 @@ func (s *server) addWriteTools(srv *mcp.Server) {
 
 	mcp.AddTool(srv, &mcp.Tool{
 		Name: "proxy_site",
-		Description: "Serve a server of its own, e.g. a Node.js dev server (Next.js, Nuxt, Vite) or an object store, at " +
+		Description: "Serve a server of its own, e.g. a dashboard, an object store, a Docker container or a Go or Python app, at " +
 			"http(s)://<name>.test: every request, WebSocket upgrades included, passes to the upstream with its Host header. " +
-			"Proxying a name again changes its upstream. Start the server itself as usual (e.g. npm run dev).",
+			"Proxying a name again changes its upstream. With a command, Flock can start and stop the server " +
+			"(proxy_server); without one, start the server yourself.",
 		Annotations: additive(true),
 	}, s.proxySite)
+
+	mcp.AddTool(srv, &mcp.Tool{
+		Name:        "proxy_server",
+		Description: "Start or stop the server of a proxy that has a command (see proxy_site); its output is the service log the proxy's command names.",
+		Annotations: additive(false),
+		InputSchema: schema[proxyServerIn](map[string][]any{"action": {"start", "stop"}}),
+	}, s.proxyServer)
 
 	mcp.AddTool(srv, &mcp.Tool{
 		Name: "update_site",
@@ -648,9 +656,12 @@ func (s *server) linkSite(ctx context.Context, _ *mcp.CallToolRequest, in linkSi
 }
 
 type proxySiteIn struct {
-	Name     string `json:"name" jsonschema:"the proxy's name, which makes its domain <name>.test"`
-	Upstream string `json:"upstream" jsonschema:"where requests go: a port on 127.0.0.1 (3000), host:port (localhost:5173) or a URL (https://127.0.0.1:8443)"`
-	Secure   *bool  `json:"secure,omitempty" jsonschema:"serve over HTTPS; left out, a new proxy is served over HTTP and an existing one keeps its setting"`
+	Name        string  `json:"name" jsonschema:"the proxy's name, which makes its domain <name>.test"`
+	Upstream    string  `json:"upstream" jsonschema:"where requests go: a port on 127.0.0.1 (3000), host:port (localhost:5173) or a URL (https://127.0.0.1:8443)"`
+	Secure      *bool   `json:"secure,omitempty" jsonschema:"serve over HTTPS; left out, a new proxy is served over HTTP and an existing one keeps its setting"`
+	Command     *string `json:"command,omitempty" jsonschema:"the command that starts the server (one line), so proxy_server can start and stop it; empty removes it; left out, it stays as it is"`
+	Dir         string  `json:"dir,omitempty" jsonschema:"the absolute folder the command runs in; left out, the project Flock was started in"`
+	StopCommand *string `json:"stop_command,omitempty" jsonschema:"for a command that starts the server in the background and exits (docker compose up -d): the command that stops it"`
 }
 
 type proxySiteOut struct {
@@ -667,6 +678,19 @@ func (s *server) proxySite(ctx context.Context, _ *mcp.CallToolRequest, in proxy
 		return nil, proxySiteOut{}, err
 	}
 	name := config.SiteName(in.Name)
+	if in.Command != nil || in.StopCommand != nil || in.Dir != "" {
+		change := api.ProxyChange{Command: in.Command, StopCommand: in.StopCommand}
+		dir := in.Dir
+		if dir == "" && in.Command != nil && *in.Command != "" {
+			dir = s.Dir
+		}
+		if dir != "" {
+			change.Dir = &dir
+		}
+		if st, err = s.Daemon.UpdateProxy(ctx, name, change); err != nil {
+			return nil, proxySiteOut{}, err
+		}
+	}
 	for _, p := range st.Proxies {
 		if p.Name == name {
 			if p.Problem != "" {
@@ -676,6 +700,39 @@ func (s *server) proxySite(ctx context.Context, _ *mcp.CallToolRequest, in proxy
 		}
 	}
 	return nil, proxySiteOut{Message: "Proxied " + name + "."}, nil
+}
+
+type proxyServerIn struct {
+	Name   string `json:"name" jsonschema:"the proxy's name"`
+	Action string `json:"action" jsonschema:"start or stop"`
+}
+
+func (s *server) proxyServer(ctx context.Context, _ *mcp.CallToolRequest, in proxyServerIn) (*mcp.CallToolResult, proxySiteOut, error) {
+	var (
+		st  api.Status
+		err error
+	)
+	switch in.Action {
+	case "start":
+		st, err = s.Daemon.StartProxy(ctx, in.Name)
+	case "stop":
+		st, err = s.Daemon.StopProxy(ctx, in.Name)
+	default:
+		return nil, proxySiteOut{}, fmt.Errorf("unknown action %q: start or stop", in.Action)
+	}
+	if err != nil {
+		return nil, proxySiteOut{}, err
+	}
+	for _, p := range st.Proxies {
+		if p.Name == in.Name && p.Command != nil {
+			msg := fmt.Sprintf("%s's server is %s.", p.Name, p.Command.State)
+			if in.Action == "start" {
+				msg = fmt.Sprintf("Starting %s's server; its output is the service log %s, and the proxy's command shows when it runs.", p.Name, p.Command.Log)
+			}
+			return nil, proxySiteOut{Message: msg, Proxy: &p}, nil
+		}
+	}
+	return nil, proxySiteOut{Message: "Done."}, nil
 }
 
 type updateSiteIn struct {

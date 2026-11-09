@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"net/url"
+	"path/filepath"
 	"slices"
 	"strconv"
 	"strings"
@@ -15,6 +16,32 @@ type Proxy struct {
 	Name     string `json:"name"`
 	Upstream string `json:"upstream"` // as NormalizeUpstream returns it, e.g. "http://127.0.0.1:3000"
 	Secured  bool   `json:"secured"`
+
+	// Command, when set, starts the proxy's server: Flock runs it through the shell in Dir (an
+	// absolute folder) when the proxy is started, and stops it when it's stopped. Without
+	// StopCommand it's the server itself, kept running until then; with one, it starts the
+	// server in the background and exits (`docker compose up -d`), and StopCommand stops it.
+	Command     string `json:"command,omitempty"`
+	Dir         string `json:"dir,omitempty"`
+	StopCommand string `json:"stop_command,omitempty"`
+}
+
+// Background reports whether the proxy's command starts its server in the background.
+func (p Proxy) Background() bool { return p.StopCommand != "" }
+
+// checkCommand checks a proxy's command settings.
+func checkCommand(p Proxy) error {
+	switch {
+	case p.Command == "" && (p.Dir != "" || p.StopCommand != ""):
+		return fmt.Errorf("%s has a folder or stop command but no command", p.Name)
+	case p.Command == "":
+		return nil
+	case strings.ContainsAny(p.Command+p.StopCommand, "\r\n"):
+		return fmt.Errorf("a command must be one line")
+	case p.Dir == "" || !filepath.IsAbs(p.Dir):
+		return fmt.Errorf("the folder the command runs in must be an absolute path")
+	}
+	return nil
 }
 
 // ProxyDomain is the hostname of a proxy.
@@ -75,6 +102,9 @@ func (c *Config) FindProxy(name string) (Proxy, bool) {
 func (c *Config) UpsertProxy(p Proxy) error {
 	if !hostLabel.MatchString(p.Name) {
 		return fmt.Errorf("%q is not a valid name: it may only contain a-z, 0-9 and inner hyphens", p.Name)
+	}
+	if err := checkCommand(p); err != nil {
+		return err
 	}
 	if slices.ContainsFunc(c.Sites, func(s Site) bool { return s.Name == p.Name }) {
 		return fmt.Errorf("%s is a linked site's name — unlink the site first, or choose another name", p.Name)

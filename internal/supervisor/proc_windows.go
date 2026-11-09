@@ -15,7 +15,22 @@ import (
 // configure starts children without a console window of their own, in case the daemon itself has
 // no console (otherwise they share its hidden one).
 func configure(cmd *exec.Cmd) {
-	cmd.SysProcAttr = &syscall.SysProcAttr{CreationFlags: windows.CREATE_NO_WINDOW}
+	if cmd.SysProcAttr == nil {
+		cmd.SysProcAttr = &syscall.SysProcAttr{}
+	}
+	cmd.SysProcAttr.CreationFlags |= windows.CREATE_NO_WINDOW
+}
+
+// shellCommand runs line through cmd.exe. /s makes cmd take what's between the outer quotes as
+// typed, so the line's own quotes reach the program; /d skips AutoRun commands.
+func shellCommand(line string) *exec.Cmd {
+	shell := os.Getenv("ComSpec")
+	if shell == "" {
+		shell = `C:\Windows\System32\cmd.exe`
+	}
+	cmd := exec.Command(shell)
+	cmd.SysProcAttr = &syscall.SysProcAttr{CmdLine: `"` + shell + `" /d /s /c "` + line + `"`}
+	return cmd
 }
 
 // terminate kills the process: Windows has no portable graceful signal for console-less children

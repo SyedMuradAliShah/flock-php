@@ -100,6 +100,7 @@ type daemon struct {
 	sites    []api.SiteStatus
 	proxies  []api.ProxyStatus
 	probe    serverProbe // what answers at the proxies' upstreams
+	runs     proxyRuns   // the proxies' commands Flock started (see StartProxy)
 	warnings []string
 	problems map[string]string // why an installed catalog service isn't running, by id
 	// breakpoints finds PhpStorm breakpoints; breakpointSites is what the last reload found, by site path.
@@ -781,9 +782,19 @@ func (d *daemon) reload() error {
 		taken[name] = true
 	}
 	var proxies []api.ProxyStatus
+	commands := map[string]bool{}
 	for _, p := range cfg.Proxies {
 		domain := cfg.ProxyDomain(p)
-		status := api.ProxyStatus{Name: p.Name, Domain: domain, Upstream: p.Upstream, Secured: p.Secured}
+		status := api.ProxyStatus{Name: p.Name, Domain: domain, Upstream: p.Upstream, Secured: p.Secured, Command: proxyCommandStatus(p)}
+		if p.Command != "" {
+			commands[p.Name] = true
+			// Started from Flock, a command that is the server keeps running until stopped.
+			if !p.Background() && d.runs.isStarted(p.Name) {
+				spec := d.proxySpec(cfg, p)
+				d.procs.Ensure(spec)
+				keep[spec.Name] = true
+			}
+		}
 		if taken[domain] {
 			status.Problem = domain + " is served by a site of the same name"
 			proxies = append(proxies, status)
@@ -803,6 +814,7 @@ func (d *daemon) reload() error {
 		domains = append(domains, domain)
 		proxies = append(proxies, status)
 	}
+	d.runs.retain(commands)
 
 	// Shares always go through the version's normal FastCGI pool, also for FrankenPHP sites: only
 	// FastCGI takes the per-request settings that keep a share safe (see web.Share).
@@ -1078,6 +1090,7 @@ func (d *daemon) Status() api.Status {
 	served := d.proxies
 	d.mu.Unlock()
 	proxies := d.probe.live(d.root, served)
+	d.liveProxyCommands(proxies)
 
 	d.mu.Lock()
 	defer d.mu.Unlock()

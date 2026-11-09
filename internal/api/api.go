@@ -71,6 +71,38 @@ type ProxyStatus struct {
 	// machine: "Node.js 22.23.4" (one of Flock's versions), "Node.js", or the program's name.
 	Running bool   `json:"running"`
 	Server  string `json:"server,omitempty"`
+	// Command is set when Flock starts and stops the proxy's server (see config.Proxy.Command).
+	Command *ProxyCommand `json:"command,omitempty"`
+}
+
+// ProxyCommand is the command that starts a proxy's server, and how that went.
+type ProxyCommand struct {
+	Command     string `json:"command"`
+	Dir         string `json:"dir"`
+	StopCommand string `json:"stop_command,omitempty"` // set when the command starts the server in the background
+	State       string `json:"state"`                  // ProxyStopped, ProxyStarting, ProxyRunning, ProxyStopping or ProxyFailed
+	Problem     string `json:"problem,omitempty"`      // why it failed, or why it's still starting
+	Log         string `json:"log"`                    // name for /v1/logs/services/{name}: the commands' output
+}
+
+// States of a ProxyCommand. Stopped is also a proxy whose server Flock didn't start, even when
+// something answers at its upstream (see ProxyStatus.Running).
+const (
+	ProxyStopped  = "stopped"
+	ProxyStarting = "starting"
+	ProxyRunning  = "running"
+	ProxyStopping = "stopping"
+	ProxyFailed   = "failed"
+)
+
+// ProxyChange is a POST /v1/proxies or PATCH /v1/proxies/{name} body; nil fields stay as they are.
+// An empty Command removes the command, its folder and its stop command.
+type ProxyChange struct {
+	Upstream    *string `json:"upstream,omitempty"`
+	Secured     *bool   `json:"secured,omitempty"`
+	Command     *string `json:"command,omitempty"`
+	Dir         *string `json:"dir,omitempty"`
+	StopCommand *string `json:"stop_command,omitempty"`
 }
 
 // DefaultsStatus is the first run's install of the default PHP and Node.js.
@@ -249,6 +281,9 @@ type Backend interface {
 	Binaries() *binaries.Catalog
 	// RestartSite restarts a FrankenPHP site's process, e.g. so Octane's workers load changed code.
 	RestartSite(name string) error
+	// StartProxy and StopProxy run a proxy's command and stop its server (see config.Proxy.Command).
+	StartProxy(name string) error
+	StopProxy(name string) error
 	// Shares runs the sites' tunnels (nil when unavailable); StartShare starts one after checking
 	// that the site can be shared, with the app's debug mode on for visitors when debug is set.
 	Shares() *share.Manager

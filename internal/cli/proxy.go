@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"net"
 	"net/url"
+	"os"
+	"path/filepath"
+	"strings"
 	"text/tabwriter"
 	"time"
 
@@ -15,17 +18,26 @@ import (
 )
 
 func newProxyCommand() *cobra.Command {
-	var secure bool
+	var (
+		secure                    bool
+		command, dir, stopCommand string
+	)
 
 	cmd := &cobra.Command{
 		Use:   "proxy <name> <port|host:port|url>",
-		Short: "Serve <name>.test from a server of its own, e.g. a Node.js dev server on a port",
-		Long: "Serve <name>.test (and its subdomains) from a server of its own instead of PHP, e.g. a Next.js, " +
-			"Nuxt or Vite dev server, an object store or a dashboard. Requests pass through with their Host header " +
-			"and WebSocket upgrades (hot reload) included.\n\n" +
-			"A port means 127.0.0.1: `flock proxy app 3000` serves http://app.test from http://127.0.0.1:3000.",
-		Example: "  flock proxy softpack 3000\n  flock proxy s3 127.0.0.1:9000 --secure\n  flock proxy api https://127.0.0.1:8443",
-		Args:    cobra.ExactArgs(2),
+		Short: "Serve <name>.test from a server of its own, e.g. a dashboard, an object store or a Docker container",
+		Long: "Serve <name>.test (and its subdomains) from a server of its own, e.g. a dashboard, an object store, " +
+			"a Docker container or a Go or Python app. Requests pass through with their Host header and WebSocket " +
+			"upgrades (hot reload) included.\n\n" +
+			"A port means 127.0.0.1: `flock proxy app 3000` serves http://app.test from http://127.0.0.1:3000.\n\n" +
+			"With --command, Flock can start and stop the server too (`flock proxies start|stop <name>`, or the app): " +
+			"it runs the command in the current folder (or --dir) and shows its output. A command that starts the " +
+			"server in the background and exits, like `docker compose up -d`, needs --stop-command. " +
+			"An empty --command removes it.",
+		Example: "  flock proxy softpack 3000\n  flock proxy s3 127.0.0.1:9000 --secure\n  flock proxy api https://127.0.0.1:8443\n" +
+			"  flock proxy admin 8000 --command \"python manage.py runserver 8000\"\n" +
+			"  flock proxy s3 9000 --command \"docker compose up -d\" --stop-command \"docker compose stop\"",
+		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			s, err := load()
 			if err != nil {
@@ -36,9 +48,16 @@ func newProxyCommand() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			p := config.Proxy{Name: config.SiteName(args[0]), Upstream: upstream, Secured: secure}
-			if existing, ok := s.cfg.FindProxy(p.Name); ok && !cmd.Flags().Changed("secure") {
-				p.Secured = existing.Secured
+			p := config.Proxy{Name: config.SiteName(args[0])}
+			if existing, ok := s.cfg.FindProxy(p.Name); ok {
+				p = existing
+			}
+			p.Upstream = upstream
+			if cmd.Flags().Changed("secure") {
+				p.Secured = secure
+			}
+			if err := applyCommandFlags(cmd, &p, command, dir, stopCommand); err != nil {
+				return err
 			}
 			if err := s.cfg.UpsertProxy(p); err != nil {
 				return err
@@ -48,7 +67,10 @@ func newProxyCommand() *cobra.Command {
 				return err
 			}
 			cmd.Printf("proxied %s → %s\n", proxyURL(s.cfg, p), upstream)
-			if !answers(upstream) {
+			switch {
+			case p.Command != "":
+				cmd.Printf("start its server with `flock proxies start %s`\n", p.Name)
+			case !answers(upstream):
 				cmd.Printf("hint: nothing answers at %s yet — start the server there\n", upstream)
 			}
 			return nil
@@ -56,8 +78,44 @@ func newProxyCommand() *cobra.Command {
 	}
 
 	cmd.Flags().BoolVar(&secure, "secure", false, "serve over HTTPS")
+	cmd.Flags().StringVar(&command, "command", "", "the command that starts the server, so Flock can start and stop it")
+	cmd.Flags().StringVar(&dir, "dir", "", "the folder the command runs in (default: the current folder)")
+	cmd.Flags().StringVar(&stopCommand, "stop-command", "", "for a command that starts the server in the background: the command that stops it")
 
 	return cmd
+}
+
+// applyCommandFlags sets the command flags given on p. A new command runs in the current folder
+// unless --dir names one.
+func applyCommandFlags(cmd *cobra.Command, p *config.Proxy, command, dir, stopCommand string) error {
+	flags := cmd.Flags()
+	if flags.Changed("command") {
+		p.Command = strings.TrimSpace(command)
+		if p.Command != "" && p.Dir == "" && !flags.Changed("dir") {
+			cwd, err := os.Getwd()
+			if err != nil {
+				return err
+			}
+			p.Dir = cwd
+		}
+	}
+	if flags.Changed("dir") {
+		abs, err := filepath.Abs(dir)
+		if err != nil {
+			return err
+		}
+		if info, err := os.Stat(abs); err != nil || !info.IsDir() {
+			return fmt.Errorf("%s is not a folder", dir)
+		}
+		p.Dir = abs
+	}
+	if flags.Changed("stop-command") {
+		p.StopCommand = strings.TrimSpace(stopCommand)
+	}
+	if flags.Changed("command") && p.Command == "" {
+		p.Dir, p.StopCommand = "", ""
+	}
+	return nil
 }
 
 func newUnproxyCommand() *cobra.Command {
@@ -84,9 +142,9 @@ func newUnproxyCommand() *cobra.Command {
 }
 
 func newProxiesCommand() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "proxies",
-		Short: "List proxies",
+		Short: "List proxies, and start or stop the servers of those with a command",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			s, err := load()
@@ -106,6 +164,65 @@ func newProxiesCommand() *cobra.Command {
 			return w.Flush()
 		},
 	}
+	cmd.AddCommand(newProxyServerCommand(true), newProxyServerCommand(false))
+	return cmd
+}
+
+// newProxyServerCommand is `flock proxies start` (start) or `flock proxies stop`.
+func newProxyServerCommand(start bool) *cobra.Command {
+	use, short := "stop <name>", "Stop the server Flock started for a proxy"
+	if start {
+		use, short = "start <name>", "Start a proxy's server with its command"
+	}
+	return &cobra.Command{
+		Use:   use,
+		Short: short,
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			s, err := load()
+			if err != nil {
+				return err
+			}
+			name := config.SiteName(args[0])
+			client := s.client()
+			if !start {
+				if _, err := client.StopProxy(cmd.Context(), name); err != nil {
+					return err
+				}
+				cmd.Printf("stopped %s\n", name)
+				return nil
+			}
+
+			if _, err := client.StartProxy(cmd.Context(), name); err != nil {
+				return err
+			}
+			// Wait a little for the server, to say whether it came up.
+			deadline := time.Now().Add(30 * time.Second)
+			for {
+				st, err := client.Status(cmd.Context())
+				if err != nil {
+					return err
+				}
+				for _, p := range st.Proxies {
+					if p.Name != name || p.Command == nil {
+						continue
+					}
+					switch p.Command.State {
+					case api.ProxyRunning:
+						cmd.Printf("started %s: %s\n", name, p.URL)
+						return nil
+					case api.ProxyFailed:
+						return fmt.Errorf("%s: %s (see `flock logs %s`)", name, p.Command.Problem, p.Command.Log)
+					}
+					if time.Now().After(deadline) {
+						cmd.Printf("%s is still starting — see `flock logs %s`\n", name, p.Command.Log)
+						return nil
+					}
+				}
+				time.Sleep(300 * time.Millisecond)
+			}
+		},
+	}
 }
 
 type proxyRow struct{ name, url, upstream, server string }
@@ -122,6 +239,12 @@ func proxyRows(st *api.Status, cfg *config.Config) []proxyRow {
 			server := "not running"
 			if p.Running {
 				server = cmp.Or(p.Server, "running")
+			}
+			if c := p.Command; c != nil && c.State != api.ProxyRunning && c.State != api.ProxyStopped {
+				server = c.State
+				if c.Problem != "" {
+					server += ": " + c.Problem
+				}
 			}
 			rows = append(rows, proxyRow{p.Name, u, p.Upstream, server})
 		}
