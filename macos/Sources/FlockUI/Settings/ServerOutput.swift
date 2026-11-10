@@ -351,22 +351,9 @@ struct AddProxySheet: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Add a proxy").font(.headline)
             ScrollingForm {
-                // Side by side, so the form fits the Settings window at its minimum size.
-                HStack(alignment: .top, spacing: 12) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Name")
-                        TextField("Name", text: nameState.projectedValue, prompt: Text("my-app → my-app.\(tld)"))
-                            .labelsHidden()
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Upstream")
-                        TextField("Upstream", text: upstreamState.projectedValue, prompt: Text("3000, host:port or URL"))
-                            .labelsHidden()
-                            .help("A port means 127.0.0.1.")
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
+                TextField("Name", text: nameState.projectedValue, prompt: Text("my-app → my-app.\(tld)"))
+                TextField("Upstream", text: upstreamState.projectedValue, prompt: Text("3000, host:port or URL"))
+                    .help("A port means 127.0.0.1.")
                 DisclosureGroup("Commands (optional)", isExpanded: commandsShownState.projectedValue) {
                     ProxyCommandsFields(start: commandState.projectedValue, stop: stopState.projectedValue, dir: dirState.projectedValue)
                 }

@@ -321,12 +321,6 @@ internal sealed partial class SitesPane : UserControl, ISettingsPane
         var name = new TextBox { Header = "Name", PlaceholderText = $"my-app → my-app.{tld}" };
         var upstream = new TextBox { Header = "Upstream", PlaceholderText = "3000, host:port or URL" };
         ToolTipService.SetToolTip(upstream, "A port means 127.0.0.1.");
-        var names = new Grid { ColumnSpacing = 12 };
-        names.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-        names.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-        Grid.SetColumn(upstream, 1);
-        names.Children.Add(name);
-        names.Children.Add(upstream);
         // Optional, so collapsed: most proxies point at a server that runs anyway.
         var commands = NewCommandFields(null);
         var expander = new Expander
@@ -337,7 +331,7 @@ internal sealed partial class SitesPane : UserControl, ISettingsPane
         var dialog = new ContentDialog
         {
             Title = "Add a proxy",
-            Content = Ui.DialogForm(Window.XamlRoot, Ui.Column(12, names, expander)),
+            Content = Ui.DialogForm(Window.XamlRoot, Ui.Column(12, name, upstream, expander)),
             PrimaryButtonText = "Add",
             CloseButtonText = "Cancel",
             DefaultButton = ContentDialogButton.Primary,
