@@ -34,9 +34,8 @@ func (d *daemon) markWorktreesSince() {
 
 // syncWorktrees starts the setup of worktrees that need one, and forgets those that are gone,
 // however they went (git, an agent app, deleting the folder), dropping the database Flock made for
-// them (also when their site was unlinked: prev is the config before the reload, which still has
-// it). It runs after every reload and never waits: a setup saves config.json, which reloads.
-func (d *daemon) syncWorktrees(prev, cfg *config.Config) {
+// them. It runs after every reload and never waits: a setup saves config.json, which reloads.
+func (d *daemon) syncWorktrees(cfg *config.Config) {
 	if d.worktrees == nil {
 		return
 	}
@@ -86,7 +85,7 @@ func (d *daemon) syncWorktrees(prev, cfg *config.Config) {
 	}
 	for _, e := range cfg.Worktrees {
 		if !current[filepath.Clean(e.Path)] && d.forgetting(e.Path) {
-			go d.forgetGone(prev, cfg, e)
+			go d.forgetGone(cfg, e)
 		}
 	}
 }
@@ -107,29 +106,16 @@ func (d *daemon) forgetting(path string) bool {
 }
 
 // forgetGone drops the database Flock made for a worktree that is gone and forgets it. When the
-// database can't be dropped (its server is stopped), the next reload tries again. Its site may be
-// gone too (unlinked): the database is then found without the site's .env, unless prev has it.
-func (d *daemon) forgetGone(prev, cfg *config.Config, e config.WorktreeEntry) {
+// database can't be dropped (its server is stopped), the next reload tries again. It needs nothing
+// but the record: the site may be gone too (unlinked).
+func (d *daemon) forgetGone(cfg *config.Config, e config.WorktreeEntry) {
 	defer func() {
 		d.pendingMu.Lock()
 		delete(d.gone, filepath.Clean(e.Path))
 		d.pendingMu.Unlock()
 	}()
 	if e.Database != "" {
-		job := worktree.Job{
-			Path:     e.Path,
-			Database: worktree.Database{Engine: e.Engine, Name: e.Database},
-			Servers:  d.dbServers(cfg),
-		}
-		for _, c := range []*config.Config{cfg, prev} {
-			if c == nil {
-				continue
-			}
-			if parent, ok := c.FindSite(e.Site); ok {
-				job.Site = parent.Path
-				break
-			}
-		}
+		job := worktree.Job{Path: e.Path, Database: worktree.Database{Engine: e.Engine, Name: e.Database, Service: e.Service}, Services: d.dbServices(cfg)}
 		if err := job.DropDatabase(context.Background(), io.Discard); err != nil {
 			d.setWarnings(append(d.currentWarnings(), fmt.Sprintf("worktree %s: %v", e.Path, err)))
 			return
@@ -168,12 +154,13 @@ func (d *daemon) worktreeJob(cfg *config.Config, parentName, path string, site c
 		BinDirs:  []string{filepath.Join(d.root, "bin"), node.GlobalBin(node.CurrentGlobalDir(d.root))},
 		AsRoot:   runningAsRoot(),
 		DBMode:   mode,
-		Database: worktree.Database{Engine: entry.Engine, Name: entry.Database},
+		Database: worktree.Database{Engine: entry.Engine, Name: entry.Database, Service: entry.Service},
 		Servers:  d.dbServers(cfg),
+		Services: d.dbServices(cfg),
 		OnDatabase: func(db worktree.Database) {
 			_ = d.Mutate(func(c *config.Config) error {
 				if e, ok := c.WorktreeEntry(path); ok {
-					e.Engine, e.Database = db.Engine, db.Name
+					e.Engine, e.Database, e.Service = db.Engine, db.Name, db.Service
 					c.SetWorktreeEntry(e)
 				}
 				return nil
