@@ -354,8 +354,16 @@ struct AddProxySheet: View {
                 TextField("Name", text: nameState.projectedValue, prompt: Text("my-app → my-app.\(tld)"))
                 TextField("Upstream", text: upstreamState.projectedValue, prompt: Text("3000, host:port or URL"))
                     .help("A port means 127.0.0.1.")
-                DisclosureGroup("Commands (optional)", isExpanded: commandsShownState.projectedValue) {
+                DisclosureGroup(isExpanded: commandsShownState.projectedValue) {
                     ProxyCommandsFields(start: commandState.projectedValue, stop: stopState.projectedValue, dir: dirState.projectedValue)
+                } label: {
+                    // The whole row opens it, not only the disclosure arrow.
+                    Text("Commands (optional)")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            withAnimation { commandsShownState.wrappedValue = !commandsShownState.wrappedValue }
+                        }
                 }
             }
             HStack {
