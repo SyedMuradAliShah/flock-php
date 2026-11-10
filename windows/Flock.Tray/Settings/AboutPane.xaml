@@ -54,6 +54,22 @@
                         <ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel Spacing="1">
+                        <TextBlock Text="Support Flock" />
+                        <TextBlock Text="Flock is free and open source, forever. Sponsoring helps keep it maintained." Style="{StaticResource CaptionTextBlockStyle}"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                        <Button Content="Star on GitHub" Click="StarOnGitHub" />
+                        <Button Content="Sponsor" Click="Sponsor" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <Border Style="{StaticResource CardStyle}">
+                <Grid Style="{StaticResource SettingRowStyle}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Spacing="1">
                         <TextBlock Text="Found a bug?" />
                         <TextBlock Text="Opens a new GitHub issue with your versions filled in." Style="{StaticResource CaptionTextBlockStyle}"
                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />

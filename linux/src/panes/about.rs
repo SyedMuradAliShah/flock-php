@@ -34,9 +34,25 @@ impl AboutPane {
             links.append(&link_button(label, url));
         }
 
+        let support = gtk::Box::builder().orientation(gtk::Orientation::Vertical).spacing(8).build();
+        support.append(
+            &gtk::Label::builder()
+                .label("Flock is free and open source, forever. Sponsoring helps keep it maintained.")
+                .wrap(true)
+                .css_classes(["dim-label"])
+                .build(),
+        );
+        let support_links = gtk::Box::builder().spacing(8).halign(gtk::Align::Center).build();
+        for (label, url) in [("Star on GitHub", "https://github.com/flock-php/flock"), ("Sponsor", "https://github.com/sponsors/flock-php")]
+        {
+            support_links.append(&link_button(label, url));
+        }
+        support.append(&support_links);
+
         let column = gtk::Box::builder().orientation(gtk::Orientation::Vertical).spacing(18).build();
         column.append(&versions);
         column.append(&links);
+        column.append(&support);
         let issue = link_button("Found a bug? Report an issue", "");
         issue.add_css_class("flat");
         column.append(&issue);

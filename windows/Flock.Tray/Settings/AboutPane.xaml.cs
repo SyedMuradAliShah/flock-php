@@ -46,6 +46,14 @@ internal sealed partial class AboutPane : UserControl, ISettingsPane
     {
         model.Open("https://flockphp.com/docs");
     }
+    private void StarOnGitHub(object sender, RoutedEventArgs args)
+    {
+        model.Open("https://github.com/flock-php/flock");
+    }
+    private void Sponsor(object sender, RoutedEventArgs args)
+    {
+        model.Open("https://github.com/sponsors/flock-php");
+    }
     private void OpenLicense(object sender, RoutedEventArgs args)
     {
         model.Open("https://github.com/flock-php/flock/blob/main/LICENSE");
