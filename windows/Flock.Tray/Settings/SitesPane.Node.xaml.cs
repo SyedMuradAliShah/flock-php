@@ -204,7 +204,7 @@ internal sealed partial class SitesPane
         var dialog = new ContentDialog
         {
             Title = current is null ? $"Add commands to {proxy.Name}" : $"Commands of {proxy.Name}",
-            Content = fields.Panel,
+            Content = Ui.DialogForm(Window.XamlRoot, fields.Panel),
             PrimaryButtonText = "Save",
             SecondaryButtonText = current is null ? "" : "Remove Commands",
             CloseButtonText = "Cancel",

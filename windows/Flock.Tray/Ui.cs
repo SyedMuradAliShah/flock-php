@@ -381,6 +381,30 @@ internal static class Ui
     /// default). A destructive action's button is red, like the macOS app's destructive role. An
     /// extra control (such as an "Also delete…" check box) goes under the consequence.
     /// </summary>
+    /// <summary>
+    ///     A dialog's form in a scroll area as tall as the window leaves it (its title and buttons
+    ///     aside), so the form stays usable in the smallest window: it scrolls instead of running
+    ///     under the buttons. Follows the window's size while the dialog is open.
+    /// </summary>
+    public static ScrollViewer DialogForm(XamlRoot root, UIElement form)
+    {
+        // The dialog's title, buttons and margins.
+        const double chrome = 230;
+        var scroller = new ScrollViewer
+        {
+            Content = form,
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+            // Room for the scrollbar, so it doesn't cover the fields.
+            Padding = new Thickness(0, 0, 16, 0),
+        };
+        void Fit(XamlRoot sender, XamlRootChangedEventArgs args) => scroller.MaxHeight = Math.Max(120, sender.Size.Height - chrome);
+        Fit(root, null!);
+        root.Changed += Fit;
+        scroller.Unloaded += (_, _) => root.Changed -= Fit;
+        return scroller;
+    }
+
     public static async Task<bool> Confirm(XamlRoot root, string question, string details, string action, bool destructive = false, UIElement? extra = null)
     {
         UIElement content = new TextBlock { Text = details, TextWrapping = TextWrapping.Wrap };
