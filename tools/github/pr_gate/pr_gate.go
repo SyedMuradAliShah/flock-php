@@ -59,72 +59,84 @@ const (
 )
 
 func Execute(dependencies Dependencies, owner, repository string, event Event) (Result, error) {
-	pullRequests := dependencies.PullRequests
-	issues := dependencies.Issues
+	gate := pullRequestGate{dependencies: dependencies, owner: owner, repository: repository, event: event}
 	for attempt := 0; ; attempt++ {
-		pr, err := pullRequests.Get(owner, repository, event.Number)
-		if err != nil {
-			return Result{}, err
+		result, retry, err := gate.evaluate(attempt < 2)
+		if err != nil || !retry {
+			return result, err
 		}
-		if pr == nil {
-			return Result{}, nil
-		}
-		if bypassesGate(pr.Author, pr.AuthorAssociation) || approvedPullRequest(pr) {
-			return Result{}, nil
-		}
-		if pr.State == "closed" {
-			if !event.BodyEdited || pr.Merged || pr.BaseRef != "main" {
-				return Result{}, nil
-			}
-			closedByGate, err := pullRequests.GateClosed(owner, repository, pr.Number)
-			if err != nil || !closedByGate {
-				return Result{}, err
-			}
-			issue, approved, _, err := firstApprovedIssue(issues, pullRequests, owner, repository, pr)
-			if err != nil {
-				return Result{}, err
-			}
-			if approved {
-				if err := pullRequests.SetState(owner, repository, pr.Number, "open"); err != nil {
-					return Result{}, err
-				}
-				if err := pullRequests.CreateComment(owner, repository, pr.Number, fmt.Sprintf("Thanks, @%s! This pull request references approved issue %s, so it has been reopened.", pr.Author.Login, issue)); err != nil {
-					return Result{}, err
-				}
-				return approvedResult(issue), nil
-			}
-			return Result{}, nil
-		}
-		if event.Action == "edited" && !event.BaseEdited {
-			return Result{}, nil
-		}
-		if pr.BaseRef != "main" {
-			return Result{}, closePullRequest(pullRequests, owner, repository, pr, closeWrongBase)
-		}
-		issue, approved, claimedBy, err := firstApprovedIssue(issues, pullRequests, owner, repository, pr)
-		if err != nil {
-			return Result{}, err
-		}
-		if claimedBy != "" {
-			return Result{ApprovedIssue: &issue, ClaimedBy: claimedBy}, nil
-		}
-		if approved {
-			return approvedResult(issue), nil
-		}
-		files, err := pullRequests.ListFiles(owner, repository, pr.Number)
-		if err != nil {
-			return Result{}, err
-		}
-		decision := evaluate(files)
-		if decision == allow {
-			return Result{}, nil
-		}
-		if decision == closeUnapproved && event.Action == "opened" && attempt < 2 {
-			time.Sleep(3 * time.Second)
-			continue
-		}
-		return Result{}, closePullRequest(pullRequests, owner, repository, pr, decision)
+		time.Sleep(3 * time.Second)
 	}
+}
+
+type pullRequestGate struct {
+	dependencies Dependencies
+	owner        string
+	repository   string
+	event        Event
+}
+
+func (g pullRequestGate) evaluate(retryAllowed bool) (Result, bool, error) {
+	pr, err := g.dependencies.PullRequests.Get(g.owner, g.repository, g.event.Number)
+	if err != nil || pr == nil || bypassesGate(pr.Author, pr.AuthorAssociation) || approvedPullRequest(pr) {
+		return Result{}, false, err
+	}
+	if pr.State == "closed" {
+		return g.evaluateClosed(pr)
+	}
+	return g.evaluateOpen(pr, retryAllowed)
+}
+
+func (g pullRequestGate) evaluateClosed(pr *github_pr.PullRequest) (Result, bool, error) {
+	if !g.event.BodyEdited || pr.Merged || pr.BaseRef != "main" {
+		return Result{}, false, nil
+	}
+	closedByGate, err := g.dependencies.PullRequests.GateClosed(g.owner, g.repository, pr.Number)
+	if err != nil || !closedByGate {
+		return Result{}, false, err
+	}
+	issue, approved, _, err := firstApprovedIssue(g.dependencies.Issues, g.dependencies.PullRequests, g.owner, g.repository, pr)
+	if err != nil || !approved {
+		return Result{}, false, err
+	}
+	if err := g.dependencies.PullRequests.SetState(g.owner, g.repository, pr.Number, "open"); err != nil {
+		return Result{}, false, err
+	}
+	comment := fmt.Sprintf("Thanks, @%s! This pull request references approved issue %s, so it has been reopened.", pr.Author.Login, issue)
+	if err := g.dependencies.PullRequests.CreateComment(g.owner, g.repository, pr.Number, comment); err != nil {
+		return Result{}, false, err
+	}
+	return approvedResult(issue), false, nil
+}
+
+func (g pullRequestGate) evaluateOpen(pr *github_pr.PullRequest, retryAllowed bool) (Result, bool, error) {
+	if g.event.Action == "edited" && !g.event.BaseEdited {
+		return Result{}, false, nil
+	}
+	if pr.BaseRef != "main" {
+		return Result{}, false, closePullRequest(g.dependencies.PullRequests, g.owner, g.repository, pr, closeWrongBase)
+	}
+	issue, approved, claimedBy, err := firstApprovedIssue(g.dependencies.Issues, g.dependencies.PullRequests, g.owner, g.repository, pr)
+	if err != nil {
+		return Result{}, false, err
+	}
+	if claimedBy != "" {
+		return Result{ApprovedIssue: &issue, ClaimedBy: claimedBy}, false, nil
+	}
+	if approved {
+		return approvedResult(issue), false, nil
+	}
+	files, err := g.dependencies.PullRequests.ListFiles(g.owner, g.repository, pr.Number)
+	if err != nil {
+		return Result{}, false, err
+	}
+	if evaluate(files) == allow {
+		return Result{}, false, nil
+	}
+	if g.event.Action == "opened" && retryAllowed {
+		return Result{}, true, nil
+	}
+	return Result{}, false, closePullRequest(g.dependencies.PullRequests, g.owner, g.repository, pr, closeUnapproved)
 }
 
 func approvedResult(issue issue_reference.Reference) Result {
