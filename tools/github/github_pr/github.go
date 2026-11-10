@@ -5,11 +5,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
-	"flock/tools/github/github_issue"
 	"github.com/google/go-github/v93/github"
+
+	"flock/tools/github/github_issue"
+	"flock/tools/github/issue_reference"
 )
 
 const GateMarker = "<!-- pr-gate:closed -->"
@@ -32,6 +35,7 @@ type PullRequest struct {
 	BaseRef           string
 	Author            github_issue.User
 	AuthorAssociation string
+	Labels            []github_issue.Label
 }
 
 // File is a changed pull request file.
@@ -118,6 +122,31 @@ func (s *Service) ListFiles(owner, repository string, number int) ([]File, error
 	}
 }
 
+// LowestOpenReference returns the open pull request with the smallest number that references issue.
+func (s *Service) LowestOpenReference(owner, repository string, issue issue_reference.Reference) (*PullRequest, error) {
+	options := &github.PullRequestListOptions{State: "open", PerPage: 100}
+	var winner *PullRequest
+	for {
+		pullRequests, response, err := s.client.PullRequests.List(context.Background(), owner, repository, options)
+		if err != nil {
+			return nil, err
+		}
+		for _, pullRequest := range pullRequests {
+			candidate := pullRequestFromGitHub(pullRequest)
+			if !references(candidate.Body, repository, issue) {
+				continue
+			}
+			if winner == nil || candidate.Number < winner.Number {
+				winner = candidate
+			}
+		}
+		if response.NextPage == 0 {
+			return winner, nil
+		}
+		options.Page = response.NextPage
+	}
+}
+
 // ParseEvent parses a pull request webhook payload into owned workflow data.
 func ParseEvent(data []byte) (Event, error) {
 	var event github.PullRequestEvent
@@ -147,7 +176,32 @@ func pullRequestFromGitHub(source *github.PullRequest) *PullRequest {
 		BaseRef:           source.GetBase().GetRef(),
 		Author:            github_issue.User{Login: source.GetUser().GetLogin(), Type: source.GetUser().GetType()},
 		AuthorAssociation: source.GetAuthorAssociation(),
+		Labels:            labelsFromGitHub(source.Labels),
 	}
+}
+
+func references(body, repository string, issue issue_reference.Reference) bool {
+	return slices.Contains(issue_reference.Parse(body, repository), issue)
+}
+
+func labelsFromGitHub(sources []*github.Label) []github_issue.Label {
+	labels := make([]github_issue.Label, 0, len(sources))
+	for _, source := range sources {
+		labels = append(labels, github_issue.Label{Name: source.GetName()})
+	}
+	return labels
+}
+
+func HasLabel(pullRequest *PullRequest, name string) bool {
+	if pullRequest == nil {
+		return false
+	}
+	for _, label := range pullRequest.Labels {
+		if label.Name == name {
+			return true
+		}
+	}
+	return false
 }
 
 func (s *Service) ListLinkedIssues(owner, repository string, pullRequestNumber int) ([]LinkedIssue, error) {

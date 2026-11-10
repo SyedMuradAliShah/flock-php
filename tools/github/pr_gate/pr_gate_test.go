@@ -8,6 +8,7 @@ import (
 
 	"flock/tools/github/github_issue"
 	"flock/tools/github/github_pr"
+	"flock/tools/github/issue_reference"
 	"github.com/google/go-github/v93/github"
 )
 
@@ -38,7 +39,7 @@ func TestRunReopensOnlyGateClosedPullRequests(t *testing.T) {
 				t.Fatalf("approved issue = %+v, want flock#73", result.ApprovedIssue)
 			}
 			if tt.gateClosed {
-				want := []string{"pr:get", "pr:gate-closed", "issue:get", "pr:set-state", "pr:create-comment"}
+				want := []string{"pr:get", "pr:gate-closed", "issue:get", "pr:lowest-reference", "issue:ensure-claimed-label", "issue:add-label", "issue:add-assignee", "issue:add-label", "issue:remove-help-wanted", "pr:set-state", "pr:create-comment"}
 				if !reflect.DeepEqual(api.calls, want) {
 					t.Fatalf("calls = %v, want %v", api.calls, want)
 				}
@@ -140,6 +141,59 @@ func TestRunBypassesMaintainersWithoutCheckingIssuesOrFiles(t *testing.T) {
 	}
 }
 
+func TestRunBypassesClaimedPullRequestsWithoutCheckingIssuesOrFiles(t *testing.T) {
+	pr := pullRequest("open", "Fixes #73")
+	pr.Labels = []github_issue.Label{{Name: claimed}}
+	api := &fakeService{pullRequest: pr}
+	if _, err := Execute(Dependencies{Issues: &fakeIssueService{api: api}, PullRequests: api}, "flock-php", "flock", Event{Action: "synchronize", Number: 87}); err != nil {
+		t.Fatal(err)
+	}
+	if api.issueCalls != 0 || api.filesCalls != 0 || len(api.calls) != 1 {
+		t.Fatalf("calls = %v, want only Get()", api.calls)
+	}
+}
+
+func TestRunRejectsAnotherAuthorForAnAssignedHelpWantedIssue(t *testing.T) {
+	api := &fakeService{
+		pullRequest: pullRequest("open", "Fixes #73"),
+		issue: &github_issue.Issue{
+			State: "open", Assignees: []github_issue.User{{Login: "claimed-by"}}, Labels: []github_issue.Label{{Name: github_issue.HelpWanted}},
+		},
+	}
+	result, err := Execute(Dependencies{Issues: &fakeIssueService{api: api}, PullRequests: api}, "flock-php", "flock", Event{Action: "synchronize", Number: 87})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.ApprovedIssue == nil || result.ApprovedIssue.Number != 73 || result.ClaimedBy != "claimed-by" {
+		t.Fatalf("result = %+v, want issue flock#73 claimed by claimed-by", result)
+	}
+	if want := []string{"pr:get", "issue:get"}; !reflect.DeepEqual(api.calls, want) {
+		t.Fatalf("calls = %v, want %v", api.calls, want)
+	}
+}
+
+func TestRunRejectsHigherNumberedCompetingPullRequest(t *testing.T) {
+	api := &fakeService{
+		pullRequest: pullRequest("open", "Fixes #73"),
+		issue:       approvedIssue(),
+	}
+	api.pullRequest.Number = 87
+	winner := pullRequest("open", "Fixes #73")
+	winner.Number = 86
+	winner.Author.Login = "first-contributor"
+	api.winner = winner
+	result, err := Execute(Dependencies{Issues: &fakeIssueService{api: api}, PullRequests: api}, "flock-php", "flock", Event{Action: "synchronize", Number: 87})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.ClaimedBy != "first-contributor" {
+		t.Fatalf("claimed by = %q, want first-contributor", result.ClaimedBy)
+	}
+	if want := []string{"pr:get", "issue:get", "pr:lowest-reference"}; !reflect.DeepEqual(api.calls, want) {
+		t.Fatalf("calls = %v, want %v", api.calls, want)
+	}
+}
+
 func TestRunClosesWrongBaseWithCommentBeforeClosing(t *testing.T) {
 	api := &fakeService{pullRequest: &github_pr.PullRequest{
 		Number: 87, State: "open", BaseRef: "release", Author: github_issue.User{Login: "contributor", Type: "User"},
@@ -224,6 +278,7 @@ func TestRunReturnsIssueServiceErrors(t *testing.T) {
 
 type fakeService struct {
 	pullRequest *github_pr.PullRequest
+	winner      *github_pr.PullRequest
 	files       []github_pr.File
 	issue       *github_issue.Issue
 	gateClosed  bool
@@ -238,12 +293,24 @@ type fakeService struct {
 	gateErr     error
 	commentErr  error
 	stateErr    error
+	lowestErr   error
+	assignErr   error
+	labelErr    error
+	removeErr   error
+	ensureErr   error
 }
 
 func (f *fakeService) Get(string, string, int) (*github_pr.PullRequest, error) {
 	f.getCalls++
 	f.calls = append(f.calls, "pr:get")
 	return f.pullRequest, f.getErr
+}
+func (f *fakeService) LowestOpenReference(string, string, issue_reference.Reference) (*github_pr.PullRequest, error) {
+	f.calls = append(f.calls, "pr:lowest-reference")
+	if f.winner != nil {
+		return f.winner, f.lowestErr
+	}
+	return f.pullRequest, f.lowestErr
 }
 func (f *fakeService) ListFiles(string, string, int) ([]github_pr.File, error) {
 	f.filesCalls++
@@ -279,6 +346,22 @@ func (f *fakeIssueService) Get(_ string, _ string, number int) (*github_issue.Is
 	}
 	return f.api.issue, f.err
 }
+func (f *fakeIssueService) AddAssignee(string, string, int, string) (*github_issue.Issue, error) {
+	f.api.calls = append(f.api.calls, "issue:add-assignee")
+	return f.api.issue, f.api.assignErr
+}
+func (f *fakeIssueService) EnsureClaimedLabel(string, string) error {
+	f.api.calls = append(f.api.calls, "issue:ensure-claimed-label")
+	return f.api.ensureErr
+}
+func (f *fakeIssueService) AddLabel(string, string, int, string) error {
+	f.api.calls = append(f.api.calls, "issue:add-label")
+	return f.api.labelErr
+}
+func (f *fakeIssueService) RemoveHelpWanted(string, string, *github_issue.Issue) error {
+	f.api.calls = append(f.api.calls, "issue:remove-help-wanted")
+	return f.api.removeErr
+}
 
 func pullRequest(state, body string) *github_pr.PullRequest {
 	return &github_pr.PullRequest{
@@ -291,5 +374,5 @@ func pullRequest(state, body string) *github_pr.PullRequest {
 }
 
 func approvedIssue() *github_issue.Issue {
-	return &github_issue.Issue{State: "open", Labels: []github_issue.Label{{Name: openToAnyone}}}
+	return &github_issue.Issue{State: "open", Labels: []github_issue.Label{{Name: github_issue.HelpWanted}}}
 }

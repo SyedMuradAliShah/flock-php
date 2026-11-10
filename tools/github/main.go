@@ -16,7 +16,6 @@ import (
 	"flock/tools/github/issue_triage"
 	"flock/tools/github/merge_gate"
 	"flock/tools/github/milestone_transfer"
-	"flock/tools/github/pr_assignment"
 	"flock/tools/github/pr_gate"
 	"flock/tools/github/repository"
 )
@@ -47,7 +46,6 @@ func main() {
 		service := PullRequestEventService{
 			PullRequests: github_pr.New(client),
 			Issues:       github_issue.New(client),
-			Repositories: github_repository.New(client),
 		}
 		err = service.Run(owner, repo, event)
 	case "issue":
@@ -69,21 +67,14 @@ func main() {
 	}
 }
 
-const maxApprovalRetries = 3
-
 // PullRequestEventService coordinates contribution policies for pull request events.
 type PullRequestEventService struct {
 	PullRequests *github_pr.Service
 	Issues       *github_issue.Service
-	Repositories *github_repository.Service
 }
 
 func (s PullRequestEventService) Run(owner, repository string, data []byte) error {
 	return runPullRequestEvent(pullRequestEventDependencies{
-		Assignment: pr_assignment.Dependencies{
-			Issues:       s.Issues,
-			Repositories: s.Repositories,
-		},
 		Gate: pr_gate.Dependencies{
 			Issues:       s.Issues,
 			PullRequests: s.PullRequests,
@@ -93,7 +84,6 @@ func (s PullRequestEventService) Run(owner, repository string, data []byte) erro
 }
 
 type pullRequestEventDependencies struct {
-	Assignment pr_assignment.Dependencies
 	Gate       pr_gate.Dependencies
 	Milestones milestone_transfer.PullRequestMilestoneService
 }
@@ -109,33 +99,13 @@ func runPullRequestEvent(dependencies pullRequestEventDependencies, owner, repos
 	if err != nil {
 		return err
 	}
-	for retries := 0; result.ApprovedIssue != nil; {
-		approvedIssue := *result.ApprovedIssue
-		if approvedIssue.Repository == repository {
-			assignment, err := pr_assignment.Execute(dependencies.Assignment, owner, approvedIssue, event.Author)
-			if err != nil {
-				return err
-			}
-			if assignment.ApprovalWithdrawn {
-				if retries == maxApprovalRetries {
-					return fmt.Errorf("issue approval changed repeatedly while processing pull request #%d", event.Number)
-				}
-				retries++
-				result, err = pr_gate.Execute(dependencies.Gate, owner, repository, pr_gate.Event{
-					Action: "synchronize", Number: event.Number,
-				})
-				if err != nil {
-					return err
-				}
-				continue
-			}
-			if assignment.ClaimedBy != "" {
-				return pr_gate.CloseClaimedIssue(dependencies.Gate.PullRequests, owner, repository, event.Number, approvedIssue, assignment.ClaimedBy)
-			}
-		}
-		return milestone_transfer.Execute(dependencies.Milestones, owner, repository, event.Number, approvedIssue)
+	if result.ApprovedIssue == nil {
+		return nil
 	}
-	return nil
+	if result.ClaimedBy != "" {
+		return pr_gate.CloseClaimedIssue(dependencies.Gate.PullRequests, owner, repository, event.Number, *result.ApprovedIssue, result.ClaimedBy)
+	}
+	return milestone_transfer.Execute(dependencies.Milestones, owner, repository, event.Number, *result.ApprovedIssue)
 }
 
 // IssueEventService coordinates contribution policies for issue events.

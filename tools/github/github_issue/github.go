@@ -62,6 +62,23 @@ func (s *Service) AddLabel(owner, repository string, number int, label string) e
 	return err
 }
 
+// EnsureClaimedLabel creates the durable pull request approval label when it is missing.
+func (s *Service) EnsureClaimedLabel(owner, repository string) error {
+	_, _, err := s.client.Issues.GetLabel(context.Background(), owner, repository, Claimed)
+	if err == nil {
+		return nil
+	}
+	if !isNotFound(err) {
+		return err
+	}
+	color := "0e8a16"
+	description := "A pull request has claimed this issue"
+	_, _, err = s.client.Issues.CreateLabel(context.Background(), owner, repository, github.CreateIssueLabelRequest{
+		Name: Claimed, Color: &color, Description: &description,
+	})
+	return err
+}
+
 func (s *Service) RemoveLabel(owner, repository string, number int, label string) error {
 	_, err := s.client.Issues.RemoveLabelForIssue(context.Background(), owner, repository, number, label)
 	return err
@@ -72,11 +89,15 @@ func (s *Service) RemoveHelpWanted(owner, repository string, issue *Issue) error
 		return nil
 	}
 	err := s.RemoveLabel(owner, repository, issue.Number, HelpWanted)
-	var response *github.ErrorResponse
-	if errors.As(err, &response) && response.Response != nil && response.Response.StatusCode == http.StatusNotFound {
+	if isNotFound(err) {
 		return nil
 	}
 	return err
+}
+
+func isNotFound(err error) bool {
+	var response *github.ErrorResponse
+	return errors.As(err, &response) && response.Response != nil && response.Response.StatusCode == http.StatusNotFound
 }
 
 func (s *Service) AddAssignee(owner, repository string, number int, username string) (*Issue, error) {

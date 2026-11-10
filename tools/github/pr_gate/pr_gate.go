@@ -14,10 +14,11 @@ import (
 	"github.com/google/go-github/v93/github"
 )
 
-const openToAnyone = "help wanted"
+const claimed = "claimed"
 
 type PullRequestGateService interface {
 	Get(owner, repository string, number int) (*github_pr.PullRequest, error)
+	LowestOpenReference(owner, repository string, issue issue_reference.Reference) (*github_pr.PullRequest, error)
 	ListFiles(owner, repository string, number int) ([]github_pr.File, error)
 	GateClosed(owner, repository string, number int) (bool, error)
 	CreateComment(owner, repository string, number int, body string) error
@@ -26,6 +27,10 @@ type PullRequestGateService interface {
 
 type IssueReader interface {
 	Get(owner, repository string, number int) (*github_issue.Issue, error)
+	EnsureClaimedLabel(owner, repository string) error
+	AddAssignee(owner, repository string, number int, username string) (*github_issue.Issue, error)
+	AddLabel(owner, repository string, number int, label string) error
+	RemoveHelpWanted(owner, repository string, issue *github_issue.Issue) error
 }
 
 type Dependencies struct {
@@ -42,6 +47,7 @@ type Event struct {
 
 type Result struct {
 	ApprovedIssue *issue_reference.Reference
+	ClaimedBy     string
 }
 
 type action string
@@ -63,7 +69,7 @@ func Execute(dependencies Dependencies, owner, repository string, event Event) (
 		if pr == nil {
 			return Result{}, nil
 		}
-		if bypassesGate(pr.Author, pr.AuthorAssociation) {
+		if bypassesGate(pr.Author, pr.AuthorAssociation) || approvedPullRequest(pr) {
 			return Result{}, nil
 		}
 		if pr.State == "closed" {
@@ -74,7 +80,7 @@ func Execute(dependencies Dependencies, owner, repository string, event Event) (
 			if err != nil || !closedByGate {
 				return Result{}, err
 			}
-			issue, approved, err := firstApprovedIssue(issues, owner, pr)
+			issue, approved, _, err := firstApprovedIssue(issues, pullRequests, owner, repository, pr)
 			if err != nil {
 				return Result{}, err
 			}
@@ -95,9 +101,12 @@ func Execute(dependencies Dependencies, owner, repository string, event Event) (
 		if pr.BaseRef != "main" {
 			return Result{}, closePullRequest(pullRequests, owner, repository, pr, closeWrongBase)
 		}
-		issue, approved, err := firstApprovedIssue(issues, owner, pr)
+		issue, approved, claimedBy, err := firstApprovedIssue(issues, pullRequests, owner, repository, pr)
 		if err != nil {
 			return Result{}, err
+		}
+		if claimedBy != "" {
+			return Result{ApprovedIssue: &issue, ClaimedBy: claimedBy}, nil
 		}
 		if approved {
 			return approvedResult(issue), nil
@@ -142,20 +151,60 @@ func evaluate(files []github_pr.File) action {
 	return closeUnapproved
 }
 
-func firstApprovedIssue(issues IssueReader, owner string, pr *github_pr.PullRequest) (issue_reference.Reference, bool, error) {
+func firstApprovedIssue(issues IssueReader, pullRequests PullRequestGateService, owner, repository string, pr *github_pr.PullRequest) (issue_reference.Reference, bool, string, error) {
 	for _, reference := range issue_reference.Parse(pr.Body, "flock") {
+		if reference.Repository != repository {
+			continue
+		}
 		issue, err := issues.Get(owner, reference.Repository, reference.Number)
 		if err != nil {
 			if isNotFound(err) {
 				continue
 			}
-			return issue_reference.Reference{}, false, err
+			return issue_reference.Reference{}, false, "", err
 		}
-		if isApproved(issue, pr.Author.Login) {
-			return reference, true, nil
+		approved, claimedBy := issueApproval(issue, pr.Author.Login)
+		if claimedBy != "" {
+			return reference, false, claimedBy, nil
 		}
+		if !approved {
+			continue
+		}
+		if len(issue.Assignees) != 0 {
+			return reference, true, "", nil
+		}
+		winner, err := pullRequests.LowestOpenReference(owner, repository, reference)
+		if err != nil {
+			return issue_reference.Reference{}, false, "", err
+		}
+		if winner == nil {
+			return issue_reference.Reference{}, false, "", fmt.Errorf("no open pull request references issue %s", reference)
+		}
+		if winner.Number != pr.Number {
+			return reference, false, winner.Author.Login, nil
+		}
+		if err := claimIssue(issues, owner, repository, pr, reference, issue); err != nil {
+			return issue_reference.Reference{}, false, "", err
+		}
+		return reference, true, "", nil
 	}
-	return issue_reference.Reference{}, false, nil
+	return issue_reference.Reference{}, false, "", nil
+}
+
+func claimIssue(issues IssueReader, owner, repository string, pr *github_pr.PullRequest, reference issue_reference.Reference, issue *github_issue.Issue) error {
+	if err := issues.EnsureClaimedLabel(owner, repository); err != nil {
+		return err
+	}
+	if err := issues.AddLabel(owner, repository, pr.Number, claimed); err != nil {
+		return err
+	}
+	if _, err := issues.AddAssignee(owner, reference.Repository, reference.Number, pr.Author.Login); err != nil {
+		return err
+	}
+	if err := issues.AddLabel(owner, reference.Repository, reference.Number, claimed); err != nil {
+		return err
+	}
+	return issues.RemoveHelpWanted(owner, reference.Repository, issue)
 }
 
 func isNotFound(err error) bool {
@@ -195,19 +244,19 @@ func docsOnly(files []github_pr.File) bool {
 	return true
 }
 
-func isApproved(issue *github_issue.Issue, author string) bool {
+func issueApproval(issue *github_issue.Issue, author string) (bool, string) {
 	if issue == nil || issue.IsPullRequest || issue.State != "open" {
-		return false
+		return false, ""
 	}
-	for _, label := range issue.Labels {
-		if label.Name == openToAnyone {
-			return true
+	if len(issue.Assignees) != 0 {
+		if github_issue.HasAssignee(issue, author) {
+			return true, ""
 		}
+		return false, issue.Assignees[0].Login
 	}
-	for _, assignee := range issue.Assignees {
-		if assignee.Login == author {
-			return true
-		}
-	}
-	return false
+	return github_issue.HasHelpWanted(issue), ""
+}
+
+func approvedPullRequest(pr *github_pr.PullRequest) bool {
+	return github_pr.HasLabel(pr, claimed)
 }

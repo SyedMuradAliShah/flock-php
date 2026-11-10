@@ -118,6 +118,35 @@ func TestServiceGetsIssueAndAddsLabel(t *testing.T) {
 	}
 }
 
+func TestServiceCreatesClaimedLabelWhenMissing(t *testing.T) {
+	var created bool
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method + " " + r.URL.EscapedPath() {
+		case "GET /repos/flock-php/flock/labels/claimed":
+			w.WriteHeader(http.StatusNotFound)
+		case "POST /repos/flock-php/flock/labels":
+			body, _ := io.ReadAll(r.Body)
+			if !strings.Contains(string(body), `"name":"claimed"`) {
+				t.Fatalf("label request = %s", body)
+			}
+			created = true
+			_, _ = io.WriteString(w, `{"name":"claimed"}`)
+		default:
+			t.Errorf("request = %s %s", r.Method, r.URL.String())
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+	defer server.Close()
+
+	client, err := github_client.New(server.URL, "token")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := New(client).EnsureClaimedLabel("flock-php", "flock"); err != nil || !created {
+		t.Fatalf("EnsureClaimedLabel() = %v, created = %t", err, created)
+	}
+}
+
 func TestServicePropagatesIssueErrors(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)

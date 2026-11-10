@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"flock/tools/github/github_client"
+	"flock/tools/github/issue_reference"
 )
 
 func TestServiceTransfersMilestone(t *testing.T) {
@@ -77,7 +78,7 @@ func TestServiceGetsPullRequestsFilesAndUpdates(t *testing.T) {
 	server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method + " " + r.URL.Path {
 		case "GET /repos/flock-php/flock/pulls/87":
-			_, _ = io.WriteString(w, `{"number":87,"state":"open"}`)
+			_, _ = io.WriteString(w, `{"number":87,"state":"open","labels":[{"name":"claimed"}]}`)
 		case "GET /repos/flock-php/flock/pulls/87/files":
 			if r.URL.Query().Get("page") == "2" {
 				_, _ = io.WriteString(w, `[{"filename":"second.go"}]`)
@@ -101,6 +102,9 @@ func TestServiceGetsPullRequestsFilesAndUpdates(t *testing.T) {
 	if err != nil || pullRequest.Number != 87 {
 		t.Fatalf("Get() = %+v, %v", pullRequest, err)
 	}
+	if !HasLabel(pullRequest, "claimed") {
+		t.Fatal("Get() did not return the claimed label")
+	}
 	files, err := service.ListFiles("flock-php", "flock", 87)
 	if err != nil || len(files) != 2 {
 		t.Fatalf("ListFiles() = %v, %v", files, err)
@@ -110,6 +114,33 @@ func TestServiceGetsPullRequestsFilesAndUpdates(t *testing.T) {
 	}
 	if err := service.SetState("flock-php", "flock", 87, "closed"); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestServiceFindsLowestOpenReferencedPullRequestAcrossPages(t *testing.T) {
+	var server *httptest.Server
+	server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet || r.URL.Path != "/repos/flock-php/flock/pulls" || (r.URL.Query().Get("page") == "" && r.URL.Query().Get("state") != "open") {
+			t.Errorf("request = %s", r.URL.String())
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		if r.URL.Query().Get("page") == "2" {
+			_, _ = io.WriteString(w, `[{"number":86,"body":"Fixes #73","user":{"login":"first"}}]`)
+			return
+		}
+		w.Header().Set("Link", "<"+server.URL+"/repos/flock-php/flock/pulls?page=2>; rel=\"next\"")
+		_, _ = io.WriteString(w, `[{"number":87,"body":"Fixes #73","user":{"login":"second"}},{"number":85,"body":"Fixes #72","user":{"login":"other"}}]`)
+	}))
+	defer server.Close()
+
+	client, err := github_client.New(server.URL, "token")
+	if err != nil {
+		t.Fatal(err)
+	}
+	winner, err := New(client).LowestOpenReference("flock-php", "flock", issue_reference.Reference{Repository: "flock", Number: 73})
+	if err != nil || winner == nil || winner.Number != 86 || winner.Author.Login != "first" {
+		t.Fatalf("LowestOpenReference() = %+v, %v", winner, err)
 	}
 }
 
