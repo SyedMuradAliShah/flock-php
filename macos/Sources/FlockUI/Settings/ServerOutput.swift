@@ -226,29 +226,52 @@ struct ProxyCommandsFields: View {
     let stop: Binding<String>
     let dir: Binding<String>
 
+    // The labels are in the UI font like the form's other fields; only what's typed is monospaced.
     var body: some View {
-        TextField("Start", text: start, prompt: Text("npm run dev"))
-            .font(.callout.monospaced())
-        TextField("Stop", text: stop, prompt: Text("Only for a server that runs in the background, e.g. docker compose stop"))
-            .font(.callout.monospaced())
+        LabeledContent("Start") {
+            TextField("Start", text: start, prompt: Text("npm run dev"))
+                .labelsHidden()
+                .font(.body.monospaced())
+        }
+        LabeledContent("Stop") {
+            VStack(alignment: .leading, spacing: 3) {
+                TextField("Stop", text: stop, prompt: Text("docker compose stop"))
+                    .labelsHidden()
+                    .font(.body.monospaced())
+                Text("Only for a server that runs in the background, like docker compose up -d.")
+                    .font(.caption).foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
         LabeledContent("Folder") {
             HStack(spacing: 8) {
-                Text(dir.wrappedValue).font(.callout.monospaced())
-                    .lineLimit(1).truncationMode(.middle)
-                    .help(dir.wrappedValue)
+                TextField("Folder", text: dir)
+                    .labelsHidden()
+                    .font(.body.monospaced())
                 Button("Choose…") {
                     let from = URL(fileURLWithPath: dir.wrappedValue)
                     if let url = SettingsStore.chooseDirectories(prompt: "Choose", multiple: false, in: from).first {
                         dir.wrappedValue = url.path
                     }
                 }
-                .controlSize(.small)
             }
         }
     }
 
     /// The folder new commands run in until another is chosen.
     static var home: String { FileManager.default.homeDirectoryForCurrentUser.path }
+}
+
+/// A sheet's form at its own height, scrolling only when the sheet can't fit it.
+struct FittingForm<Content: View>: View {
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        ViewThatFits(in: .vertical) {
+            Form { content() }
+            ScrollView { Form { content() } }
+        }
+    }
 }
 
 /// Edits the commands that start and stop a proxy's server, and their folder.
@@ -273,12 +296,9 @@ struct ProxyCommandSheet: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Commands of \(proxy.name)").font(.headline)
-            Form {
+            FittingForm {
                 ProxyCommandsFields(start: commandState.projectedValue, stop: stopState.projectedValue, dir: dirState.projectedValue)
             }
-            Text(proxyCommandsHelp)
-                .font(.caption).foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
             HStack {
                 if proxy.command != nil {
                     // An empty start command removes the commands and their folder.
@@ -324,14 +344,11 @@ struct AddProxySheet: View {
             Text("Flock serves <name>.\(tld) from a server of its own, e.g. a dashboard, an object store, a Docker container or a Go or Python app. A port means 127.0.0.1.")
                 .font(.callout).foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
-            Form {
+            FittingForm {
                 TextField("Name", text: nameState.projectedValue, prompt: Text("my-app"))
                 TextField("Upstream", text: upstreamState.projectedValue, prompt: Text("Port, host:port or URL, e.g. 3000"))
                 DisclosureGroup("Commands (optional)", isExpanded: commandsShownState.projectedValue) {
                     ProxyCommandsFields(start: commandState.projectedValue, stop: stopState.projectedValue, dir: dirState.projectedValue)
-                    Text(proxyCommandsHelp)
-                        .font(.caption).foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
             HStack {

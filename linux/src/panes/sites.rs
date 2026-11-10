@@ -296,7 +296,6 @@ impl Inner {
         for row in &fields.rows {
             commands.add_row(row);
         }
-        commands.add_row(&adw::ActionRow::builder().subtitle(glib::markup_escape_text(COMMANDS_HELP)).build());
         let list = gtk::ListBox::builder().css_classes(["boxed-list"]).selection_mode(gtk::SelectionMode::None).build();
         list.append(&name);
         list.append(&upstream);
@@ -1750,7 +1749,7 @@ impl Inner {
         for row in &fields.rows {
             list.append(row);
         }
-        let dialog = adw::AlertDialog::new(Some(&format!("Commands of {}", proxy.name)), Some(COMMANDS_HELP));
+        let dialog = adw::AlertDialog::new(Some(&format!("Commands of {}", proxy.name)), None);
         dialog.set_extra_child(Some(&list));
         dialog.add_response("cancel", "Cancel");
         if !current.command.is_empty() {
@@ -1925,9 +1924,6 @@ fn extension_row(ext: &PhpExtension, php: &str, path: &str, require: Rc<dyn Fn(S
     row
 }
 
-/// What a proxy's commands do, in the dialogs that set them.
-const COMMANDS_HELP: &str = "Flock runs the start command when you click Start and shows its output. For a command that starts the server in the background, like docker compose up -d, add the command that stops it.";
-
 /// The Start, Stop and Folder fields of a proxy's commands, for the dialogs that add or change
 /// them. The folder is the home folder until one is chosen.
 struct CommandFields {
@@ -1939,14 +1935,22 @@ struct CommandFields {
 
 impl CommandFields {
     fn new(current: &ProxyCommand) -> Self {
+        // The labels in the UI's font, what's typed in monospace.
         let field = |title: &str, text: &str, placeholder: &str| {
-            let entry = gtk::Entry::builder().text(text).placeholder_text(placeholder).hexpand(true).valign(gtk::Align::Center).build();
+            let entry = gtk::Entry::builder()
+                .text(text)
+                .placeholder_text(placeholder)
+                .hexpand(true)
+                .valign(gtk::Align::Center)
+                .css_classes(["monospace"])
+                .build();
             let row = adw::ActionRow::builder().title(title).build();
             row.add_suffix(&entry);
             (row, entry)
         };
         let (start_row, start) = field("Start", &current.command, "npm run dev");
-        let (stop_row, stop) = field("Stop", &current.stop_command, "Only for a server that runs in the background, e.g. docker compose stop");
+        let (stop_row, stop) = field("Stop", &current.stop_command, "docker compose stop");
+        stop_row.set_subtitle("Only for a server that runs in the background, like docker compose up -d.");
         let dir = if current.dir.is_empty() { glib::home_dir().to_string_lossy().into_owned() } else { current.dir.clone() };
         let (folder_row, folder) = field("Folder", &dir, "");
         let choose = gtk::Button::builder().label("Choose…").valign(gtk::Align::Center).css_classes(["flat"]).build();

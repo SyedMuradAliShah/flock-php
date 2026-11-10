@@ -1,6 +1,7 @@
 using Flock.Kit;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 namespace Flock.Tray.Settings;
 
 /// <summary>
@@ -157,18 +158,22 @@ internal sealed partial class SitesPane
 
     private CommandFields NewCommandFields(Status.ProxyCommand? current)
     {
-        var start = new TextBox { Header = "Start", PlaceholderText = "npm run dev", Text = current?.Command ?? "", FontFamily = Ui.Mono };
-        var stop = new TextBox
+        // The commands are typed in a monospaced font; their labels stay in the dialog's own, like Name and Upstream.
+        static TextBlock Label(string text) => new()
         {
-            Header = "Stop", PlaceholderText = "Only for a server that runs in the background, e.g. docker compose stop",
-            Text = current?.StopCommand ?? "", FontFamily = Ui.Mono,
+            Text = text,
+            FontFamily = Application.Current.Resources.TryGetValue("ContentControlThemeFontFamily", out var font) && font is FontFamily family
+                ? family : new FontFamily("Segoe UI Variable Text"),
         };
+        var start = new TextBox { Header = Label("Start"), PlaceholderText = "npm run dev", Text = current?.Command ?? "", FontFamily = Ui.Mono };
+        var stop = new TextBox { Header = Label("Stop"), PlaceholderText = "docker compose stop", Text = current?.StopCommand ?? "", FontFamily = Ui.Mono };
         var folder = new TextBox
         {
+            Header = "Folder",
             Text = current?.Dir is { Length: > 0 } dir ? dir : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-            MinWidth = 280,
         };
         var choose = Ui.Button("Choose…", () => _ = ChooseFolderAsync());
+        choose.VerticalAlignment = VerticalAlignment.Bottom;
         async Task ChooseFolderAsync()
         {
             if (await Window.PickFolder() is { } picked)
@@ -176,10 +181,18 @@ internal sealed partial class SitesPane
                 folder.Text = picked;
             }
         }
+        var folderRow = new Grid { ColumnSpacing = 8 };
+        folderRow.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        folderRow.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        Grid.SetColumn(choose, 1);
+        folderRow.Children.Add(folder);
+        folderRow.Children.Add(choose);
         return new CommandFields
         {
             Start = start, Stop = stop, Folder = folder,
-            Panel = Ui.Column(12, Ui.Caption(CommandHelp), start, stop, Ui.Column(4, Ui.Text("Folder"), Ui.Row(8, folder, choose))),
+            Panel = Ui.Column(12, start,
+                Ui.Column(4, stop, Ui.Caption("Only for a server that runs in the background, like docker compose up -d.", Ui.TertiaryText)),
+                folderRow),
         };
     }
 
