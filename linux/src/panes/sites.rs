@@ -27,8 +27,8 @@ use super::versions::{MenuItem, badge, button, more_menu};
 use super::worktree_job;
 use super::{Data, Pane};
 use crate::api::{
-    Branches, Client, Config, Error, ExtensionReport, PhpExtension, ProxyCommand, ProxyCommandChange, ProxyStatus, ShareStatus,
-    SiteChange, SiteNodeServer, SiteStatus, Status, WorktreeStatus,
+    Branches, Client, Config, Error, ExtensionReport, PhpExtension, ProxyChange, ProxyCommand, ProxyCommandChange, ProxyStatus,
+    ShareStatus, SiteChange, SiteNodeServer, SiteStatus, Status, WorktreeStatus,
 };
 use crate::links::{self, Link};
 use crate::model::AppModel;
@@ -291,13 +291,20 @@ impl Inner {
     fn add_proxy(self: &Rc<Self>, tld: &str) {
         let name = adw::EntryRow::builder().title("Name, e.g. my-app").build();
         let upstream = adw::EntryRow::builder().title("Port, host:port or URL, e.g. 3000").activates_default(true).build();
+        let commands = adw::ExpanderRow::builder().title("Commands (optional)").expanded(false).build();
+        let fields = CommandFields::new(&ProxyCommand::default());
+        for row in &fields.rows {
+            commands.add_row(row);
+        }
+        commands.add_row(&adw::ActionRow::builder().subtitle(glib::markup_escape_text(COMMANDS_HELP)).build());
         let list = gtk::ListBox::builder().css_classes(["boxed-list"]).selection_mode(gtk::SelectionMode::None).build();
         list.append(&name);
         list.append(&upstream);
+        list.append(&commands);
         let dialog = adw::AlertDialog::new(
             Some("Add a proxy"),
             Some(&format!(
-                "Flock serves <name>.{tld} from a server of its own, e.g. a dashboard, an object store, a Docker container or a Go or Python app. A port means 127.0.0.1. Afterwards, you can give it the command that starts the server, so Flock can start and stop it."
+                "Flock serves <name>.{tld} from a server of its own, e.g. a dashboard, an object store, a Docker container or a Go or Python app. A port means 127.0.0.1."
             )),
         );
         dialog.set_extra_child(Some(&list));
@@ -312,8 +319,9 @@ impl Inner {
             }
             // Its detail shows once the daemon added it; the new status renders it.
             let (pane, banner, n) = (this.clone(), this.banner.clone(), name.clone());
+            let change = ProxyChange::new(&name, &upstream, None).with_commands(fields.change());
             this.model.perform(
-                move |c| c.proxy(&name, &upstream, None),
+                move |c| c.add_proxy(&change),
                 move |e| {
                     if e.is_none() {
                         pane.selected.replace(Some(n.clone()));
@@ -1587,7 +1595,8 @@ impl Inner {
 
     /// A proxy: its address and actions, then what answers at its upstream, its HTTPS and upstream.
     fn render_proxy(self: &Rc<Self>, proxy: &ProxyStatus) {
-        let mut groups: Vec<gtk::Widget> = vec![self.proxy_header(proxy).upcast(), self.proxy_group(proxy).upcast()];
+        let mut groups: Vec<gtk::Widget> =
+            vec![self.proxy_header(proxy).upcast(), self.proxy_group(proxy).upcast(), self.commands_group(proxy).upcast()];
         if let Some(command) = &proxy.command {
             groups.push(self.output.show(&command.log, command.live()));
         }
@@ -1647,7 +1656,7 @@ impl Inner {
             )
         } else {
             format!(
-                "Every request passes to the upstream with its Host header, WebSocket upgrades (hot reload) included. Flock doesn't start the server, so start it as usual. Until it answers, {} shows a page saying so.",
+                "Every request passes to the upstream with its Host header, WebSocket upgrades (hot reload) included. Flock doesn't start the server, so start it as usual, or give it commands below. Until it answers, {} shows a page saying so.",
                 proxy.domain
             )
         };
@@ -1680,19 +1689,30 @@ impl Inner {
         let (this, p) = (self.clone(), proxy.clone());
         upstream.add_suffix(&button("Change…", false, move || this.change_upstream(&p)));
         group.add(&upstream);
+        group
+    }
 
-        let command = proxy.command.as_ref().map_or("None", |c| c.command.as_str());
-        let row = info_row("Command", command);
-        if let Some(c) = &proxy.command {
-            let mut subtitle = c.dir.clone();
-            if !c.stop_command.is_empty() {
-                subtitle.push_str(&format!("\nStops with {}", c.stop_command));
-            }
-            row.set_subtitle(&glib::markup_escape_text(&subtitle));
-        }
+    /// The commands that start and stop a proxy's server and the folder they run in, or Add
+    /// Commands… when it has none.
+    fn commands_group(self: &Rc<Self>, proxy: &ProxyStatus) -> adw::PreferencesGroup {
+        let group = group("Commands", "");
         let (this, p) = (self.clone(), proxy.clone());
-        row.add_suffix(&button("Change…", false, move || this.change_command(&p)));
-        group.add(&row);
+        match &proxy.command {
+            Some(command) => {
+                group.add(&info_row("Start", &command.command));
+                if !command.stop_command.is_empty() {
+                    group.add(&info_row("Stop", &command.stop_command));
+                }
+                group.add(&info_row("Folder", &command.dir));
+                group.set_header_suffix(Some(&button("Change…", false, move || this.change_command(&p))));
+            }
+            None => {
+                group.set_description(Some("Give Flock the commands that start and stop the server, so you can start it here."));
+                let row = adw::ActionRow::new();
+                row.add_suffix(&button("Add Commands…", false, move || this.change_command(&p)));
+                group.add(&row);
+            }
+        }
         group
     }
 
@@ -1721,50 +1741,34 @@ impl Inner {
         row
     }
 
-    /// Asks for the command that starts a proxy's server, the folder it runs in and, for a server
-    /// that runs in the background, the command that stops it. An empty command removes it.
+    /// Asks for the commands that start and, for a server that runs in the background, stop a
+    /// proxy's server, and the folder they run in. Remove Commands (or an empty Start) removes them.
     fn change_command(self: &Rc<Self>, proxy: &ProxyStatus) {
         let current = proxy.command.clone().unwrap_or_default();
-        let command = adw::EntryRow::builder().title("Command").build();
-        command.set_text(&current.command);
-        let folder = adw::EntryRow::builder().title("Folder").build();
-        folder.set_text(&if current.dir.is_empty() { glib::home_dir().to_string_lossy().into_owned() } else { current.dir.clone() });
-        let choose = gtk::Button::builder().label("Choose…").valign(gtk::Align::Center).css_classes(["flat"]).build();
-        let entry = folder.clone();
-        choose.connect_clicked(move |button| {
-            let window = button.root().and_downcast::<gtk::Window>();
-            let entry = entry.clone();
-            gtk::FileDialog::builder().title("Choose Folder").accept_label("Choose").build().select_folder(
-                window.as_ref(),
-                gio::Cancellable::NONE,
-                move |result| {
-                    if let Some(path) = result.ok().and_then(|f| f.path()) {
-                        entry.set_text(&path.to_string_lossy());
-                    }
-                },
-            );
-        });
-        folder.add_suffix(&choose);
-        let stop = adw::EntryRow::builder().title("Stop command").build();
-        stop.set_text(&current.stop_command);
+        let fields = CommandFields::new(&current);
         let list = gtk::ListBox::builder().css_classes(["boxed-list"]).selection_mode(gtk::SelectionMode::None).build();
-        list.append(&command);
-        list.append(&folder);
-        list.append(&stop);
-        let dialog = adw::AlertDialog::new(
-            Some(&format!("Start {} from Flock", proxy.name)),
-            Some("Flock runs the command when you click Start and shows its output here. For a command that starts the server in the background, like docker compose up -d, add the command that stops it."),
-        );
+        for row in &fields.rows {
+            list.append(row);
+        }
+        let dialog = adw::AlertDialog::new(Some(&format!("Commands of {}", proxy.name)), Some(COMMANDS_HELP));
         dialog.set_extra_child(Some(&list));
-        dialog.add_responses(&[("cancel", "Cancel"), ("save", "Save")]);
+        dialog.add_response("cancel", "Cancel");
+        if !current.command.is_empty() {
+            dialog.add_response("remove", "Remove Commands");
+            dialog.set_response_appearance("remove", adw::ResponseAppearance::Destructive);
+        }
+        dialog.add_response("save", "Save");
         dialog.set_response_appearance("save", adw::ResponseAppearance::Suggested);
         dialog.set_default_response(Some("save"));
         let (this, name) = (self.clone(), proxy.name.clone());
         dialog.choose(Some(&self.stack), gio::Cancellable::NONE, move |response| {
-            if response == "save" {
-                let (name, change) = (name.clone(), ProxyCommandChange::new(&command.text(), &folder.text(), &stop.text()));
-                this.perform(move |c| c.update_proxy(&name, &change));
-            }
+            let change = match response.as_str() {
+                "save" => fields.change(),
+                "remove" => ProxyCommandChange::default(),
+                _ => return,
+            };
+            let name = name.clone();
+            this.perform(move |c| c.update_proxy(&name, &change));
         });
     }
 
@@ -1919,6 +1923,55 @@ fn extension_row(ext: &PhpExtension, php: &str, path: &str, require: Rc<dyn Fn(S
         row.add_suffix(&add);
     }
     row
+}
+
+/// What a proxy's commands do, in the dialogs that set them.
+const COMMANDS_HELP: &str = "Flock runs the start command when you click Start and shows its output. For a command that starts the server in the background, like docker compose up -d, add the command that stops it.";
+
+/// The Start, Stop and Folder fields of a proxy's commands, for the dialogs that add or change
+/// them. The folder is the home folder until one is chosen.
+struct CommandFields {
+    start: gtk::Entry,
+    stop: gtk::Entry,
+    folder: gtk::Entry,
+    rows: [adw::ActionRow; 3],
+}
+
+impl CommandFields {
+    fn new(current: &ProxyCommand) -> Self {
+        let field = |title: &str, text: &str, placeholder: &str| {
+            let entry = gtk::Entry::builder().text(text).placeholder_text(placeholder).hexpand(true).valign(gtk::Align::Center).build();
+            let row = adw::ActionRow::builder().title(title).build();
+            row.add_suffix(&entry);
+            (row, entry)
+        };
+        let (start_row, start) = field("Start", &current.command, "npm run dev");
+        let (stop_row, stop) = field("Stop", &current.stop_command, "Only for a server that runs in the background, e.g. docker compose stop");
+        let dir = if current.dir.is_empty() { glib::home_dir().to_string_lossy().into_owned() } else { current.dir.clone() };
+        let (folder_row, folder) = field("Folder", &dir, "");
+        let choose = gtk::Button::builder().label("Choose…").valign(gtk::Align::Center).css_classes(["flat"]).build();
+        let entry = folder.clone();
+        choose.connect_clicked(move |button| {
+            let window = button.root().and_downcast::<gtk::Window>();
+            let entry = entry.clone();
+            gtk::FileDialog::builder().title("Choose Folder").accept_label("Choose").build().select_folder(
+                window.as_ref(),
+                gio::Cancellable::NONE,
+                move |result| {
+                    if let Some(path) = result.ok().and_then(|f| f.path()) {
+                        entry.set_text(&path.to_string_lossy());
+                    }
+                },
+            );
+        });
+        folder_row.add_suffix(&choose);
+        Self { start, stop, folder, rows: [start_row, stop_row, folder_row] }
+    }
+
+    /// The commands as typed: none without a start command.
+    fn change(&self) -> ProxyCommandChange {
+        ProxyCommandChange::new(&self.start.text(), &self.folder.text(), &self.stop.text())
+    }
 }
 
 /// The Output group of a dev server or a proxy's command: the last lines its log has, with Clear

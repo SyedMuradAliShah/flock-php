@@ -286,7 +286,12 @@ impl Client {
     /// Serves <name>.test from upstream (a port, host:port or URL), adding the proxy or changing its
     /// upstream. None for secured keeps the proxy's setting (HTTP for a new one).
     pub fn proxy(&self, name: &str, upstream: &str, secured: Option<bool>) -> Result<Status, Error> {
-        self.request("POST", "/v1/proxies", Some(&ProxyChange::new(name, upstream, secured)), DEFAULT_TIMEOUT)
+        self.add_proxy(&ProxyChange::new(name, upstream, secured))
+    }
+
+    /// Adds a proxy, or changes one, with all it has in one request (see ProxyChange).
+    pub fn add_proxy(&self, change: &ProxyChange) -> Result<Status, Error> {
+        self.request("POST", "/v1/proxies", Some(change), CHANGE_TIMEOUT)
     }
 
     /// Serves a proxy over HTTPS (on) or plain HTTP.
@@ -557,18 +562,36 @@ fn proxy_path(name: &str) -> String {
     format!("/v1/proxies/{}", escape(name))
 }
 
-/// POST /v1/proxies: secured is left out to keep an existing proxy's setting.
+/// POST /v1/proxies: secured is left out to keep an existing proxy's setting, and so are the
+/// commands unless the proxy gets some (see with_commands).
 #[derive(Serialize, Debug, Clone, PartialEq)]
 pub struct ProxyChange {
     pub name: String,
     pub upstream: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub secured: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub command: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dir: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stop_command: Option<String>,
 }
 
 impl ProxyChange {
     pub fn new(name: &str, upstream: &str, secured: Option<bool>) -> Self {
-        Self { name: name.to_owned(), upstream: upstream.to_owned(), secured }
+        Self { name: name.to_owned(), upstream: upstream.to_owned(), secured, command: None, dir: None, stop_command: None }
+    }
+
+    /// Gives the proxy the commands that start and stop its server; without a start command it
+    /// gets none.
+    pub fn with_commands(mut self, commands: ProxyCommandChange) -> Self {
+        if !commands.command.is_empty() {
+            self.command = Some(commands.command);
+            self.dir = commands.dir;
+            self.stop_command = Some(commands.stop_command);
+        }
+        self
     }
 }
 
@@ -1618,6 +1641,16 @@ mod tests {
         let secured = serde_json::to_value(ProxyChange::new("softpack", "3001", Some(true))).unwrap();
         assert_eq!(secured, serde_json::json!({ "name": "softpack", "upstream": "3001", "secured": true }));
         assert_eq!(proxy_path("soft pack"), "/v1/proxies/soft%20pack");
+        // A new proxy with commands is added in one request; without a start command it has none.
+        let commands = ProxyCommandChange::new("docker compose up -d", "/home/a/s3", "docker compose stop");
+        let with = serde_json::to_value(ProxyChange::new("s3", "9000", None).with_commands(commands)).unwrap();
+        assert_eq!(
+            with,
+            serde_json::json!({ "name": "s3", "upstream": "9000", "command": "docker compose up -d", "dir": "/home/a/s3", "stop_command": "docker compose stop" })
+        );
+        let without =
+            serde_json::to_value(ProxyChange::new("s3", "9000", None).with_commands(ProxyCommandChange::new("", "/home/a", ""))).unwrap();
+        assert_eq!(without, serde_json::json!({ "name": "s3", "upstream": "9000" }));
     }
 
     #[test]
