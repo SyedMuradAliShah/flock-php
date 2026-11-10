@@ -39,7 +39,7 @@ func TestRunReopensOnlyGateClosedPullRequests(t *testing.T) {
 				t.Fatalf("approved issue = %+v, want flock#73", result.ApprovedIssue)
 			}
 			if tt.gateClosed {
-				want := []string{"pr:get", "pr:gate-closed", "issue:get", "pr:lowest-reference", "issue:ensure-claimed-label", "issue:add-label", "pr:set-state", "pr:create-comment"}
+				want := []string{"pr:get", "pr:gate-closed", "issue:get", "pr:lowest-reference", "pr:set-state", "pr:create-comment"}
 				if !reflect.DeepEqual(api.calls, want) {
 					t.Fatalf("calls = %v, want %v", api.calls, want)
 				}
@@ -207,6 +207,36 @@ func TestRunClosesWrongBaseWithCommentBeforeClosing(t *testing.T) {
 	}
 }
 
+func TestRunClosesClaimedPullRequestsRetargetedAwayFromMain(t *testing.T) {
+	pr := pullRequest("open", "Fixes #73")
+	pr.BaseRef = "release"
+	pr.Labels = []github_issue.Label{{Name: github_issue.Claimed}}
+	api := &fakeService{pullRequest: pr}
+	if _, err := Execute(Dependencies{Issues: &fakeIssueService{api: api}, PullRequests: api}, "flock-php", "flock", Event{Action: "edited", Number: 87, BaseEdited: true}); err != nil {
+		t.Fatal(err)
+	}
+	want := []string{"pr:get", "pr:create-comment", "pr:set-state"}
+	if !reflect.DeepEqual(api.calls, want) {
+		t.Fatalf("calls = %v, want %v", api.calls, want)
+	}
+}
+
+func TestRunReopensGateClosedPullRequestWithoutAnOpenCandidate(t *testing.T) {
+	api := &fakeService{
+		pullRequest: pullRequest("closed", "Fixes #73"),
+		gateClosed:  true,
+		issue:       approvedIssue(),
+		noWinner:    true,
+	}
+	result, err := Execute(Dependencies{Issues: &fakeIssueService{api: api}, PullRequests: api}, "flock-php", "flock", Event{Action: "edited", Number: 87, BodyEdited: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.ApprovedIssue == nil || api.state != "open" {
+		t.Fatalf("result = %+v, state = %q; want approved and open", result, api.state)
+	}
+}
+
 func TestRunRetriesNewUnapprovedPullRequestsBeforeClosing(t *testing.T) {
 	api := &fakeService{pullRequest: pullRequest("open", ""), files: []github_pr.File{{Filename: "internal/site.go"}}}
 	if _, err := Execute(Dependencies{Issues: &fakeIssueService{api: api}, PullRequests: api}, "flock-php", "flock", Event{Action: "opened", Number: 87}); err != nil {
@@ -279,6 +309,7 @@ func TestRunReturnsIssueServiceErrors(t *testing.T) {
 type fakeService struct {
 	pullRequest *github_pr.PullRequest
 	winner      *github_pr.PullRequest
+	noWinner    bool
 	files       []github_pr.File
 	issue       *github_issue.Issue
 	gateClosed  bool
@@ -303,6 +334,9 @@ func (f *fakeService) Get(string, string, int) (*github_pr.PullRequest, error) {
 }
 func (f *fakeService) LowestOpenReference(string, string, issue_reference.Reference) (*github_pr.PullRequest, error) {
 	f.calls = append(f.calls, "pr:lowest-reference")
+	if f.noWinner {
+		return nil, f.lowestErr
+	}
 	if f.winner != nil {
 		return f.winner, f.lowestErr
 	}

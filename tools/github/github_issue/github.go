@@ -64,7 +64,11 @@ func (s *Service) AddLabel(owner, repository string, number int, label string) e
 
 // EnsureClaimedLabel creates the durable pull request approval label when it is missing.
 func (s *Service) EnsureClaimedLabel(owner, repository string) error {
-	_, _, err := s.client.Issues.GetLabel(context.Background(), owner, repository, Claimed)
+	return s.ensureLabel(owner, repository, Claimed, "A pull request has claimed this issue")
+}
+
+func (s *Service) ensureLabel(owner, repository, name, description string) error {
+	_, _, err := s.client.Issues.GetLabel(context.Background(), owner, repository, name)
 	if err == nil {
 		return nil
 	}
@@ -72,9 +76,8 @@ func (s *Service) EnsureClaimedLabel(owner, repository string) error {
 		return err
 	}
 	color := "0e8a16"
-	description := "A pull request has claimed this issue"
 	_, _, err = s.client.Issues.CreateLabel(context.Background(), owner, repository, github.CreateIssueLabelRequest{
-		Name: Claimed, Color: &color, Description: &description,
+		Name: name, Color: &color, Description: &description,
 	})
 	return err
 }

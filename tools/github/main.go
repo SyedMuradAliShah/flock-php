@@ -125,6 +125,9 @@ func runPullRequestEvent(dependencies pullRequestEventDependencies, owner, repos
 			return pr_gate.CloseClaimedIssue(dependencies.Gate.PullRequests, owner, repository, event.Number, approvedIssue, assignment.ClaimedBy)
 		}
 		if !assignment.ApprovalWithdrawn {
+			if err := pr_gate.CompleteClaim(dependencies.Gate.Issues, owner, repository, event.Number); err != nil {
+				return err
+			}
 			return milestone_transfer.Execute(dependencies.Milestones, owner, repository, event.Number, approvedIssue)
 		}
 		if retries == maxApprovalRetries {

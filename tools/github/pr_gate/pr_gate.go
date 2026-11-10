@@ -74,7 +74,7 @@ type pullRequestGate struct {
 
 func (g pullRequestGate) evaluate(retryAllowed bool) (Result, bool, error) {
 	pr, err := g.dependencies.PullRequests.Get(g.owner, g.repository, g.event.Number)
-	if err != nil || pr == nil || bypassesGate(pr.Author, pr.AuthorAssociation) || approvedPullRequest(pr) {
+	if err != nil || pr == nil || bypassesGate(pr.Author, pr.AuthorAssociation) || (approvedPullRequest(pr) && pr.BaseRef == "main") {
 		return Result{}, false, err
 	}
 	if pr.State == "closed" {
@@ -92,8 +92,11 @@ func (g pullRequestGate) evaluateClosed(pr *github_pr.PullRequest) (Result, bool
 		return Result{}, false, err
 	}
 	issue, approved, _, err := firstApprovedIssue(g.dependencies.Issues, g.dependencies.PullRequests, g.owner, g.repository, pr)
-	if err != nil || !approved {
+	if err != nil {
 		return Result{}, false, err
+	}
+	if !approved {
+		return Result{}, false, nil
 	}
 	if err := g.dependencies.PullRequests.SetState(g.owner, g.repository, pr.Number, "open"); err != nil {
 		return Result{}, false, err
@@ -181,14 +184,11 @@ func firstApprovedIssue(issues IssueReader, pullRequests PullRequestGateService,
 		if err != nil {
 			return issue_reference.Reference{}, false, "", err
 		}
-		if winner == nil {
-			return issue_reference.Reference{}, false, "", fmt.Errorf("no open pull request references issue %s", reference)
+		if winner == nil || pr.Number < winner.Number {
+			winner = pr
 		}
 		if winner.Number != pr.Number {
 			return reference, false, winner.Author.Login, nil
-		}
-		if err := markPullRequestClaimed(issues, owner, repository, pr.Number); err != nil {
-			return issue_reference.Reference{}, false, "", err
 		}
 		return reference, true, "", nil
 	}
@@ -200,7 +200,8 @@ func isNotFound(err error) bool {
 	return errors.As(err, &response) && response.Response != nil && response.Response.StatusCode == http.StatusNotFound
 }
 
-func markPullRequestClaimed(issues IssueReader, owner, repository string, number int) error {
+// CompleteClaim marks a pull request as durably approved after its issue assignment succeeds.
+func CompleteClaim(issues IssueReader, owner, repository string, number int) error {
 	if err := issues.EnsureClaimedLabel(owner, repository); err != nil {
 		return err
 	}
