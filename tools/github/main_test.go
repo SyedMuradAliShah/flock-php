@@ -11,6 +11,7 @@ import (
 	"flock/tools/github/issue_reference"
 	"flock/tools/github/issue_triage"
 	"flock/tools/github/merge_gate"
+	"flock/tools/github/pr_assignment"
 	"flock/tools/github/pr_gate"
 )
 
@@ -147,7 +148,7 @@ func TestRunPullRequestEventClaimsApprovedIssue(t *testing.T) {
 	if issues.assignee != "contributor" || !issues.claimed || !issues.removed {
 		t.Fatalf("assignee = %q, claimed = %t, removed = %t", issues.assignee, issues.claimed, issues.removed)
 	}
-	want := []string{"pr:get", "issue:get", "pr:lowest-reference", "issue:ensure-claimed-label", "issue:add-label", "issue:assign", "issue:add-label", "issue:remove-help-wanted", "pr:get", "pr:list-linked-issues", "pr:transfer-milestone"}
+	want := []string{"pr:get", "issue:get", "pr:lowest-reference", "issue:ensure-claimed-label", "issue:add-label", "issue:get", "issue:assign", "repository:role", "issue:add-label", "issue:remove-help-wanted", "pr:get", "pr:list-linked-issues", "pr:transfer-milestone"}
 	if !reflect.DeepEqual(calls, want) {
 		t.Fatalf("calls = %v, want %v", calls, want)
 	}
@@ -179,7 +180,7 @@ func TestRunPullRequestEventClosesIssueClaimedByAnotherContributor(t *testing.T)
 	if err := runPullRequestEvent(newPullRequestEventDependencies(pullRequests, issues), "flock-php", "flock", []byte(`{"action":"opened","pull_request":{"number":87,"user":{"login":"contributor"}}}`)); err != nil {
 		t.Fatal(err)
 	}
-	want := []string{"pr:get", "issue:get", "pr:get", "pr:create-comment", "pr:set-state"}
+	want := []string{"pr:get", "issue:get", "issue:get", "repository:role", "pr:get", "pr:create-comment", "pr:set-state"}
 	if !reflect.DeepEqual(calls, want) {
 		t.Fatalf("calls = %v, want %v", calls, want)
 	}
@@ -216,9 +217,93 @@ func TestRunPullRequestEventClosesAssignedIssueForAnotherAuthor(t *testing.T) {
 	if err := runPullRequestEvent(newPullRequestEventDependencies(pullRequests, issues), "flock-php", "flock", []byte(`{"action":"opened","pull_request":{"number":87,"user":{"login":"contributor"}}}`)); err != nil {
 		t.Fatal(err)
 	}
-	want := []string{"pr:get", "issue:get", "pr:get", "pr:create-comment", "pr:set-state"}
+	want := []string{"pr:get", "issue:get", "issue:get", "repository:role", "pr:get", "pr:create-comment", "pr:set-state"}
 	if !reflect.DeepEqual(calls, want) {
 		t.Fatalf("calls = %v, want %v", calls, want)
+	}
+}
+
+func TestRunPullRequestEventReevaluatesWhenIssueApprovalIsWithdrawn(t *testing.T) {
+	calls := []string{}
+	pullRequests := &pullRequestEventFake{pullRequest: &github_pr.PullRequest{
+		Number: 87, State: "closed", BaseRef: "main", Body: "Fixes #73", Author: github_issue.User{Login: "contributor", Type: "User"},
+	}, gateClosed: true, files: []github_pr.File{{Filename: "tools/github/main.go"}}, calls: &calls}
+	issues := &pullRequestIssueFake{
+		issue: &github_issue.Issue{Number: 74, State: "open", Labels: []github_issue.Label{{Name: "help wanted"}}},
+		issueReads: []*github_issue.Issue{
+			{Number: 73, State: "open", Labels: []github_issue.Label{{Name: "help wanted"}}},
+			{Number: 73, State: "closed", Labels: []github_issue.Label{{Name: "help wanted"}}},
+			{Number: 73, State: "closed", Labels: []github_issue.Label{{Name: "help wanted"}}},
+		},
+		calls: &calls,
+	}
+	if err := runPullRequestEvent(newPullRequestEventDependencies(pullRequests, issues), "flock-php", "flock", []byte(`{"action":"edited","changes":{"body":{}},"pull_request":{"number":87,"user":{"login":"contributor"}}}`)); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(pullRequests.comment, "Flock takes pull requests only for issues a maintainer has approved") {
+		t.Fatalf("re-evaluation comment = %q", pullRequests.comment)
+	}
+	want := []string{"pr:get", "pr:gate-closed", "issue:get", "pr:lowest-reference", "issue:ensure-claimed-label", "issue:add-label", "pr:set-state", "pr:create-comment", "issue:get", "pr:get", "issue:get", "pr:list-files", "pr:create-comment", "pr:set-state"}
+	if !reflect.DeepEqual(calls, want) {
+		t.Fatalf("calls = %v, want %v", calls, want)
+	}
+	if issues.assignee != "" || issues.removed {
+		t.Fatalf("withdrawn approval had claim side effects: assignee = %q, removed = %t", issues.assignee, issues.removed)
+	}
+}
+
+func TestRunPullRequestEventProcessesReplacementApprovedIssue(t *testing.T) {
+	calls := []string{}
+	milestone := 4
+	pullRequests := &pullRequestEventFake{pullRequest: &github_pr.PullRequest{
+		Number: 87, State: "open", BaseRef: "main", Body: "Fixes #73\nFixes #74", Author: github_issue.User{Login: "contributor", Type: "User"},
+	}, linkedIssues: []github_pr.LinkedIssue{{Number: 74, MilestoneNumber: &milestone}}, calls: &calls}
+	issues := &pullRequestIssueFake{
+		issue: &github_issue.Issue{Number: 74, State: "open", Labels: []github_issue.Label{{Name: "help wanted"}}},
+		issueReads: []*github_issue.Issue{
+			{Number: 73, State: "open", Labels: []github_issue.Label{{Name: "help wanted"}}},
+			{Number: 73, State: "closed", Labels: []github_issue.Label{{Name: "help wanted"}}},
+			{Number: 73, State: "closed", Labels: []github_issue.Label{{Name: "help wanted"}}},
+			{Number: 74, State: "open", Labels: []github_issue.Label{{Name: "help wanted"}}},
+			{Number: 74, State: "open", Labels: []github_issue.Label{{Name: "help wanted"}}},
+		},
+		calls: &calls,
+	}
+	if err := runPullRequestEvent(newPullRequestEventDependencies(pullRequests, issues), "flock-php", "flock", []byte(`{"action":"opened","pull_request":{"number":87,"user":{"login":"contributor"}}}`)); err != nil {
+		t.Fatal(err)
+	}
+	want := []string{
+		"pr:get", "issue:get", "pr:lowest-reference", "issue:ensure-claimed-label", "issue:add-label", "issue:get", "pr:get", "issue:get", "issue:get", "pr:lowest-reference",
+		"issue:ensure-claimed-label", "issue:add-label", "issue:get", "issue:assign", "repository:role", "issue:add-label", "issue:remove-help-wanted", "pr:get", "pr:list-linked-issues", "pr:transfer-milestone",
+	}
+	if !reflect.DeepEqual(calls, want) {
+		t.Fatalf("calls = %v, want %v", calls, want)
+	}
+	if issues.assignedIssue != 74 || pullRequests.transferredIssue != 74 {
+		t.Fatalf("assigned issue = %d, transferred issue = %d; want 74 for both", issues.assignedIssue, pullRequests.transferredIssue)
+	}
+}
+
+func TestRunPullRequestEventBoundsApprovalRetries(t *testing.T) {
+	calls := []string{}
+	pullRequests := &pullRequestEventFake{pullRequest: &github_pr.PullRequest{
+		Number: 87, State: "open", BaseRef: "main", Body: "Fixes #73", Author: github_issue.User{Login: "contributor", Type: "User"},
+	}, calls: &calls}
+	approved := &github_issue.Issue{Number: 73, State: "open", Labels: []github_issue.Label{{Name: "help wanted"}}}
+	withdrawn := &github_issue.Issue{Number: 73, State: "closed", Labels: []github_issue.Label{{Name: "help wanted"}}}
+	issues := &pullRequestIssueFake{
+		issue: approved,
+		issueReads: []*github_issue.Issue{
+			approved, withdrawn, approved, withdrawn, approved, withdrawn, approved, withdrawn,
+		},
+		calls: &calls,
+	}
+	err := runPullRequestEvent(newPullRequestEventDependencies(pullRequests, issues), "flock-php", "flock", []byte(`{"action":"opened","pull_request":{"number":87,"user":{"login":"contributor"}}}`))
+	if err == nil || !strings.Contains(err.Error(), "issue approval changed repeatedly") {
+		t.Fatalf("runPullRequestEvent() error = %v, want bounded-retry error", err)
+	}
+	if got := strings.Count(strings.Join(calls, ","), "issue:get"); got != 8 {
+		t.Fatalf("issue reads = %d, want 8", got)
 	}
 }
 
@@ -338,6 +423,10 @@ type pullRequestEventFake struct {
 
 func newPullRequestEventDependencies(pullRequests *pullRequestEventFake, issues *pullRequestIssueFake) pullRequestEventDependencies {
 	return pullRequestEventDependencies{
+		Assignment: pr_assignment.Dependencies{
+			Issues:       issues,
+			Repositories: issues,
+		},
 		Gate: pr_gate.Dependencies{
 			Issues:       issues,
 			PullRequests: pullRequests,

@@ -3,6 +3,7 @@ package pr_assignment
 
 import (
 	"fmt"
+	"slices"
 	"sort"
 
 	"flock/tools/github/github_issue"
@@ -99,12 +100,7 @@ func winningAssignee(repositories UserRoleReader, owner, repository string, issu
 		assignees = append(assignees, assignee.Login)
 	}
 	sort.Strings(assignees)
-	for i := 1; i < len(assignees); i++ {
-		if assignees[i] == assignees[i-1] {
-			assignees = append(assignees[:i], assignees[i+1:]...)
-			i--
-		}
-	}
+	assignees = slices.Compact(assignees)
 	for _, username := range assignees {
 		role, err := repositories.GetUserRole(owner, repository, username)
 		if err != nil {

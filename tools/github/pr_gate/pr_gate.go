@@ -14,8 +14,6 @@ import (
 	"github.com/google/go-github/v93/github"
 )
 
-const claimed = "claimed"
-
 type PullRequestGateService interface {
 	Get(owner, repository string, number int) (*github_pr.PullRequest, error)
 	LowestOpenReference(owner, repository string, issue issue_reference.Reference) (*github_pr.PullRequest, error)
@@ -28,9 +26,7 @@ type PullRequestGateService interface {
 type IssueReader interface {
 	Get(owner, repository string, number int) (*github_issue.Issue, error)
 	EnsureClaimedLabel(owner, repository string) error
-	AddAssignee(owner, repository string, number int, username string) (*github_issue.Issue, error)
 	AddLabel(owner, repository string, number int, label string) error
-	RemoveHelpWanted(owner, repository string, issue *github_issue.Issue) error
 }
 
 type Dependencies struct {
@@ -175,11 +171,7 @@ func firstApprovedIssue(issues IssueReader, pullRequests PullRequestGateService,
 			}
 			return issue_reference.Reference{}, false, "", err
 		}
-		approved, claimedBy := issueApproval(issue, pr.Author.Login)
-		if claimedBy != "" {
-			return reference, false, claimedBy, nil
-		}
-		if !approved {
+		if !issueApproved(issue, pr.Author.Login) {
 			continue
 		}
 		if len(issue.Assignees) != 0 {
@@ -195,7 +187,7 @@ func firstApprovedIssue(issues IssueReader, pullRequests PullRequestGateService,
 		if winner.Number != pr.Number {
 			return reference, false, winner.Author.Login, nil
 		}
-		if err := claimIssue(issues, owner, repository, pr, reference, issue); err != nil {
+		if err := markPullRequestClaimed(issues, owner, repository, pr.Number); err != nil {
 			return issue_reference.Reference{}, false, "", err
 		}
 		return reference, true, "", nil
@@ -203,25 +195,16 @@ func firstApprovedIssue(issues IssueReader, pullRequests PullRequestGateService,
 	return issue_reference.Reference{}, false, "", nil
 }
 
-func claimIssue(issues IssueReader, owner, repository string, pr *github_pr.PullRequest, reference issue_reference.Reference, issue *github_issue.Issue) error {
-	if err := issues.EnsureClaimedLabel(owner, repository); err != nil {
-		return err
-	}
-	if err := issues.AddLabel(owner, repository, pr.Number, claimed); err != nil {
-		return err
-	}
-	if _, err := issues.AddAssignee(owner, reference.Repository, reference.Number, pr.Author.Login); err != nil {
-		return err
-	}
-	if err := issues.AddLabel(owner, reference.Repository, reference.Number, claimed); err != nil {
-		return err
-	}
-	return issues.RemoveHelpWanted(owner, reference.Repository, issue)
-}
-
 func isNotFound(err error) bool {
 	var response *github.ErrorResponse
 	return errors.As(err, &response) && response.Response != nil && response.Response.StatusCode == http.StatusNotFound
+}
+
+func markPullRequestClaimed(issues IssueReader, owner, repository string, number int) error {
+	if err := issues.EnsureClaimedLabel(owner, repository); err != nil {
+		return err
+	}
+	return issues.AddLabel(owner, repository, number, github_issue.Claimed)
 }
 
 func closePullRequest(pullRequests PullRequestGateService, owner, repository string, pr *github_pr.PullRequest, decision action) error {
@@ -256,19 +239,13 @@ func docsOnly(files []github_pr.File) bool {
 	return true
 }
 
-func issueApproval(issue *github_issue.Issue, author string) (bool, string) {
+func issueApproved(issue *github_issue.Issue, author string) bool {
 	if issue == nil || issue.IsPullRequest || issue.State != "open" {
-		return false, ""
+		return false
 	}
-	if len(issue.Assignees) != 0 {
-		if github_issue.HasAssignee(issue, author) {
-			return true, ""
-		}
-		return false, issue.Assignees[0].Login
-	}
-	return github_issue.HasHelpWanted(issue), ""
+	return github_issue.HasHelpWanted(issue) || github_issue.HasAssignee(issue, author)
 }
 
 func approvedPullRequest(pr *github_pr.PullRequest) bool {
-	return github_pr.HasLabel(pr, claimed)
+	return github_pr.HasLabel(pr, github_issue.Claimed)
 }
