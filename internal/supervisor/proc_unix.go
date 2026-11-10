@@ -3,6 +3,7 @@
 package supervisor
 
 import (
+	"errors"
 	"os"
 	"os/exec"
 	"syscall"
@@ -46,7 +47,8 @@ func (t *tree) signal(sig os.Signal) {
 
 func (t *tree) kill() { _ = syscall.Kill(-t.pgid, syscall.SIGKILL) }
 
-// empty reports whether no process is left in the group (or none Flock may signal).
-func (t *tree) empty() bool { return syscall.Kill(-t.pgid, 0) != nil }
+// empty reports whether no process is left in the group. Only ESRCH says so: macOS answers EPERM
+// while the group's processes are exiting but not reaped yet (settle kills what's left in time).
+func (t *tree) empty() bool { return errors.Is(syscall.Kill(-t.pgid, 0), syscall.ESRCH) }
 
 func (t *tree) close() {}
