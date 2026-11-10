@@ -16,7 +16,7 @@ This page lists the `flock` commands. The other pages show where to find each ac
 | `flock uninstall [--purge]` | Remove Flock. Keeps site settings and databases unless `--purge` is given |
 | `flock status` | Show the state of the daemon and its services |
 | `flock restart` | Restart the daemon and all services |
-| `flock logs [name] [-n 50] [-f]` | Show service logs (daemon, web, php8.5-fpm on macOS and Linux or php8.5-cgi on Windows, postgres, …). Without a name, lists the logs |
+| `flock logs [name] [-n 50] [-f]` | Show service logs (daemon, web, php8.5-fpm on macOS and Linux or php8.5-cgi on Windows, postgres, …), or of what Flock runs for a site or proxy by its name (its FrankenPHP, dev server or command). Without a name, lists the logs |
 | `flock update` | Update Flock, CLI and daemon included: the app installs the new version (on Linux, apt or dnf) |
 | `flock version` | Print the Flock version |
 
@@ -33,8 +33,8 @@ This page lists the `flock` commands. The other pages show where to find each ac
 | `flock proxy <name> <port\|host:port\|url> [--secure] [--command <cmd>] [--dir <dir>] [--stop-command <cmd>]` | Proxy `<name>.test` to a local service, e.g. a dashboard or a Docker container; with `--command`, Flock can start and stop its server |
 | `flock unproxy <name>` | Stop serving a proxy |
 | `flock proxies` | List proxies |
-| `flock proxies start <name>` | Start a proxy's server with its command |
-| `flock proxies stop <name>` | Stop the server Flock started for a proxy |
+| `flock proxy start <name>` | Start a proxy's server with its command |
+| `flock proxy stop <name>` | Stop the server Flock started for a proxy |
 | `flock secure [name]` | Serve a site or proxy over HTTPS with a trusted certificate |
 | `flock unsecure [name]` | Serve a site or proxy over plain HTTP |
 | `flock domain add <domain> [site]` | Add a subdomain or alias to a site (`flock domains` works too) |

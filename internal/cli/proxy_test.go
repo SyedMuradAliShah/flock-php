@@ -41,3 +41,14 @@ func TestProxyCommandFlags(t *testing.T) {
 		t.Fatalf("removed: %+v", p)
 	}
 }
+
+func TestProxyStartIsASubcommand(t *testing.T) {
+	cmd, args, err := newProxyCommand().Find([]string{"start", "admin"})
+	if err != nil || cmd.Name() != "start" || len(args) != 1 || args[0] != "admin" {
+		t.Fatalf("got %s %v %v", cmd.Name(), args, err)
+	}
+	// A name and an upstream still add a proxy.
+	if cmd, _, err := newProxyCommand().Find([]string{"admin", "8000"}); err != nil || cmd.Name() != "proxy" {
+		t.Fatalf("got %s %v", cmd.Name(), err)
+	}
+}

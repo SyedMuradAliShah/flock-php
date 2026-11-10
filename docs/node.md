@@ -72,7 +72,7 @@ In **Settings → Sites**, a Node.js app's **Type** is **Node.js**. Change it th
 ```bash
 flock type node          # serve the current project as a Node.js app
 flock type php blog      # or another site as a PHP site
-flock logs node-my-app   # the dev server's output
+flock logs my-app        # the dev server's output
 ```
 :::
 

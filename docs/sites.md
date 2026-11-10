@@ -109,13 +109,13 @@ Select the proxy in **Settings → Sites** and click **Add Command…**. Give th
 ```bash
 cd ~/Code/admin
 flock proxy admin 8000 --command "python manage.py runserver 8000"   # runs in the current folder, or --dir
-flock proxies start admin
-flock proxies stop admin
+flock proxy start admin
+flock proxy stop admin
 
 flock proxy s3 9000 --command "docker compose up -d" --stop-command "docker compose stop"
 ```
 
-`flock logs proxy-admin` shows the command's output, and `--command ""` removes the command.
+`flock logs admin` shows the command's output, and `--command ""` removes the command.
 :::
 
 ## Custom Caddy directives

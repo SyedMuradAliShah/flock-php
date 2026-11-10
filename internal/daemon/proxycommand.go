@@ -18,7 +18,7 @@ import (
 )
 
 // A proxy's command (see config.Proxy.Command) runs only after the proxy is started, from the
-// apps, `flock proxies start` or the API: the user decides when a proxy's server runs. What was
+// apps, `flock proxy start` or the API: the user decides when a proxy's server runs. What was
 // started isn't kept across daemon restarts.
 
 // proxyStartGrace is how long a started server may take before Flock says nothing answers yet.

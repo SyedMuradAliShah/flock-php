@@ -338,7 +338,7 @@ footer code { font-family: var(--mono); font-size: 0.75rem; color: var(--ink-sof
             <div class="host"><span class="scheme">{{if .Req.TLS}}https{{else}}http{{end}}://</span><span class="name">{{html .Host}}</span><span class="code">503</span></div>
             <p class="lead">
                 Flock runs <code>npm run dev</code> for <strong>{{html $nodeSite}}</strong>, but it exited{{if $nodeProblem}}: {{html $nodeProblem}}{{end}}.
-                Its output is in Flock, or <code>flock logs node-{{html $nodeSite}}</code>. Flock tries again in a moment.
+                Its output is in Flock, or <code>flock logs {{html $nodeSite}}</code>. Flock tries again in a moment.
             </p>
             <p class="waiting" data-wait>Your app shows here as soon as it answers&hellip;</p>
 {{else if $nodeSite}}
