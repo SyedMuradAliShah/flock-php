@@ -33,53 +33,90 @@ type Result struct {
 }
 
 func Execute(dependencies Dependencies, owner string, issueReference issue_reference.Reference, author string) (Result, error) {
-	issue, err := dependencies.Issues.Get(owner, issueReference.Repository, issueReference.Number)
+	claim := issueClaim{
+		dependencies:   dependencies,
+		owner:          owner,
+		issueReference: issueReference,
+		author:         author,
+	}
+	return claim.evaluate()
+}
+
+type issueClaim struct {
+	dependencies   Dependencies
+	owner          string
+	issueReference issue_reference.Reference
+	author         string
+}
+
+func (c issueClaim) evaluate() (Result, error) {
+	issue, err := c.dependencies.Issues.Get(c.owner, c.issueReference.Repository, c.issueReference.Number)
 	if err != nil {
 		return Result{}, err
 	}
-	if !approvedFor(issue, author) {
+	if !approvedFor(issue, c.author) {
 		return Result{ApprovalWithdrawn: true}, nil
 	}
-	claimedBy, err := winningAssignee(dependencies.Repositories, owner, issueReference.Repository, issue)
+	claimedBy, err := c.winningAssignee(issue)
 	if err != nil {
 		return Result{}, err
 	}
-	if claimedBy != "" && claimedBy != author {
-		if github_issue.HasAssignee(issue, author) {
-			if err := dependencies.Issues.RemoveAssignee(owner, issueReference.Repository, issueReference.Number, author); err != nil {
-				return Result{}, err
-			}
-		}
-		return Result{ClaimedBy: claimedBy}, nil
+	if claimedBy != "" && claimedBy != c.author {
+		return c.releaseAuthor(issue, claimedBy)
 	}
-	if github_issue.HasAssignee(issue, author) {
-		return Result{}, markClaimed(dependencies.Issues, owner, issueReference.Repository, issue)
+	if github_issue.HasAssignee(issue, c.author) {
+		return c.markClaimed(issue)
 	}
+	return c.assignAuthor()
+}
 
-	issue, err = dependencies.Issues.AddAssignee(owner, issueReference.Repository, issueReference.Number, author)
+func (c issueClaim) assignAuthor() (Result, error) {
+	issue, err := c.dependencies.Issues.AddAssignee(c.owner, c.issueReference.Repository, c.issueReference.Number, c.author)
 	if err != nil {
 		return Result{}, err
 	}
-	claimedBy, err = winningAssignee(dependencies.Repositories, owner, issueReference.Repository, issue)
+	claimedBy, err := c.winningAssignee(issue)
 	if err != nil {
-		if github_issue.HasAssignee(issue, author) {
-			if cleanupErr := dependencies.Issues.RemoveAssignee(owner, issueReference.Repository, issueReference.Number, author); cleanupErr != nil {
-				return Result{}, fmt.Errorf("verify issue claim: %w; remove unsuccessful assignment: %v", err, cleanupErr)
-			}
-		}
-		return Result{}, err
+		return c.cleanupFailedAssignment(issue, err)
 	}
-	if claimedBy != author {
-		if github_issue.HasAssignee(issue, author) {
-			if err := dependencies.Issues.RemoveAssignee(owner, issueReference.Repository, issueReference.Number, author); err != nil {
-				return Result{}, err
-			}
+	if claimedBy != c.author {
+		if err := c.removeAuthor(issue); err != nil {
+			return Result{}, err
 		}
 		if claimedBy != "" {
 			return Result{ClaimedBy: claimedBy}, nil
 		}
 	}
-	return Result{}, markClaimed(dependencies.Issues, owner, issueReference.Repository, issue)
+	return c.markClaimed(issue)
+}
+
+func (c issueClaim) releaseAuthor(issue *github_issue.Issue, claimedBy string) (Result, error) {
+	if err := c.removeAuthor(issue); err != nil {
+		return Result{}, err
+	}
+	return Result{ClaimedBy: claimedBy}, nil
+}
+
+func (c issueClaim) cleanupFailedAssignment(issue *github_issue.Issue, claimErr error) (Result, error) {
+	if cleanupErr := c.removeAuthor(issue); cleanupErr != nil {
+		return Result{}, fmt.Errorf("verify issue claim: %w; remove unsuccessful assignment: %v", claimErr, cleanupErr)
+	}
+	return Result{}, claimErr
+}
+
+func (c issueClaim) removeAuthor(issue *github_issue.Issue) error {
+	if !github_issue.HasAssignee(issue, c.author) {
+		return nil
+	}
+	return c.dependencies.Issues.RemoveAssignee(c.owner, c.issueReference.Repository, c.issueReference.Number, c.author)
+}
+
+func (c issueClaim) markClaimed(issue *github_issue.Issue) (Result, error) {
+	return Result{}, markClaimed(c.dependencies.Issues, c.owner, c.issueReference.Repository, issue)
+}
+
+func (c issueClaim) winningAssignee(issue *github_issue.Issue) (string, error) {
+	return winningAssignee(c.dependencies.Repositories, c.owner, c.issueReference.Repository, issue)
 }
 
 func markClaimed(issues IssueClaimer, owner, repository string, issue *github_issue.Issue) error {
