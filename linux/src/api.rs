@@ -612,11 +612,7 @@ impl ProxyCommandChange {
             return Self::default();
         }
         let dir = dir.trim();
-        Self {
-            command: command.to_owned(),
-            dir: (!dir.is_empty()).then(|| dir.to_owned()),
-            stop_command: stop_command.trim().to_owned(),
-        }
+        Self { command: command.to_owned(), dir: (!dir.is_empty()).then(|| dir.to_owned()), stop_command: stop_command.trim().to_owned() }
     }
 }
 

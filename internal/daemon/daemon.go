@@ -304,7 +304,7 @@ func Run(ctx context.Context, cfg Config) error {
 	d.catalog = catalog.NewManager(cfg.Root, catalog.Kinds(runtime.GOOS), d.binaries, d.Mutate)
 	go d.catalog.Run(ctx)
 	d.worktrees = worktree.NewManager(cfg.Root)
-	go d.sleepNodeSites(ctx)
+	go d.sleepNodeSites(ctx, nodeIdle, nodeSleepCheck)
 	d.shares = share.NewManager(cfg.Root, d.binaries)
 	d.shares.Changed = func() {
 		if err := d.reload(); err != nil {

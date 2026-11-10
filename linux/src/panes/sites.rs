@@ -1031,10 +1031,8 @@ impl Inner {
 
     /// A Node.js site's dev server: its state with Start, Stop and Restart, and the command it runs.
     fn dev_server_group(self: &Rc<Self>, site: &SiteStatus, server: &SiteNodeServer) -> adw::PreferencesGroup {
-        let group = group(
-            "Server",
-            "Flock runs the project's dev script when the site is visited, and stops it after 30 minutes without visits.",
-        );
+        let group =
+            group("Server", "Flock runs the project's dev script when the site is visited, and stops it after 30 minutes without visits.");
         let mut subtitle = server.text();
         if let Some(note) = server.note() {
             subtitle.push('\n');
@@ -1083,7 +1081,6 @@ impl Inner {
         group.add(&command);
         group
     }
-
 
     fn boost_group(self: &Rc<Self>, site: &SiteStatus) -> adw::PreferencesGroup {
         let missing = site.boost == "missing";

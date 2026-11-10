@@ -188,7 +188,7 @@ func waitNode(t *testing.T, client *api.Client, root, state string) {
 }
 
 func TestAnIdleNodeSiteGoesToSleepAndWakesAgain(t *testing.T) {
-	quickSleep(t, 500*time.Millisecond)
+	quickSleep(t, 2*time.Second)
 	root, cfg := testRoot(t, func(c *config.Config) { nodeApp(t, c) })
 	fakeNpm(t, root, "flock-test-server")
 	client := startDaemon(t, root)
@@ -210,7 +210,7 @@ func TestAnIdleNodeSiteGoesToSleepAndWakesAgain(t *testing.T) {
 }
 
 func TestAnOpenHotReloadConnectionKeepsANodeSiteAwake(t *testing.T) {
-	quickSleep(t, 300*time.Millisecond)
+	quickSleep(t, 2*time.Second)
 	root, cfg := testRoot(t, func(c *config.Config) { nodeApp(t, c) })
 	fakeNpm(t, root, "flock-test-server")
 	client := startDaemon(t, root)
@@ -230,7 +230,7 @@ func TestAnOpenHotReloadConnectionKeepsANodeSiteAwake(t *testing.T) {
 	}
 
 	// Several idle periods pass with the tab open.
-	time.Sleep(1500 * time.Millisecond)
+	time.Sleep(5 * time.Second)
 	if s := siteStatus(t, client, "app").NodeServer.State; s != api.NodeRunning {
 		t.Fatalf("slept with a hot-reload connection open: %s", s)
 	}

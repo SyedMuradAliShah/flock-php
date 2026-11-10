@@ -47,6 +47,8 @@ type nodeRuns struct {
 	ports  map[string]int             // the port each site got
 	open   map[string]int             // requests in progress, open WebSockets included
 	active map[string]time.Time       // when a request last came or ended
+	// idleAfter is how long a server may go unused before it sleeps (see sleepNodeSites).
+	idleAfter time.Duration
 }
 
 // wake marks a site's server as to run, and as used now. It reports whether it was asleep.
@@ -170,9 +172,14 @@ func (d *daemon) wakeNode(site string) (string, string, func()) {
 	return state, problem, done
 }
 
-// sleepNodeSites puts the dev servers nothing used for nodeIdle back to sleep, until ctx ends.
-func (d *daemon) sleepNodeSites(ctx context.Context) {
-	tick := time.NewTicker(nodeSleepCheck)
+// sleepNodeSites puts the dev servers nothing used for idleAfter back to sleep, checking every
+// check, until ctx ends. The daemon passes nodeIdle and nodeSleepCheck as they were when it
+// started: a test's daemon that is still stopping mustn't read the next test's.
+func (d *daemon) sleepNodeSites(ctx context.Context, idleAfter, check time.Duration) {
+	d.node.mu.Lock()
+	d.node.idleAfter = idleAfter
+	d.node.mu.Unlock()
+	tick := time.NewTicker(check)
 	defer tick.Stop()
 	for {
 		select {
@@ -195,9 +202,9 @@ func (d *daemon) sleepNodeSites(ctx context.Context) {
 	}
 }
 
-// idle reports whether nothing has used a site's server for nodeIdle. r.mu is held.
+// idle reports whether nothing has used a site's server for idleAfter. r.mu is held.
 func (r *nodeRuns) idle(site string) bool {
-	return r.open[site] == 0 && time.Since(r.active[site]) > nodeIdle
+	return r.idleAfter > 0 && r.open[site] == 0 && time.Since(r.active[site]) > r.idleAfter
 }
 
 // shared reports whether a site has a share running: its visitors come through the tunnel, which
