@@ -262,15 +262,24 @@ struct ProxyCommandsFields: View {
     static var home: String { FileManager.default.homeDirectoryForCurrentUser.path }
 }
 
-/// A sheet's form at its own height, scrolling only when the sheet can't fit it.
-struct FittingForm<Content: View>: View {
+/// A sheet's form, as tall as it is up to `maxHeight`, scrolling beyond it. A sheet sizes itself to
+/// its content and can grow past its window, so the height is capped here: with the sheet's title
+/// and buttons (outside this), a sheet stays within the Settings window at its minimum size
+/// (810 × 480).
+struct ScrollingForm<Content: View>: View {
+    var maxHeight: CGFloat = 300
     @ViewBuilder let content: () -> Content
 
+    /// The form's own height, measured.
+    private let heightState = State<CGFloat>(initialValue: 0)
+
     var body: some View {
-        ViewThatFits(in: .vertical) {
+        ScrollView {
             Form { content() }
-            ScrollView { Form { content() } }
+                .padding(.trailing, 12) // room for the scroller
+                .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { heightState.wrappedValue = $0 }
         }
+        .frame(height: min(max(heightState.wrappedValue, 1), maxHeight))
     }
 }
 
@@ -296,7 +305,7 @@ struct ProxyCommandSheet: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Commands of \(proxy.name)").font(.headline)
-            FittingForm {
+            ScrollingForm {
                 ProxyCommandsFields(start: commandState.projectedValue, stop: stopState.projectedValue, dir: dirState.projectedValue)
             }
             HStack {
@@ -341,12 +350,23 @@ struct AddProxySheet: View {
         let upstream = upstreamState.wrappedValue.trimmingCharacters(in: .whitespaces)
         VStack(alignment: .leading, spacing: 12) {
             Text("Add a proxy").font(.headline)
-            Text("Flock serves <name>.\(tld) from a server of its own, e.g. a dashboard, an object store, a Docker container or a Go or Python app. A port means 127.0.0.1.")
-                .font(.callout).foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-            FittingForm {
-                TextField("Name", text: nameState.projectedValue, prompt: Text("my-app"))
-                TextField("Upstream", text: upstreamState.projectedValue, prompt: Text("Port, host:port or URL, e.g. 3000"))
+            ScrollingForm {
+                // Side by side, so the form fits the Settings window at its minimum size.
+                HStack(alignment: .top, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Name")
+                        TextField("Name", text: nameState.projectedValue, prompt: Text("my-app → my-app.\(tld)"))
+                            .labelsHidden()
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Upstream")
+                        TextField("Upstream", text: upstreamState.projectedValue, prompt: Text("3000, host:port or URL"))
+                            .labelsHidden()
+                            .help("A port means 127.0.0.1.")
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
                 DisclosureGroup("Commands (optional)", isExpanded: commandsShownState.projectedValue) {
                     ProxyCommandsFields(start: commandState.projectedValue, stop: stopState.projectedValue, dir: dirState.projectedValue)
                 }
