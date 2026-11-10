@@ -289,8 +289,13 @@ impl Inner {
     }
 
     fn add_proxy(self: &Rc<Self>, tld: &str) {
-        let name = adw::EntryRow::builder().title("Name, e.g. my-app").build();
-        let upstream = adw::EntryRow::builder().title("Port, host:port or URL, e.g. 3000").activates_default(true).build();
+        // Stacked: side by side, they don't fit the dialog at the window's smallest.
+        let name = adw::EntryRow::builder().title("Name").tooltip_text(format!("e.g. my-app → my-app.{tld}")).build();
+        let upstream = adw::EntryRow::builder()
+            .title("Upstream")
+            .tooltip_text("3000, host:port or URL. A port means 127.0.0.1.")
+            .activates_default(true)
+            .build();
         let commands = adw::ExpanderRow::builder().title("Commands (optional)").expanded(false).build();
         let fields = CommandFields::new(&ProxyCommand::default());
         for row in &fields.rows {
@@ -300,13 +305,8 @@ impl Inner {
         list.append(&name);
         list.append(&upstream);
         list.append(&commands);
-        let dialog = adw::AlertDialog::new(
-            Some("Add a proxy"),
-            Some(&format!(
-                "Flock serves <name>.{tld} from a server of its own, e.g. a dashboard, an object store, a Docker container or a Go or Python app. A port means 127.0.0.1."
-            )),
-        );
-        dialog.set_extra_child(Some(&list));
+        let dialog = adw::AlertDialog::new(Some("Add a proxy"), None);
+        dialog.set_extra_child(Some(&scrolling_form(&list, &self.stack)));
         dialog.add_responses(&[("cancel", "Cancel"), ("add", "Add")]);
         dialog.set_response_appearance("add", adw::ResponseAppearance::Suggested);
         dialog.set_default_response(Some("add"));
@@ -1750,7 +1750,7 @@ impl Inner {
             list.append(row);
         }
         let dialog = adw::AlertDialog::new(Some(&format!("Commands of {}", proxy.name)), None);
-        dialog.set_extra_child(Some(&list));
+        dialog.set_extra_child(Some(&scrolling_form(&list, &self.stack)));
         dialog.add_response("cancel", "Cancel");
         if !current.command.is_empty() {
             dialog.add_response("remove", "Remove Commands");
@@ -1922,6 +1922,21 @@ fn extension_row(ext: &PhpExtension, php: &str, path: &str, require: Rc<dyn Fn(S
         row.add_suffix(&add);
     }
     row
+}
+
+/// A dialog's form, which scrolls when it's taller than the window leaves room for: the dialog's
+/// heading and buttons stay visible. The window has no minimum size of its own (its content's), so
+/// the room comes from its height now, between 120 and 480 pixels.
+fn scrolling_form(form: &impl IsA<gtk::Widget>, parent: &impl IsA<gtk::Widget>) -> gtk::ScrolledWindow {
+    // The heading, the buttons and the dialog's margins take about this much.
+    const CHROME: i32 = 220;
+    let window = parent.root().map_or(640, |root| root.height());
+    gtk::ScrolledWindow::builder()
+        .child(form)
+        .hscrollbar_policy(gtk::PolicyType::Never)
+        .propagate_natural_height(true)
+        .max_content_height((window - CHROME).clamp(120, 480))
+        .build()
 }
 
 /// The Start, Stop and Folder fields of a proxy's commands, for the dialogs that add or change
