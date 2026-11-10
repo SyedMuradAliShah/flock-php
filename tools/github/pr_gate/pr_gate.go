@@ -2,13 +2,16 @@
 package pr_gate
 
 import (
+	"errors"
 	"fmt"
+	"net/http"
 	"strings"
 	"time"
 
 	"flock/tools/github/github_issue"
 	"flock/tools/github/github_pr"
 	"flock/tools/github/issue_reference"
+	"github.com/google/go-github/v93/github"
 )
 
 const openToAnyone = "help wanted"
@@ -143,6 +146,9 @@ func firstApprovedIssue(issues IssueReader, owner string, pr *github_pr.PullRequ
 	for _, reference := range issue_reference.Parse(pr.Body, "flock") {
 		issue, err := issues.Get(owner, reference.Repository, reference.Number)
 		if err != nil {
+			if isNotFound(err) {
+				continue
+			}
 			return issue_reference.Reference{}, false, err
 		}
 		if isApproved(issue, pr.Author.Login) {
@@ -150,6 +156,11 @@ func firstApprovedIssue(issues IssueReader, owner string, pr *github_pr.PullRequ
 		}
 	}
 	return issue_reference.Reference{}, false, nil
+}
+
+func isNotFound(err error) bool {
+	var response *github.ErrorResponse
+	return errors.As(err, &response) && response.Response != nil && response.Response.StatusCode == http.StatusNotFound
 }
 
 func closePullRequest(pullRequests PullRequestGateService, owner, repository string, pr *github_pr.PullRequest, decision action) error {

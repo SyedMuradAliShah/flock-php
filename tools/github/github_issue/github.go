@@ -5,13 +5,15 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/google/go-github/v93/github"
 )
 
-const HelpWanted = "help wanted"
+const (
+	Claimed    = "claimed"
+	HelpWanted = "help wanted"
+)
 
 // User is the GitHub user data used by issue workflows.
 type User struct {
@@ -83,9 +85,6 @@ func (s *Service) AddAssignee(owner, repository string, number int, username str
 		return nil, err
 	}
 	result := issueFromGitHub(issue)
-	if !HasAssignee(result, username) {
-		return nil, fmt.Errorf("GitHub did not assign %q to issue #%d", username, number)
-	}
 	return result, nil
 }
 

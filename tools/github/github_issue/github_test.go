@@ -54,7 +54,7 @@ func TestServiceAssignsUserAndRemovesLabel(t *testing.T) {
 	}
 }
 
-func TestServiceRejectsAssignmentResponseWithoutRequestedUser(t *testing.T) {
+func TestServiceReturnsAssignmentResponseWithoutRequestedUser(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, _ = io.WriteString(w, `{"number":73,"assignees":[]}`)
 	}))
@@ -64,8 +64,9 @@ func TestServiceRejectsAssignmentResponseWithoutRequestedUser(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := New(client).AddAssignee("flock-php", "flock", 73, "contributor"); err == nil {
-		t.Fatal("AddAssignee() returned nil error when GitHub did not assign the requested user")
+	issue, err := New(client).AddAssignee("flock-php", "flock", 73, "contributor")
+	if err != nil || HasAssignee(issue, "contributor") {
+		t.Fatalf("AddAssignee() = %+v, %v", issue, err)
 	}
 }
 

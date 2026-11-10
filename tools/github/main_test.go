@@ -144,10 +144,10 @@ func TestRunPullRequestEventClaimsApprovedIssue(t *testing.T) {
 	if err := runPullRequestEvent(newPullRequestEventDependencies(pullRequests, issues), "flock-php", "flock", []byte(`{"action":"opened","pull_request":{"number":87,"user":{"login":"contributor"}}}`)); err != nil {
 		t.Fatal(err)
 	}
-	if issues.assignee != "contributor" || !issues.removed {
-		t.Fatalf("assignee = %q, removed = %t", issues.assignee, issues.removed)
+	if issues.assignee != "contributor" || !issues.claimed || !issues.removed {
+		t.Fatalf("assignee = %q, claimed = %t, removed = %t", issues.assignee, issues.claimed, issues.removed)
 	}
-	want := []string{"pr:get", "issue:get", "issue:get", "issue:assign", "repository:role", "issue:remove-help-wanted", "pr:get", "pr:list-linked-issues", "pr:transfer-milestone"}
+	want := []string{"pr:get", "issue:get", "issue:get", "issue:assign", "repository:role", "issue:add-label", "issue:remove-help-wanted", "pr:get", "pr:list-linked-issues", "pr:transfer-milestone"}
 	if !reflect.DeepEqual(calls, want) {
 		t.Fatalf("calls = %v, want %v", calls, want)
 	}
@@ -239,7 +239,7 @@ func TestRunPullRequestEventProcessesReplacementApprovedIssue(t *testing.T) {
 	}
 	want := []string{
 		"pr:get", "issue:get", "issue:get", "pr:get", "issue:get", "issue:get",
-		"issue:get", "issue:assign", "repository:role", "issue:remove-help-wanted",
+		"issue:get", "issue:assign", "repository:role", "issue:add-label", "issue:remove-help-wanted",
 		"pr:get", "pr:list-linked-issues", "pr:transfer-milestone",
 	}
 	if !reflect.DeepEqual(calls, want) {
@@ -445,6 +445,7 @@ type pullRequestIssueFake struct {
 	assignee      string
 	assignedIssue int
 	removed       bool
+	claimed       bool
 	calls         *[]string
 	assignErr     error
 	role          string
@@ -470,6 +471,13 @@ func (f *pullRequestIssueFake) AddAssignee(_ string, _ string, number int, usern
 func (f *pullRequestIssueFake) RemoveAssignee(_ string, _ string, _ int, username string) error {
 	f.record("issue:remove-assignee")
 	f.assignee = username
+	return nil
+}
+func (f *pullRequestIssueFake) AddLabel(_ string, _ string, _ int, label string) error {
+	f.record("issue:add-label")
+	if label == github_issue.Claimed {
+		f.claimed = true
+	}
 	return nil
 }
 func (f *pullRequestIssueFake) RemoveHelpWanted(string, string, *github_issue.Issue) error {

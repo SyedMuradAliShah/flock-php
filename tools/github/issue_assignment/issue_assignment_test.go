@@ -7,18 +7,22 @@ import (
 )
 
 func TestRunRemovesHelpWantedFromAssignedIssue(t *testing.T) {
-	issue := &github_issue.Issue{
-		Number:    73,
-		Assignees: []github_issue.User{{Login: "contributor"}},
-		Labels:    []github_issue.Label{{Name: github_issue.HelpWanted}},
-	}
-	api := &fakeService{currentIssue: issue}
+	for _, assignee := range []string{"contributor", "maintainer"} {
+		t.Run(assignee, func(t *testing.T) {
+			issue := &github_issue.Issue{
+				Number:    73,
+				Assignees: []github_issue.User{{Login: assignee}},
+				Labels:    []github_issue.Label{{Name: github_issue.HelpWanted}},
+			}
+			api := &fakeService{currentIssue: issue}
 
-	if err := Execute(api, "flock-php", "flock", issue); err != nil {
-		t.Fatal(err)
-	}
-	if !api.removed {
-		t.Fatal("help wanted label was not removed")
+			if err := Execute(api, "flock-php", "flock", issue); err != nil {
+				t.Fatal(err)
+			}
+			if !api.removed {
+				t.Fatal("help wanted label was not removed")
+			}
+		})
 	}
 }
 

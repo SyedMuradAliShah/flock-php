@@ -2,11 +2,13 @@ package pr_gate
 
 import (
 	"errors"
+	"net/http"
 	"reflect"
 	"testing"
 
 	"flock/tools/github/github_issue"
 	"flock/tools/github/github_pr"
+	"github.com/google/go-github/v93/github"
 )
 
 func TestRunReopensOnlyGateClosedPullRequests(t *testing.T) {
@@ -66,6 +68,47 @@ func TestRunDoesNotListFilesForApprovedIssue(t *testing.T) {
 	}
 	if api.filesCalls != 0 {
 		t.Fatalf("Files() calls = %d, want 0", api.filesCalls)
+	}
+}
+
+func TestRunSkipsMissingIssueReferences(t *testing.T) {
+	api := &fakeService{pullRequest: pullRequest("open", "Fixes #72 and #73"), issue: approvedIssue()}
+	issues := &fakeIssueService{
+		api: api,
+		errors: map[int]error{
+			72: &github.ErrorResponse{Response: &http.Response{StatusCode: http.StatusNotFound}},
+		},
+	}
+
+	result, err := Execute(Dependencies{Issues: issues, PullRequests: api}, "flock-php", "flock", Event{Action: "opened", Number: 87})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.ApprovedIssue == nil || result.ApprovedIssue.Number != 73 {
+		t.Fatalf("approved issue = %+v, want flock#73", result.ApprovedIssue)
+	}
+	if api.filesCalls != 0 {
+		t.Fatalf("Files() calls = %d, want 0", api.filesCalls)
+	}
+}
+
+func TestRunClosesPullRequestsWithOnlyMissingIssueReferences(t *testing.T) {
+	api := &fakeService{
+		pullRequest: pullRequest("open", "Fixes #72"),
+		files:       []github_pr.File{{Filename: "internal/site.go"}},
+	}
+	issues := &fakeIssueService{
+		api: api,
+		errors: map[int]error{
+			72: &github.ErrorResponse{Response: &http.Response{StatusCode: http.StatusNotFound}},
+		},
+	}
+
+	if _, err := Execute(Dependencies{Issues: issues, PullRequests: api}, "flock-php", "flock", Event{Action: "synchronize", Number: 87}); err != nil {
+		t.Fatal(err)
+	}
+	if api.state != "closed" || !api.commented {
+		t.Fatalf("state = %q, commented = %t", api.state, api.commented)
 	}
 }
 
@@ -223,13 +266,17 @@ func (f *fakeService) SetState(_ string, _ string, _ int, state string) error {
 }
 
 type fakeIssueService struct {
-	api *fakeService
-	err error
+	api    *fakeService
+	err    error
+	errors map[int]error
 }
 
-func (f *fakeIssueService) Get(string, string, int) (*github_issue.Issue, error) {
+func (f *fakeIssueService) Get(_ string, _ string, number int) (*github_issue.Issue, error) {
 	f.api.issueCalls++
 	f.api.calls = append(f.api.calls, "issue:get")
+	if err := f.errors[number]; err != nil {
+		return nil, err
+	}
 	return f.api.issue, f.err
 }
 

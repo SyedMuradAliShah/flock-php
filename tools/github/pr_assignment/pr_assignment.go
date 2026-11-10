@@ -13,6 +13,7 @@ type IssueClaimer interface {
 	Get(owner, repository string, number int) (*github_issue.Issue, error)
 	AddAssignee(owner, repository string, number int, username string) (*github_issue.Issue, error)
 	RemoveAssignee(owner, repository string, number int, username string) error
+	AddLabel(owner, repository string, number int, label string) error
 	RemoveHelpWanted(owner, repository string, issue *github_issue.Issue) error
 }
 
@@ -51,30 +52,40 @@ func Execute(dependencies Dependencies, owner string, issueReference issue_refer
 		return Result{ClaimedBy: claimedBy}, nil
 	}
 	if github_issue.HasAssignee(issue, author) {
-		return Result{}, dependencies.Issues.RemoveHelpWanted(owner, issueReference.Repository, issue)
+		return Result{}, markClaimed(dependencies.Issues, owner, issueReference.Repository, issue)
 	}
 
 	issue, err = dependencies.Issues.AddAssignee(owner, issueReference.Repository, issueReference.Number, author)
 	if err != nil {
 		return Result{}, err
 	}
-	if !github_issue.HasAssignee(issue, author) {
-		return Result{}, fmt.Errorf("issue #%d was not assigned to %q", issueReference.Number, author)
-	}
 	claimedBy, err = winningAssignee(dependencies.Repositories, owner, issueReference.Repository, issue)
 	if err != nil {
-		if cleanupErr := dependencies.Issues.RemoveAssignee(owner, issueReference.Repository, issueReference.Number, author); cleanupErr != nil {
-			return Result{}, fmt.Errorf("verify issue claim: %w; remove unsuccessful assignment: %v", err, cleanupErr)
+		if github_issue.HasAssignee(issue, author) {
+			if cleanupErr := dependencies.Issues.RemoveAssignee(owner, issueReference.Repository, issueReference.Number, author); cleanupErr != nil {
+				return Result{}, fmt.Errorf("verify issue claim: %w; remove unsuccessful assignment: %v", err, cleanupErr)
+			}
 		}
 		return Result{}, err
 	}
 	if claimedBy != author {
-		if err := dependencies.Issues.RemoveAssignee(owner, issueReference.Repository, issueReference.Number, author); err != nil {
-			return Result{}, err
+		if github_issue.HasAssignee(issue, author) {
+			if err := dependencies.Issues.RemoveAssignee(owner, issueReference.Repository, issueReference.Number, author); err != nil {
+				return Result{}, err
+			}
 		}
-		return Result{ClaimedBy: claimedBy}, nil
+		if claimedBy != "" {
+			return Result{ClaimedBy: claimedBy}, nil
+		}
 	}
-	return Result{}, dependencies.Issues.RemoveHelpWanted(owner, issueReference.Repository, issue)
+	return Result{}, markClaimed(dependencies.Issues, owner, issueReference.Repository, issue)
+}
+
+func markClaimed(issues IssueClaimer, owner, repository string, issue *github_issue.Issue) error {
+	if err := issues.AddLabel(owner, repository, issue.Number, github_issue.Claimed); err != nil {
+		return err
+	}
+	return issues.RemoveHelpWanted(owner, repository, issue)
 }
 
 func approvedFor(issue *github_issue.Issue, author string) bool {
