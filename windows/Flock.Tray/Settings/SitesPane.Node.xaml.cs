@@ -11,7 +11,7 @@ namespace Flock.Tray.Settings;
 internal sealed partial class SitesPane
 {
     private const string CommandHelp =
-        "Flock runs the command when you click Start and shows its output here. For a command that starts the server in the background, like docker compose up -d, add the command that stops it.";
+        "Flock runs the start command when you click Start and shows its output. For a command that starts the server in the background, like docker compose up -d, add the command that stops it.";
 
     /// <summary>The site's type: PHP, or a Node.js app whose dev server Flock runs.</summary>
     private ComboBox TypePicker(Status.Site site)
@@ -80,10 +80,10 @@ internal sealed partial class SitesPane
     /// <summary>A proxy's start command: its state, Start and Stop, the command and its output; or a way to add one.</summary>
     private StackPanel ProxyCommandSection(Status.Proxy proxy)
     {
-        var section = Section("Start command");
+        var section = Section("Commands");
         if (proxy.Command is not { } command)
         {
-            section.Children.Add(Ui.Button("Add Command…", () => Start(proxy.Name, () => ChangeCommandAsync(proxy))));
+            section.Children.Add(Ui.Button("Add Commands…", () => Start(proxy.Name, () => ChangeCommandAsync(proxy))));
             section.Children.Add(Ui.Caption(CommandHelp, Ui.TertiaryText));
             return section;
         }
@@ -96,14 +96,14 @@ internal sealed partial class SitesPane
         };
         section.Children.Add(Field("State", StateLine(tone, command.StateLabel,
             command.State == Status.ProxyState.Starting ? command.Problem : "")));
-        section.Children.Add(Field("Command", Ui.MonoText(command.Command, 12)));
+        section.Children.Add(Field("Start", Ui.MonoText(command.Command, 12)));
+        if (command.StopCommand.Length > 0)
+        {
+            section.Children.Add(Field("Stop", Ui.MonoText(command.StopCommand, 12)));
+        }
         var folder = Ui.Text(command.Dir, wrap: false);
         ToolTipService.SetToolTip(folder, command.Dir);
         section.Children.Add(Field("Folder", folder));
-        if (command.StopCommand.Length > 0)
-        {
-            section.Children.Add(Field("Stop command", Ui.MonoText(command.StopCommand, 12)));
-        }
 
         var buttons = Ui.Row(8);
         if (command.CanStart)
@@ -141,11 +141,28 @@ internal sealed partial class SitesPane
         output.ShowIn(section, log, live && active);
     }
 
-    /// <summary>Asks for a proxy's command, its folder and its stop command; an empty command removes them.</summary>
-    private async Task ChangeCommandAsync(Status.Proxy proxy)
+    /// <summary>The Start, Stop and Folder fields of a proxy's commands, in the Add Proxy dialog and in their own.</summary>
+    private sealed class CommandFields
     {
-        var current = proxy.Command;
-        var command = new TextBox { Header = "Command", PlaceholderText = "npm run dev", Text = current?.Command ?? "", FontFamily = Ui.Mono };
+        public required TextBox Start { get; init; }
+        public required TextBox Stop { get; init; }
+        public required TextBox Folder { get; init; }
+        public required StackPanel Panel { get; init; }
+
+        /// <summary>What was entered; without a start command, none (an empty command removes them).</summary>
+        public ProxyChange Change => Start.Text.Trim() is { Length: > 0 } start
+            ? new ProxyChange(Command: start, Dir: Folder.Text.Trim(), StopCommand: Stop.Text.Trim())
+            : new ProxyChange(Command: "");
+    }
+
+    private CommandFields NewCommandFields(Status.ProxyCommand? current)
+    {
+        var start = new TextBox { Header = "Start", PlaceholderText = "npm run dev", Text = current?.Command ?? "", FontFamily = Ui.Mono };
+        var stop = new TextBox
+        {
+            Header = "Stop", PlaceholderText = "Only for a server that runs in the background, e.g. docker compose stop",
+            Text = current?.StopCommand ?? "", FontFamily = Ui.Mono,
+        };
         var folder = new TextBox
         {
             Text = current?.Dir is { Length: > 0 } dir ? dir : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
@@ -159,39 +176,35 @@ internal sealed partial class SitesPane
                 folder.Text = picked;
             }
         }
-        var stop = new TextBox
+        return new CommandFields
         {
-            Header = "Stop command", PlaceholderText = "Only for a server that runs in the background, e.g. docker compose stop",
-            Text = current?.StopCommand ?? "", FontFamily = Ui.Mono,
+            Start = start, Stop = stop, Folder = folder,
+            Panel = Ui.Column(12, Ui.Caption(CommandHelp), start, stop, Ui.Column(4, Ui.Text("Folder"), Ui.Row(8, folder, choose))),
         };
+    }
+
+    /// <summary>Asks for a proxy's commands: Start, Stop and Folder. An empty start command removes them.</summary>
+    private async Task ChangeCommandAsync(Status.Proxy proxy)
+    {
+        var current = proxy.Command;
+        var fields = NewCommandFields(current);
         var dialog = new ContentDialog
         {
-            Title = current is null ? $"Add a start command to {proxy.Name}" : $"Change the start command of {proxy.Name}",
-            Content = Ui.Column(12, Ui.Text(CommandHelp), command,
-                Ui.Column(4, Ui.Text("Folder"), Ui.Row(8, folder, choose)), stop),
+            Title = current is null ? $"Add commands to {proxy.Name}" : $"Commands of {proxy.Name}",
+            Content = fields.Panel,
             PrimaryButtonText = "Save",
-            SecondaryButtonText = current is null ? "" : "Remove Command",
+            SecondaryButtonText = current is null ? "" : "Remove Commands",
             CloseButtonText = "Cancel",
             DefaultButton = ContentDialogButton.Primary,
             XamlRoot = Window.XamlRoot,
         };
-        var result = await dialog.ShowAsync();
-        ProxyChange change;
-        switch (result)
+        var change = await dialog.ShowAsync() switch
         {
-            case ContentDialogResult.Secondary:
-                change = new ProxyChange(Command: "");
-                break;
-            case ContentDialogResult.Primary:
-                var line = command.Text.Trim();
-                change = line.Length == 0
-                    ? new ProxyChange(Command: "")
-                    : new ProxyChange(Command: line, Dir: folder.Text.Trim(), StopCommand: stop.Text.Trim());
-                break;
-            default:
-                return;
-        }
-        if (current is null && change.Command == "")
+            ContentDialogResult.Secondary => new ProxyChange(Command: ""),
+            ContentDialogResult.Primary => fields.Change,
+            _ => null,
+        };
+        if (change is null || current is null && change.Command == "")
         {
             return;
         }

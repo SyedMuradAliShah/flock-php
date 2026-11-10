@@ -96,7 +96,12 @@ public sealed class FlockClient : IDisposable
     /// upstream. A null secured keeps the proxy's setting (HTTP for a new one).
     /// </summary>
     public Task<Status> ProxyAsync(string name, string upstream, bool? secured = null, CancellationToken cancellationToken = default) =>
-        Send<Status>(HttpMethod.Post, "/v1/proxies", new ProxyRequest(name, upstream, secured), cancellationToken: cancellationToken);
+        ProxyAsync(name, upstream, secured, null, cancellationToken);
+
+    /// <summary>As ProxyAsync, also setting the commands that start and stop its server (commands' null fields are left out).</summary>
+    public Task<Status> ProxyAsync(string name, string upstream, bool? secured, ProxyChange? commands, CancellationToken cancellationToken = default) =>
+        Send<Status>(HttpMethod.Post, "/v1/proxies",
+            new ProxyRequest(name, upstream, secured, commands?.Command, commands?.Dir, commands?.StopCommand), cancellationToken: cancellationToken);
 
     /// <summary>Serves a proxy over HTTPS (on) or plain HTTP.</summary>
     public Task<Status> SecureProxyAsync(string name, bool secured, CancellationToken cancellationToken = default) =>
@@ -119,7 +124,7 @@ public sealed class FlockClient : IDisposable
         Send<Status>(HttpMethod.Delete, $"/v1/proxies/{Escape(name)}", cancellationToken: cancellationToken);
 
     // Secured is left out when null (FlockJson ignores nulls), so the daemon keeps an existing proxy's setting.
-    private sealed record ProxyRequest(string Name, string Upstream, bool? Secured);
+    private sealed record ProxyRequest(string Name, string Upstream, bool? Secured, string? Command = null, string? Dir = null, string? StopCommand = null);
 
     /// <summary>Adds an extra domain: a subdomain ("tenant1", "a.b") or an alias ("my-app-2.test").</summary>
     public Task<Status> AddDomainAsync(string site, string domain, CancellationToken cancellationToken = default) =>

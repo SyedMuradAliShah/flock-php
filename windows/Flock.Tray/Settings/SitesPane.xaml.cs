@@ -318,12 +318,19 @@ internal sealed partial class SitesPane : UserControl, ISettingsPane
         var tld = Model.Status?.Dns.Tld is { Length: > 0 } t ? t : "test";
         var name = new TextBox { Header = "Name", PlaceholderText = "my-app" };
         var upstream = new TextBox { Header = "Upstream", PlaceholderText = "Port, host:port or URL, e.g. 3000" };
+        // Optional, so collapsed: most proxies point at a server that runs anyway.
+        var commands = NewCommandFields(null);
+        var expander = new Expander
+        {
+            Header = "Commands (optional)", Content = commands.Panel, IsExpanded = false,
+            HorizontalAlignment = HorizontalAlignment.Stretch, HorizontalContentAlignment = HorizontalAlignment.Stretch,
+        };
         var dialog = new ContentDialog
         {
             Title = "Add a proxy",
             Content = Ui.Column(12,
-                Ui.Text($"Flock serves <name>.{tld} from a server of its own, e.g. a dashboard, an object store, a Docker container or a Go or Python app. A port means 127.0.0.1. You can give it a start command afterwards."),
-                name, upstream),
+                Ui.Text($"Flock serves <name>.{tld} from a server of its own, e.g. a dashboard, an object store, a Docker container or a Go or Python app. A port means 127.0.0.1."),
+                name, upstream, expander),
             PrimaryButtonText = "Add",
             CloseButtonText = "Cancel",
             DefaultButton = ContentDialogButton.Primary,
@@ -339,7 +346,8 @@ internal sealed partial class SitesPane : UserControl, ISettingsPane
         {
             return;
         }
-        if (await Model.Sites.ProxyAsync(proxyName, proxyUpstream) == OperationOutcome.Succeeded)
+        var change = commands.Change;
+        if (await Model.Sites.ProxyAsync(proxyName, proxyUpstream, change.Command is { Length: > 0 } ? change : null) == OperationOutcome.Succeeded)
         {
             Select(proxyName);
         }
@@ -395,7 +403,7 @@ internal sealed partial class SitesPane : UserControl, ISettingsPane
         var upstream = Ui.MonoText(proxy.Upstream);
         upstream.VerticalAlignment = VerticalAlignment.Center;
         var change = Ui.Button("Change…", () => Start(proxy.Name, () => ChangeUpstreamAsync(proxy)));
-        var starts = proxy.Command is null ? " Flock doesn't start the server, so start it as usual, or give it a start command below." : "";
+        var starts = proxy.Command is null ? " Flock doesn't start the server, so start it as usual, or give it commands below." : "";
         panel.Children.Add(Section("Proxy",
             Field("Server", server),
             Field("HTTPS", https),

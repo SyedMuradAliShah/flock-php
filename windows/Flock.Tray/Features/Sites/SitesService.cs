@@ -49,7 +49,11 @@ public sealed class SitesService : IAsyncDisposable
 
     /// <summary>Adds a proxy, or changes its upstream (a port, host:port or URL). Site and proxy names never clash, so they share the site keys.</summary>
     public Task<OperationOutcome> ProxyAsync(string name, string upstream, CancellationToken token = default) =>
-        MutateAsync(Key(name), name, (_, cancellationToken) => client.ProxyAsync(name, upstream, cancellationToken: cancellationToken), token);
+        ProxyAsync(name, upstream, null, token);
+
+    /// <summary>Adds a proxy with the commands that start and stop its server (null: none).</summary>
+    public Task<OperationOutcome> ProxyAsync(string name, string upstream, ProxyChange? commands, CancellationToken token = default) =>
+        MutateAsync(Key(name), name, (_, cancellationToken) => client.ProxyAsync(name, upstream, null, commands, cancellationToken), token);
 
     public Task<OperationOutcome> SecureProxyAsync(string name, bool secured, CancellationToken token = default) =>
         MutateAsync(Key(name), name, (_, cancellationToken) => client.SecureProxyAsync(name, secured, cancellationToken), token);

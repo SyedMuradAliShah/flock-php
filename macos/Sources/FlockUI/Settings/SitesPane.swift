@@ -42,10 +42,8 @@ struct SitesPane: View {
         nonmutating set { sharingState.wrappedValue = newValue }
     }
 
-    /// The Add Proxy alert is open; its name and upstream typed so far.
+    /// The Add Proxy sheet is open.
     private let addingProxyState = State<Bool>(initialValue: false)
-    private let newProxyNameState = State<String>(initialValue: "")
-    private let newProxyUpstreamState = State<String>(initialValue: "")
     /// The proxy whose upstream is being changed, and the upstream typed so far.
     private let editingUpstreamState = State<String?>(initialValue: nil)
     private var editingUpstream: String? {
@@ -194,25 +192,15 @@ struct SitesPane: View {
         } message: {
             Text(domainHelp)
         }
-        .alert("Add a proxy", isPresented: addingProxyState.projectedValue) {
-            TextField("Name, e.g. my-app", text: newProxyNameState.projectedValue)
-            TextField("Port, host:port or URL, e.g. 3000", text: newProxyUpstreamState.projectedValue)
-            Button("Add") {
-                let name = newProxyNameState.wrappedValue.trimmingCharacters(in: .whitespaces)
-                let upstream = newProxyUpstreamState.wrappedValue.trimmingCharacters(in: .whitespaces)
-                newProxyNameState.wrappedValue = ""
-                newProxyUpstreamState.wrappedValue = ""
-                if !name.isEmpty, !upstream.isEmpty {
-                    selectionState.wrappedValue = name
-                    Task { await store.perform { _ = try await $0.proxy(name: name, upstream: upstream) } }
-                }
-            }
-            Button("Cancel", role: .cancel) {
-                newProxyNameState.wrappedValue = ""
-                newProxyUpstreamState.wrappedValue = ""
-            }
-        } message: {
-            Text("Flock serves <name>.\(model.status?.dns.tld ?? "test") from a server of its own, e.g. a dashboard, an object store, a Docker container or a Go or Python app. A port means 127.0.0.1.")
+        .sheet(isPresented: addingProxyState.projectedValue) {
+            AddProxySheet(add: { name, upstream, command, dir, stop in
+                addingProxyState.wrappedValue = false
+                selectionState.wrappedValue = name
+                // With commands, one request makes the proxy and its commands.
+                Task { await store.perform { _ = try await $0.proxy(name: name, upstream: upstream, command: command, dir: dir, stopCommand: stop) } }
+            }, cancel: {
+                addingProxyState.wrappedValue = false
+            }, tld: model.status?.dns.tld ?? "test")
         }
         .alert("Change the upstream of \(editingUpstream ?? "")", isPresented: Binding(get: { editingUpstream != nil }, set: { if !$0 { editingUpstream = nil } })) {
             TextField("Port, host:port or URL", text: upstreamDraftState.projectedValue)
@@ -374,31 +362,6 @@ struct SitesPane: View {
                         }
                     }
                 }
-                field("Command") {
-                    HStack(spacing: 8) {
-                        if let command = proxy.command {
-                            Text(command.command).font(.callout.monospaced()).textSelection(.enabled)
-                                .lineLimit(1).truncationMode(.middle)
-                        } else {
-                            Text("None").foregroundStyle(.secondary)
-                        }
-                        Button(proxy.command == nil ? "Add…" : "Change…") { editingCommandState.wrappedValue = proxy }
-                            .controlSize(.small)
-                    }
-                }
-                if let command = proxy.command {
-                    field("Folder") {
-                        Text(command.dir).font(.callout.monospaced()).textSelection(.enabled)
-                            .lineLimit(1).truncationMode(.middle)
-                            .help(command.dir)
-                    }
-                    if let stop = command.stopCommand, !stop.isEmpty {
-                        field("Stop command") {
-                            Text(stop).font(.callout.monospaced()).textSelection(.enabled)
-                                .lineLimit(1).truncationMode(.middle)
-                        }
-                    }
-                }
                 field("HTTPS") {
                     Toggle("HTTPS", isOn: Binding(
                         get: { proxy.secured },
@@ -419,8 +382,33 @@ struct SitesPane: View {
                     }
                 }
                 Text(proxy.command == nil
-                     ? "Every request passes to the upstream with its Host header, WebSocket upgrades (hot reload) included. Flock doesn't start the server, so start it as usual, or give Flock its command. Until it answers, \(proxy.domain) shows a page saying so."
-                     : "Flock runs the command when you click Start and shows its output here. For a command that starts the server in the background, like docker compose up -d, add the command that stops it.")
+                     ? "Every request passes to the upstream with its Host header, WebSocket upgrades (hot reload) included. Flock doesn't start the server, so start it as usual, or give it commands below. Until it answers, \(proxy.domain) shows a page saying so."
+                     : "Every request passes to the upstream with its Host header, WebSocket upgrades (hot reload) included. Until it answers, \(proxy.domain) shows a page saying so.")
+                    .font(.caption).foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            section("Commands") {
+                if let command = proxy.command {
+                    field("Start") {
+                        Text(command.command).font(.callout.monospaced()).textSelection(.enabled)
+                            .lineLimit(1).truncationMode(.middle)
+                    }
+                    if let stop = command.stopCommand, !stop.isEmpty {
+                        field("Stop") {
+                            Text(stop).font(.callout.monospaced()).textSelection(.enabled)
+                                .lineLimit(1).truncationMode(.middle)
+                        }
+                    }
+                    field("Folder") {
+                        Text(command.dir).font(.callout.monospaced()).textSelection(.enabled)
+                            .lineLimit(1).truncationMode(.middle)
+                            .help(command.dir)
+                    }
+                }
+                Button(proxy.command == nil ? "Add Commands…" : "Change…") { editingCommandState.wrappedValue = proxy }
+                    .controlSize(.small)
+                Text(proxyCommandsHelp)
                     .font(.caption).foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }

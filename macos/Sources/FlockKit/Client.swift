@@ -131,10 +131,26 @@ public actor FlockClient {
     }
 
     /// Serves <name>.test from upstream (a port, host:port or URL), adding the proxy or changing its
-    /// upstream. A nil secured keeps the proxy's setting (HTTP for a new one).
-    public func proxy(name: String, upstream: String, secured: Bool? = nil) async throws -> Status {
-        struct Body: Encodable { var name: String; var upstream: String; var secured: Bool? }
-        return try await decode(Status.self, "POST", "/v1/proxies", body: try JSONEncoder().encode(Body(name: name, upstream: upstream, secured: secured)))
+    /// upstream. A nil secured keeps the proxy's setting (HTTP for a new one); nil commands keep the
+    /// proxy's (none for a new one). A start command runs in `dir`; `stopCommand` stops a server that
+    /// runs in the background.
+    public func proxy(name: String, upstream: String, secured: Bool? = nil,
+                      command: String? = nil, dir: String? = nil, stopCommand: String? = nil) async throws -> Status {
+        struct Body: Encodable {
+            var name: String
+            var upstream: String
+            var secured: Bool?
+            var command: String?
+            var dir: String?
+            var stopCommand: String?
+
+            enum CodingKeys: String, CodingKey {
+                case name, upstream, secured, command, dir
+                case stopCommand = "stop_command"
+            }
+        }
+        let body = Body(name: name, upstream: upstream, secured: secured, command: command, dir: dir, stopCommand: stopCommand)
+        return try await decode(Status.self, "POST", "/v1/proxies", body: try JSONEncoder().encode(body), timeout: Self.siteRestartTimeout)
     }
 
     /// Serves a proxy over HTTPS (on) or plain HTTP.

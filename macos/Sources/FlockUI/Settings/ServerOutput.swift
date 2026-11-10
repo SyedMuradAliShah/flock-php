@@ -217,7 +217,41 @@ struct StateDot: View {
     static let failed = Color.red
 }
 
-/// Edits the command that starts a proxy's server, its folder and its stop command.
+/// The help text under a proxy's command fields.
+let proxyCommandsHelp = "Flock runs the start command when you click Start and shows its output. For a command that starts the server in the background, like docker compose up -d, add the command that stops it."
+
+/// The Start, Stop and Folder fields of a proxy's commands, in a Form.
+struct ProxyCommandsFields: View {
+    let start: Binding<String>
+    let stop: Binding<String>
+    let dir: Binding<String>
+
+    var body: some View {
+        TextField("Start", text: start, prompt: Text("npm run dev"))
+            .font(.callout.monospaced())
+        TextField("Stop", text: stop, prompt: Text("Only for a server that runs in the background, e.g. docker compose stop"))
+            .font(.callout.monospaced())
+        LabeledContent("Folder") {
+            HStack(spacing: 8) {
+                Text(dir.wrappedValue).font(.callout.monospaced())
+                    .lineLimit(1).truncationMode(.middle)
+                    .help(dir.wrappedValue)
+                Button("Choose…") {
+                    let from = URL(fileURLWithPath: dir.wrappedValue)
+                    if let url = SettingsStore.chooseDirectories(prompt: "Choose", multiple: false, in: from).first {
+                        dir.wrappedValue = url.path
+                    }
+                }
+                .controlSize(.small)
+            }
+        }
+    }
+
+    /// The folder new commands run in until another is chosen.
+    static var home: String { FileManager.default.homeDirectoryForCurrentUser.path }
+}
+
+/// Edits the commands that start and stop a proxy's server, and their folder.
 struct ProxyCommandSheet: View {
     let proxy: Status.Proxy
     let save: (ProxyChange) -> Void
@@ -232,44 +266,29 @@ struct ProxyCommandSheet: View {
         self.save = save
         self.cancel = cancel
         commandState = State(initialValue: proxy.command?.command ?? "")
-        // A new command runs in the home folder until another is chosen.
-        dirState = State(initialValue: proxy.command?.dir ?? FileManager.default.homeDirectoryForCurrentUser.path)
+        dirState = State(initialValue: proxy.command?.dir ?? ProxyCommandsFields.home)
         stopState = State(initialValue: proxy.command?.stopCommand ?? "")
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Command of \(proxy.name)").font(.headline)
+            Text("Commands of \(proxy.name)").font(.headline)
             Form {
-                TextField("Command", text: commandState.projectedValue, prompt: Text("npm run dev"))
-                    .font(.callout.monospaced())
-                LabeledContent("Folder") {
-                    HStack(spacing: 8) {
-                        Text(dirState.wrappedValue).font(.callout.monospaced())
-                            .lineLimit(1).truncationMode(.middle)
-                            .help(dirState.wrappedValue)
-                        Button("Choose…") {
-                            let start = URL(fileURLWithPath: dirState.wrappedValue)
-                            if let url = SettingsStore.chooseDirectories(prompt: "Choose", multiple: false, in: start).first {
-                                dirState.wrappedValue = url.path
-                            }
-                        }
-                        .controlSize(.small)
-                    }
-                }
-                TextField("Stop command", text: stopState.projectedValue, prompt: Text("docker compose stop"))
-                    .font(.callout.monospaced())
+                ProxyCommandsFields(start: commandState.projectedValue, stop: stopState.projectedValue, dir: dirState.projectedValue)
             }
-            Text("Flock runs the command when you click Start and shows its output here. For a command that starts the server in the background, like docker compose up -d, add the command that stops it.")
+            Text(proxyCommandsHelp)
                 .font(.caption).foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
             HStack {
+                if proxy.command != nil {
+                    // An empty start command removes the commands and their folder.
+                    Button("Remove Commands", role: .destructive) { save(ProxyChange(command: "")) }
+                }
                 Spacer()
                 Button("Cancel", role: .cancel) { cancel() }
                     .keyboardShortcut(.cancelAction)
                 Button("Save") {
                     let command = commandState.wrappedValue.trimmingCharacters(in: .whitespaces)
-                    // An empty command removes it, with its folder and stop command.
                     save(command.isEmpty
                          ? ProxyChange(command: "")
                          : ProxyChange(command: command, dir: dirState.wrappedValue,
@@ -279,6 +298,60 @@ struct ProxyCommandSheet: View {
             }
         }
         .padding(20)
-        .frame(width: 480)
+        .frame(width: 520)
+    }
+}
+
+/// Adds a proxy: its name and upstream, and optionally the commands that start and stop its server.
+struct AddProxySheet: View {
+    /// name, upstream, then the start command, its folder and the stop command (nil without a start command).
+    let add: (String, String, String?, String?, String?) -> Void
+    let cancel: () -> Void
+    let tld: String
+
+    private let nameState = State<String>(initialValue: "")
+    private let upstreamState = State<String>(initialValue: "")
+    private let commandsShownState = State<Bool>(initialValue: false)
+    private let commandState = State<String>(initialValue: "")
+    private let stopState = State<String>(initialValue: "")
+    private let dirState = State<String>(initialValue: ProxyCommandsFields.home)
+
+    var body: some View {
+        let name = nameState.wrappedValue.trimmingCharacters(in: .whitespaces)
+        let upstream = upstreamState.wrappedValue.trimmingCharacters(in: .whitespaces)
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Add a proxy").font(.headline)
+            Text("Flock serves <name>.\(tld) from a server of its own, e.g. a dashboard, an object store, a Docker container or a Go or Python app. A port means 127.0.0.1.")
+                .font(.callout).foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            Form {
+                TextField("Name", text: nameState.projectedValue, prompt: Text("my-app"))
+                TextField("Upstream", text: upstreamState.projectedValue, prompt: Text("Port, host:port or URL, e.g. 3000"))
+                DisclosureGroup("Commands (optional)", isExpanded: commandsShownState.projectedValue) {
+                    ProxyCommandsFields(start: commandState.projectedValue, stop: stopState.projectedValue, dir: dirState.projectedValue)
+                    Text(proxyCommandsHelp)
+                        .font(.caption).foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            HStack {
+                Spacer()
+                Button("Cancel", role: .cancel) { cancel() }
+                    .keyboardShortcut(.cancelAction)
+                Button("Add") {
+                    let command = commandState.wrappedValue.trimmingCharacters(in: .whitespaces)
+                    if command.isEmpty {
+                        add(name, upstream, nil, nil, nil)
+                    } else {
+                        let stop = stopState.wrappedValue.trimmingCharacters(in: .whitespaces)
+                        add(name, upstream, command, dirState.wrappedValue, stop.isEmpty ? nil : stop)
+                    }
+                }
+                .keyboardShortcut(.defaultAction)
+                .disabled(name.isEmpty || upstream.isEmpty)
+            }
+        }
+        .padding(20)
+        .frame(width: 520)
     }
 }

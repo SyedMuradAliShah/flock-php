@@ -73,7 +73,7 @@ Remove a link with `flock unlink [name]`.
 Some servers aren't projects Flock serves: an object store such as MinIO, a dashboard, a Docker container, or a Go or Python app. They run a server of their own on a port. A proxy passes a `.test` domain to that server, so it gets a name, and HTTPS, like a site. A Next.js, Nuxt or Vite app in your projects is a site of its own instead: Flock runs its dev server (see [Node.js apps](node.md#nodejs-apps)).
 
 :::app
-Click **Add Proxy…** in **Settings → Sites**, and give a name and the port (or host:port or URL). Proxies are listed under the sites, here and in the Flock panel, with what serves them (for example Node.js 22, when it's one of Flock's versions) or **Not running**; select one to turn on HTTPS, change its upstream, give it a start command or remove it.
+Click **Add Proxy…** in **Settings → Sites**, and give a name and the port (or host:port or URL). Proxies are listed under the sites, here and in the Flock panel, with what serves them (for example Node.js 22, when it's one of Flock's versions) or **Not running**; select one to turn on HTTPS, change its upstream, give it commands or remove it.
 :::
 
 :::cli
@@ -102,7 +102,7 @@ Flock doesn't start a proxy's server unless you give it the command that does. T
 A command such as `docker compose up -d` starts the server in the background and exits. Give such a command the one that stops the server as well (`docker compose stop`): Flock then runs one to start and the other to stop.
 
 :::app
-Select the proxy in **Settings → Sites** and click **Add Command…**. Give the command, its folder and, for a server that runs in the background, the stop command. **Start** and **Stop** then sit next to the proxy's state, with the command's output below.
+Open **Commands (optional)** in the **Add Proxy…** dialog, or select a proxy in **Settings → Sites** and click **Add Commands…**. Give the **Start** command, its **Folder** and, for a server that runs in the background, the **Stop** command. **Start** and **Stop** then sit next to the proxy's state, with the command's output below.
 :::
 
 :::cli

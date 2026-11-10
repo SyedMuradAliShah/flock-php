@@ -395,6 +395,7 @@ public class ClientTests : IDisposable
         });
         using var client = new FlockClient(new HttpClient(handler) { Timeout = Timeout.InfiniteTimeSpan }, WriteApiJson("http://127.0.0.1:1", "t"), clock);
 
+        await client.ProxyAsync("admin", "8000", null, new ProxyChange(Command: "npm run dev", Dir: "C:\\code\\admin", StopCommand: ""));
         await client.UpdateProxyAsync("s3", new ProxyChange(Command: "docker compose up -d", Dir: "C:\\code\\s3", StopCommand: "docker compose stop"));
         await client.UpdateProxyAsync("s3", new ProxyChange(Command: ""));
         await client.StartProxyAsync("s3");
@@ -405,12 +406,13 @@ public class ClientTests : IDisposable
 
         Assert.Equal(
             [
-                "PATCH /v1/proxies/s3", "PATCH /v1/proxies/s3", "POST /v1/proxies/s3/start", "POST /v1/proxies/s3/stop",
+                "POST /v1/proxies", "PATCH /v1/proxies/s3", "PATCH /v1/proxies/s3", "POST /v1/proxies/s3/start", "POST /v1/proxies/s3/stop",
                 "PATCH /v1/sites/next-app", "POST /v1/sites/next-app/stop", "DELETE /v1/logs/services/proxy-s3",
             ],
             handler.Requests.Select(r => $"{r.Method} {r.RequestUri!.PathAndQuery}"));
         Assert.Equal(
             [
+                """{"name":"admin","upstream":"8000","command":"npm run dev","dir":"C:\\code\\admin","stop_command":""}""",
                 """{"command":"docker compose up -d","dir":"C:\\code\\s3","stop_command":"docker compose stop"}""", """{"command":""}""", "", "",
                 """{"type":"node"}""", "", "",
             ],
