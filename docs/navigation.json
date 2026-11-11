@@ -29,7 +29,8 @@
     "section": "Services",
     "pages": [
       { "slug": "services", "title": "Databases & services" },
-      { "slug": "postgres", "title": "PostgreSQL" }
+      { "slug": "postgres", "title": "PostgreSQL" },
+      { "slug": "phpmyadmin", "title": "phpMyAdmin" }
     ]
   },
   {

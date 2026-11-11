@@ -28,6 +28,9 @@ public sealed class Status
     public string? Postgres { get; init; }
     /// <summary>The installed catalog services (MySQL, Redis, ...).</summary>
     public List<ExtraService> Extras { get; init; } = [];
+    /// <summary>The installed phpMyAdmin; it is served as a site, so it has no process of its own. Null when not installed.</summary>
+    [JsonPropertyName("phpmyadmin")]
+    public PhpMyAdminSummary? PhpMyAdmin { get; init; }
     /// <summary>Xdebug detection: requests that ask for Xdebug go to a PHP pool that loads it.</summary>
     public bool Xdebug { get; init; }
     /// <summary>Sites with PhpStorm breakpoints send every request to Xdebug.</summary>
@@ -90,6 +93,14 @@ public sealed class Status
         public const string Failed = "failed";
         /// <summary>The default is set.</summary>
         public const string Done = "done";
+    }
+
+    /// <summary>The installed phpMyAdmin, for the tray panel.</summary>
+    public sealed class PhpMyAdminSummary
+    {
+        public string Version { get; init; } = "";
+        public string Domain { get; init; } = "";
+        public string Url { get; init; } = "";
     }
 
     /// <summary>An installed catalog service, for the tray panel.</summary>

@@ -282,6 +282,10 @@ public sealed class PanelViewModel : ObservableObject, IDisposable
         {
             values.Add(new(extra.Name, extra.Name, extra.Enabled ? $"{extra.Version} on 127.0.0.1:{extra.Port}" : "stopped", extra.Up));
         }
+        if (status.PhpMyAdmin is { } phpMyAdmin)
+        {
+            values.Add(new("phpmyadmin", "phpMyAdmin", $"{phpMyAdmin.Version} · {phpMyAdmin.Domain}", true));
+        }
         foreach (var pool in status.Processes.Where(p => p.Name.StartsWith("php", StringComparison.Ordinal)).GroupBy(p => PoolName(p.Name)))
         {
             var workers = pool.ToList();

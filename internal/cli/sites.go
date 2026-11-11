@@ -58,6 +58,11 @@ func newLinkCommand() *cobra.Command {
 				name = config.SiteName(args[0])
 			}
 
+			if renamed := s.cfg.LinkName(name); renamed != name {
+				cmd.PrintErrf("%s is phpMyAdmin's name here: linking this folder as %s\n", name, renamed)
+				name = renamed
+			}
+
 			site := config.Site{Name: name, Path: cwd, PHP: phpVersion, Secured: secure}
 			if existing, ok := s.cfg.FindSite(name); ok && !existing.Parked {
 				site.Node, site.Domains = existing.Node, existing.Domains

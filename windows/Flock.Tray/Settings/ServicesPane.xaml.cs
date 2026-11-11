@@ -166,9 +166,14 @@ internal sealed partial class ServicesPane : UserControl, ISettingsPane
         {
             PostgresDetail(panel);
         }
-        if (service.IsOnRequest)
+        if (service.IsCatalog)
         {
             CatalogDetail(panel, service);
+        }
+        if (service.IsPhpMyAdmin)
+        {
+            PhpMyAdminDetail(panel, service);
+            return card;
         }
         if (service.Installed || !IsInstallable(service))
         {

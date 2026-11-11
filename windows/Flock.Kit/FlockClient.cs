@@ -354,6 +354,39 @@ public sealed class FlockClient : IDisposable
         return Send<ServiceCatalog>(HttpMethod.Delete, path, timeout: TimeSpan.FromMinutes(1), cancellationToken: cancellationToken);
     }
 
+    // phpMyAdmin
+
+    public Task<PhpMyAdminState> PhpMyAdminAsync(CancellationToken cancellationToken = default) => Get<PhpMyAdminState>("/v1/phpmyadmin", cancellationToken: cancellationToken);
+
+    /// <summary>
+    /// Starts installing (or updating) phpMyAdmin in the background; null folder: the current or default one.
+    /// Reinstall replaces the files of the installed version even when it is the newest. Poll PhpMyAdminAsync.
+    /// </summary>
+    public Task<PhpMyAdminState> InstallPhpMyAdminAsync(string? folder = null, bool reinstall = false, CancellationToken cancellationToken = default) =>
+        Send<PhpMyAdminState>(HttpMethod.Post, "/v1/phpmyadmin/install", new { folder = folder ?? "", reinstall }, cancellationToken: cancellationToken);
+
+    /// <summary>Looks up the newest phpMyAdmin release now.</summary>
+    public Task<PhpMyAdminState> CheckPhpMyAdminAsync(CancellationToken cancellationToken = default) =>
+        Send<PhpMyAdminState>(HttpMethod.Post, "/v1/phpmyadmin/check", timeout: TimeSpan.FromMinutes(1), cancellationToken: cancellationToken);
+
+    /// <summary>Moves the installed phpMyAdmin to another folder (null: back to the default one).</summary>
+    public Task<PhpMyAdminState> SetPhpMyAdminFolderAsync(string? folder, CancellationToken cancellationToken = default) =>
+        Send<PhpMyAdminState>(HttpMethod.Put, "/v1/phpmyadmin/folder", new { folder = folder ?? "" }, timeout: TimeSpan.FromMinutes(5), cancellationToken: cancellationToken);
+
+    /// <summary>Serves phpMyAdmin at another address ("db" for db.test; null: back to phpmyadmin). A name another site has is refused.</summary>
+    public Task<PhpMyAdminState> SetPhpMyAdminNameAsync(string? name, CancellationToken cancellationToken = default) =>
+        Send<PhpMyAdminState>(HttpMethod.Put, "/v1/phpmyadmin/name", new { name = name ?? "" }, timeout: TimeSpan.FromMinutes(1), cancellationToken: cancellationToken);
+
+    public Task<PhpMyAdminState> CancelPhpMyAdminJobAsync(CancellationToken cancellationToken = default) =>
+        Send<PhpMyAdminState>(HttpMethod.Post, "/v1/phpmyadmin/cancel", cancellationToken: cancellationToken);
+
+    /// <summary>Forgets a failed install.</summary>
+    public Task<PhpMyAdminState> DismissPhpMyAdminJobAsync(CancellationToken cancellationToken = default) =>
+        Send<PhpMyAdminState>(HttpMethod.Delete, "/v1/phpmyadmin/job", cancellationToken: cancellationToken);
+
+    public Task<PhpMyAdminState> UninstallPhpMyAdminAsync(CancellationToken cancellationToken = default) =>
+        Send<PhpMyAdminState>(HttpMethod.Delete, "/v1/phpmyadmin", timeout: TimeSpan.FromMinutes(2), cancellationToken: cancellationToken);
+
     // Mail
 
     public Task<List<MailSummary>> MailAsync(CancellationToken cancellationToken = default) => Get<List<MailSummary>>("/v1/mail", cancellationToken: cancellationToken);

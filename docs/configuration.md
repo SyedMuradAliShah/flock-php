@@ -34,6 +34,8 @@ Global settings live in `config.json` in the data directory. Edit them through t
 - the default PHP and Node versions,
 - the release channel (stable, beta), and the Xdebug and dump capture switches,
 - parked folders and linked sites, with their PHP and Node versions, HTTPS state and extra domains,
+- the installed services, with their versions and ports,
+- the [phpMyAdmin](phpmyadmin.md) you installed: its version, folder and address,
 - the ports Flock uses.
 
 ## Ports

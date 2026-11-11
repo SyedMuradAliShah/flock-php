@@ -232,7 +232,7 @@ func registerConfig(mux *http.ServeMux, b Backend) {
 			if name == "" {
 				name = filepath.Base(body.Path)
 			}
-			if err := cfg.Upsert(config.Site{Name: config.SiteName(name), Path: filepath.Clean(body.Path), PHP: body.PHP, Secured: body.Secured}); err != nil {
+			if _, err := cfg.Link(config.Site{Name: config.SiteName(name), Path: filepath.Clean(body.Path), PHP: body.PHP, Secured: body.Secured}); err != nil {
 				return invalid("%v", err)
 			}
 			return nil

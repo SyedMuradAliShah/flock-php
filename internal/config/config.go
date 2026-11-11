@@ -41,6 +41,9 @@ type Config struct {
 	// Proxies are names served by a server of their own, e.g. a Node.js dev server (see Proxy).
 	Proxies []Proxy `json:"proxies,omitempty"`
 
+	// PhpMyAdmin is the phpMyAdmin Flock installed; it is served as the site "phpmyadmin".
+	PhpMyAdmin *PhpMyAdmin `json:"phpmyadmin,omitempty"`
+
 	// Worktrees are the git worktrees Flock sets up (see package worktree). WorktreesSince is when
 	// Flock first looked for worktrees: older ones are served, but only set up when asked.
 	Worktrees      []WorktreeEntry `json:"worktrees,omitempty"`
@@ -309,6 +312,7 @@ func (c *Config) NodeFor(s Site) string {
 // Sorted by name, so a site's worktrees follow it.
 func (c *Config) AllSites() []Site {
 	byName := map[string]Site{}
+	var displaced []Site // parked folders that want phpMyAdmin's name
 
 	for _, dir := range c.Parked {
 		entries, err := os.ReadDir(dir)
@@ -323,13 +327,19 @@ func (c *Config) AllSites() []Site {
 			if _, proxied := c.FindProxy(name); proxied {
 				continue
 			}
-			byName[name] = Site{Name: name, Path: filepath.Join(dir, e.Name()), Parked: true}
+			site := Site{Name: name, Path: filepath.Join(dir, e.Name()), Parked: true}
+			if c.reserved(name) {
+				displaced = append(displaced, site)
+				continue
+			}
+			byName[name] = site
 		}
 	}
 
 	for _, s := range c.Sites {
 		byName[s.Name] = s
 	}
+	c.addPhpMyAdmin(byName, displaced)
 	c.worktreeSites(byName)
 
 	sites := make([]Site, 0, len(byName))
@@ -383,6 +393,9 @@ func siteForDir(sites []Site, dir string, pathOf func(Site) string) (Site, bool)
 func (c *Config) Upsert(site Site) error {
 	if site.IsWorktree() {
 		return fmt.Errorf("%s is a git worktree of %s and uses its settings — change them on %s", site.Name, site.Parent, site.Parent)
+	}
+	if c.reserved(site.Name) {
+		return fmt.Errorf("%s is phpMyAdmin's name — link the folder under another name, or uninstall phpMyAdmin first", site.Name)
 	}
 	if _, ok := c.FindProxy(site.Name); ok {
 		return fmt.Errorf("%s is a proxy's name — remove it with `flock unproxy %s` first, or choose another name", site.Name, site.Name)

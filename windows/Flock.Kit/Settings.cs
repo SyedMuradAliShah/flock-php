@@ -87,6 +87,14 @@ public sealed class Service
     /// <summary>A catalog service (MySQL, Valkey, ...), installed on request from its detail.</summary>
     [JsonIgnore]
     public bool IsOnRequest => Id is not ("web" or "dns" or "hosts" or "mail" or "dumps" or "postgres");
+
+    /// <summary>phpMyAdmin: installed on request like the catalog services, but from phpmyadmin.net and with a folder instead of a port.</summary>
+    [JsonIgnore]
+    public bool IsPhpMyAdmin => Id == "phpmyadmin";
+
+    /// <summary>One of the catalog's services (MySQL, Valkey, ...), whose detail comes from /v1/catalog.</summary>
+    [JsonIgnore]
+    public bool IsCatalog => IsOnRequest && !IsPhpMyAdmin;
 }
 
 /// <summary>

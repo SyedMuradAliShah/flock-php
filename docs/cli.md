@@ -83,6 +83,18 @@ This page lists the `flock` commands. The other pages show where to find each ac
 | `flock services list <service>` | List the versions of a service with what is installed, updates and data sizes |
 | `flock services create-db <service> <name>...` | Create one or more databases in PostgreSQL, MySQL or MariaDB (the service has to be running) |
 
+## phpMyAdmin
+
+| Command | Description |
+| --- | --- |
+| `flock phpmyadmin` | Show whether phpMyAdmin is installed, its address and its folder |
+| `flock phpmyadmin install [--folder <dir>] [--reinstall]` | Install or update phpMyAdmin. `--folder` picks an empty or new folder; `--reinstall` replaces the files of the installed version |
+| `flock phpmyadmin name [name]` | Serve it at `<name>.test` instead of `phpmyadmin.test`; without a name, back to the default |
+| `flock phpmyadmin folder [dir]` | Move it to another folder; without one, back to Flock's data directory |
+| `flock phpmyadmin uninstall` | Remove phpMyAdmin |
+
+See [phpMyAdmin](phpmyadmin.md).
+
 ## Tools
 
 | Command | Description |

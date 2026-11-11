@@ -26,6 +26,32 @@ public sealed class ShellLaunchTests
     }
 
     [Fact]
+    public void OpeningAFolderOpensExplorerAndIsNotAFailureWhenNoProcessComesBack()
+    {
+        ProcessStartInfo? observed = null;
+        var launcher = new ShellLauncher(NullLogger<ShellLauncher>.Instance, start =>
+        {
+            observed = start;
+            return null;
+        });
+        var folder = Path.GetTempPath();
+
+        var result = launcher.Open(folder);
+
+        Assert.True(result.Succeeded);
+        Assert.Equal("explorer.exe", observed!.FileName);
+        Assert.Contains(folder.TrimEnd('\\'), observed.Arguments);
+    }
+
+    [Fact]
+    public void AnAddressThatStartsNothingIsStillAFailure()
+    {
+        var launcher = new ShellLauncher(NullLogger<ShellLauncher>.Instance, _ => null);
+
+        Assert.False(launcher.Open("https://example.test/").Succeeded);
+    }
+
+    [Fact]
     public void UnsupportedEditorAssociationReturnsVisibleFailure()
     {
         var launcher = new ShellLauncher(NullLogger<ShellLauncher>.Instance, _ => throw new Win32Exception("no association"));

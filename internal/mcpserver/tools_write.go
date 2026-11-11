@@ -635,7 +635,7 @@ func (s *server) linkSite(ctx context.Context, _ *mcp.CallToolRequest, in linkSi
 	}
 	name := config.SiteName(cmpOr(in.Name, filepath.Base(dir)))
 	for _, site := range st.Sites {
-		if site.Name == name {
+		if site.Name == name || (!site.Parked && config.SamePath(site.Path, dir)) {
 			info := siteInfoOf(site)
 			msg := fmt.Sprintf("Linked: %s is served at %s.", dir, info.URL)
 			if info.Problem != "" {

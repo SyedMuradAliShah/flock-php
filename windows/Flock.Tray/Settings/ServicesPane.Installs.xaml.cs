@@ -33,8 +33,9 @@ internal sealed partial class ServicesPane
     {
         while (!hidden.IsCancellationRequested)
         {
-            var fast = PostgresWorking || Model.Catalog.Current?.HasRunningJob == true;
+            var fast = PostgresWorking || Model.Catalog.Current?.HasRunningJob == true || PhpMyAdminWorking;
             await (fast ? rows.RefreshReleaseStateAsync(hidden) : rows.RefreshAsync(hidden));
+            await RefreshPhpMyAdminAsync(hidden);
             using var wake = CancellationTokenSource.CreateLinkedTokenSource(hidden);
             nap = wake;
             try

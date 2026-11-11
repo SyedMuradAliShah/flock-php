@@ -15,8 +15,9 @@ Flock installs databases, caches, search engines and object storage as native pr
 | Meilisearch | Search | 7700 | 1.x |
 | Typesense | Search | 8108 | 30, 29 (macOS and Linux) |
 | RustFS | Storage | 9000 | 1.x |
+| phpMyAdmin | Database client | none (a site, `phpmyadmin.test`) | newest release |
 
-PostgreSQL has its own section. See [PostgreSQL](postgres.md).
+PostgreSQL has its own section. See [PostgreSQL](postgres.md). phpMyAdmin is a site rather than a process; see [phpMyAdmin](phpmyadmin.md).
 
 ## Installing and removing
 

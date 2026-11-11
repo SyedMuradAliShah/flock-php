@@ -32,6 +32,7 @@ import (
 	"flock/internal/paths"
 	"flock/internal/php"
 	"flock/internal/phpext"
+	"flock/internal/phpmyadmin"
 	"flock/internal/ports"
 	"flock/internal/postgres"
 	"flock/internal/project"
@@ -82,6 +83,8 @@ type daemon struct {
 	// pg manages the PostgreSQL versions, catalog the other services (MySQL, Valkey, Meilisearch, ...).
 	pg      *postgres.Manager
 	catalog *catalog.Manager
+	// phpmyadmin installs phpMyAdmin, served as the site "phpmyadmin".
+	phpmyadmin *phpmyadmin.Manager
 	// shares are the sites shared through tunnels (`flock share`); never kept across restarts.
 	shares *share.Manager
 	// worktrees sets up the sites' git worktrees (see syncWorktrees); pendingDB are the database
@@ -300,6 +303,8 @@ func Run(ctx context.Context, cfg Config) error {
 	go d.frankenphp.Run(ctx)
 	d.catalog = catalog.NewManager(cfg.Root, catalog.Kinds(runtime.GOOS), d.binaries, d.Mutate)
 	go d.catalog.Run(ctx)
+	d.phpmyadmin = phpmyadmin.NewManager(cfg.Root, d.Mutate)
+	go d.phpmyadmin.Run(ctx)
 	d.worktrees = worktree.NewManager(cfg.Root)
 	d.shares = share.NewManager(cfg.Root, d.binaries)
 	d.shares.Changed = func() {
@@ -650,7 +655,18 @@ func (d *daemon) reload() error {
 	type shareable struct{ root, version string }
 	shareables := map[string]shareable{}
 
+	if err := phpmyadmin.Sync(cfg, d.root); err != nil {
+		warnings = append(warnings, err.Error())
+	}
 	sites := cfg.AllSites()
+	for i, s := range sites {
+		if cfg.PhpMyAdmin == nil || s.Name != cfg.PhpMyAdminSiteName() || s.Parked {
+			continue
+		}
+		if sites[i].PHP = phpmyadmin.PHPFor(cfg.PhpMyAdmin.PHP, installed, cfg.DefaultPHP); sites[i].PHP == "" {
+			warnings = append(warnings, fmt.Sprintf("phpmyadmin: phpMyAdmin %s needs PHP %s — install a PHP version in that range", cfg.PhpMyAdmin.Version, cfg.PhpMyAdmin.PHP))
+		}
+	}
 	extras := cfg.DomainsBySite(sites)
 	for _, site := range sites {
 		domain := cfg.Domain(site)
@@ -918,6 +934,17 @@ func (d *daemon) reload() error {
 	}
 
 	d.mu.Lock()
+	// phpMyAdmin is served like a site but has its own screen: the site list isn't where it is managed.
+	if cfg.PhpMyAdmin != nil {
+		own := cfg.PhpMyAdminSiteName()
+		shown := statuses[:0:0]
+		for _, s := range statuses {
+			if s.Name != own || s.Parked {
+				shown = append(shown, s)
+			}
+		}
+		statuses = shown
+	}
 	d.cfg, d.sites, d.proxies, d.warnings, d.problems, d.breakpointSites = cfg, statuses, proxies, warnings, problems, breakpoints
 	d.mu.Unlock()
 
@@ -1012,6 +1039,9 @@ func (d *daemon) PostgresVersions() *postgres.Manager { return d.pg }
 
 // Catalog implements api.Backend.
 func (d *daemon) Catalog() *catalog.Manager { return d.catalog }
+
+// PhpMyAdmin implements api.Backend.
+func (d *daemon) PhpMyAdmin() *phpmyadmin.Manager { return d.phpmyadmin }
 
 // serviceName names a service for messages: "MySQL" for "mysql".
 func serviceName(id string) string {
@@ -1127,6 +1157,11 @@ func (d *daemon) Status() api.Status {
 				}
 			}
 		}
+		if d.phpmyadmin != nil {
+			if p := d.phpmyadmin.Status(); p.Installed {
+				st.PhpMyAdmin = &api.PhpMyAdminStatus{Version: p.Version, Domain: p.Domain, URL: p.URL}
+			}
+		}
 		st.Xdebug, st.XdebugBreakpoints = d.cfg.Xdebug, d.cfg.XdebugBreakpoints
 		st.Channel = api.ChannelOf(d.cfg)
 		st.Dumps, st.DumpsInPage = d.cfg.Dumps, d.cfg.DumpsInPage
@@ -1225,6 +1260,16 @@ func (d *daemon) Services() []api.Service {
 			}
 			services = append(services, s)
 		}
+	}
+
+	// Only the Windows app has a screen for it so far.
+	if d.phpmyadmin != nil && runtime.GOOS == "windows" {
+		st := d.phpmyadmin.Status()
+		services = append(services, api.Service{
+			ID: "phpmyadmin", Name: "phpMyAdmin", Category: "Database Client", Available: true, Installed: st.Installed, Enabled: st.Installed,
+			Running: st.Installed, Version: st.Version, URL: st.URL,
+			Description: "Manage your MySQL and MariaDB databases in the browser. Log in as root without a password.",
+		})
 	}
 
 	return services

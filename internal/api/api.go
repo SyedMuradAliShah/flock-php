@@ -19,6 +19,7 @@ import (
 	"flock/internal/config"
 	"flock/internal/frankenphp"
 	"flock/internal/php"
+	"flock/internal/phpmyadmin"
 	"flock/internal/postgres"
 	"flock/internal/share"
 	"flock/internal/supervisor"
@@ -46,8 +47,9 @@ type Status struct {
 	DumpCount          int                     `json:"dump_count"`
 	EventCount         int                     `json:"event_count"`
 	Postgres           string                  `json:"postgres,omitempty"`
-	Extras             []ExtraStatus           `json:"extras,omitempty"` // installed catalog services
-	Xdebug             bool                    `json:"xdebug"`           // Xdebug detection; see config.Config.Xdebug
+	Extras             []ExtraStatus           `json:"extras,omitempty"`     // installed catalog services
+	PhpMyAdmin         *PhpMyAdminStatus       `json:"phpmyadmin,omitempty"` // the installed phpMyAdmin, which is a site rather than a process
+	Xdebug             bool                    `json:"xdebug"`               // Xdebug detection; see config.Config.Xdebug
 	XdebugBreakpoints  bool                    `json:"xdebug_breakpoints"`
 	Sites              []SiteStatus            `json:"sites"`
 	Proxies            []ProxyStatus           `json:"proxies,omitempty"` // see config.Proxy
@@ -103,6 +105,13 @@ type ExtraStatus struct {
 	Port    int    `json:"port"`
 	Enabled bool   `json:"enabled"`
 	Up      bool   `json:"up"`
+}
+
+// PhpMyAdminStatus is the installed phpMyAdmin, for the panels that list what runs.
+type PhpMyAdminStatus struct {
+	Version string `json:"version"`
+	Domain  string `json:"domain"`
+	URL     string `json:"url"`
 }
 
 // SiteStatus is one served site as the daemon sees it.
@@ -243,6 +252,8 @@ type Backend interface {
 	PostgresVersions() *postgres.Manager
 	// Catalog manages MySQL, Redis, Meilisearch and the other catalog services (nil when unavailable).
 	Catalog() *catalog.Manager
+	// PhpMyAdmin installs phpMyAdmin, which Flock serves as the site "phpmyadmin" (nil when unavailable).
+	PhpMyAdmin() *phpmyadmin.Manager
 	// FrankenPHP installs FrankenPHP builds (nil when unavailable).
 	FrankenPHP() *frankenphp.Manager
 	// Binaries is the package manifest of the configured channel (nil when there is none).
@@ -306,6 +317,7 @@ func NewHandler(b Backend, token string) http.Handler {
 	registerNodeVersions(mux, b)
 	registerPostgresVersions(mux, b)
 	registerCatalog(mux, b)
+	registerPhpMyAdmin(mux, b)
 	registerFrankenPHP(mux, b)
 	registerMail(mux, b)
 	registerDumps(mux, b)

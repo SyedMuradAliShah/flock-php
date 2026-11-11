@@ -27,12 +27,15 @@ public sealed class ShellLauncher : IShellLauncher
         this.startProcess = startProcess ?? Process.Start;
     }
 
-    public ShellLaunchResult Open(string target) => Start("open", new ProcessStartInfo(target) { UseShellExecute = true }, "Could not open this item.");
+    // Opening a folder reuses the running Explorer, so the shell returns no process even though the window opens.
+    public ShellLaunchResult Open(string target) => Directory.Exists(target)
+        ? Reveal(target)
+        : Start("open", new ProcessStartInfo(target) { UseShellExecute = true }, "Could not open this item.");
 
     public ShellLaunchResult Reveal(string path)
     {
         var arguments = Directory.Exists(path) && !File.Exists(path) ? $"\"{path}\"" : $"/select,\"{path}\"";
-        return Start("reveal", new ProcessStartInfo("explorer.exe", arguments) { UseShellExecute = true }, "Could not show this item in Explorer.");
+        return Start("reveal", new ProcessStartInfo("explorer.exe", arguments) { UseShellExecute = true }, "Could not show this item in Explorer.", noProcessIsFine: true);
     }
 
     public ShellLaunchResult OpenConnection(string executable, string connection)
@@ -42,12 +45,12 @@ public sealed class ShellLauncher : IShellLauncher
         return Start("connection", start, "Could not open this database connection.");
     }
 
-    private ShellLaunchResult Start(string operation, ProcessStartInfo start, string message)
+    private ShellLaunchResult Start(string operation, ProcessStartInfo start, string message, bool noProcessIsFine = false)
     {
         try
         {
             using var process = startProcess(start);
-            return process is null ? Failure(operation, message, null) : ShellLaunchResult.Success();
+            return process is null && !noProcessIsFine ? Failure(operation, message, null) : ShellLaunchResult.Success();
         }
         catch (Exception error)
         {

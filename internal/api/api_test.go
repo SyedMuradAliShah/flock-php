@@ -20,6 +20,7 @@ import (
 	"flock/internal/frankenphp"
 	"flock/internal/php"
 	"flock/internal/phpext"
+	"flock/internal/phpmyadmin"
 	"flock/internal/postgres"
 	"flock/internal/share"
 )
@@ -40,6 +41,7 @@ func (f *fakeBackend) PHP() *php.Manager { return f.php }
 
 func (f *fakeBackend) PostgresVersions() *postgres.Manager     { return f.pg }
 func (f *fakeBackend) Catalog() *catalog.Manager               { return f.catalog }
+func (f *fakeBackend) PhpMyAdmin() *phpmyadmin.Manager         { return nil }
 func (f *fakeBackend) FrankenPHP() *frankenphp.Manager         { return f.frankenphp }
 func (f *fakeBackend) Binaries() *binaries.Catalog             { return f.binaries }
 func (f *fakeBackend) RestartSite(string) error                { return nil }
