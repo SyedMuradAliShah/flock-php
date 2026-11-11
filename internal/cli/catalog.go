@@ -314,6 +314,48 @@ Laravel app to it (env).`,
 		},
 	}
 
+	addExisting := &cobra.Command{
+		Use:   "add-existing <mysql|mariadb> <basedir> <datadir>",
+		Short: "Use a MySQL or MariaDB you already have, in place, from its own folders",
+		Long: `Adds a MySQL or MariaDB version that is already on your computer, for example one another tool
+installed. The base directory (basedir) is the one that contains bin, like C:\path\to\mysql; the data
+directory (datadir) is where its databases are stored. Flock runs that server on that data in place and never
+deletes either folder: remove it with
+"flock services uninstall <service> custom-<version>", which only stops using it. The server upgrades its data
+files if it is newer than the version that wrote them, which an older program may not be able to read
+again, so back the data up first. Stop whatever else is using that data before starting it in Flock.`,
+		Args: cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			s, err := load()
+			if err != nil {
+				return err
+			}
+			id := strings.ToLower(args[0])
+			binary, err := filepath.Abs(args[1])
+			if err != nil {
+				return err
+			}
+			data, err := filepath.Abs(args[2])
+			if err != nil {
+				return err
+			}
+			c, err := s.client().AddExistingVersion(cmd.Context(), id, binary, data)
+			if err != nil {
+				return err
+			}
+			if e, ok := c.Find(id); ok {
+				for _, l := range e.Lines {
+					if l.Custom && strings.EqualFold(l.DataDir, data) {
+						cmd.Printf("%s %s added: %s runs on %s in place\n", e.Name, l.Version, l.BaseDir, l.DataDir)
+						return nil
+					}
+				}
+			}
+			cmd.Println("added")
+			return nil
+		},
+	}
+
 	var currentPassword string
 	rootPassword := &cobra.Command{
 		Use:   "root-password <mysql|mariadb> [new password]",
@@ -349,7 +391,7 @@ your shell history.`,
 	}
 	rootPassword.Flags().StringVar(&currentPassword, "current", "", "the password in use now, when it isn't the one Flock set")
 
-	cmd.AddCommand(install, update, uninstall, use, list, createDB, rootPassword, extensions)
+	cmd.AddCommand(install, update, uninstall, use, list, addExisting, createDB, rootPassword, extensions)
 	return cmd
 }
 
@@ -376,6 +418,16 @@ func printLines(out io.Writer, root string, e catalog.Entry) {
 		fmt.Fprintf(tw, "%s %s\t%s\t%s\t%s\t\n", marker, l.ID, installed, latest, data)
 	}
 	_ = tw.Flush()
+	for _, l := range e.Lines {
+		if l.BaseDir == "" && l.DataDir == "" {
+			continue
+		}
+		what := l.ID
+		if l.Custom {
+			what += " (yours: Flock never deletes these folders)"
+		}
+		fmt.Fprintf(out, "\n  %s\n    basedir  %s\n    datadir  %s\n", what, dash(l.BaseDir), dash(l.DataDir))
+	}
 }
 
 func printCatalog(out io.Writer, pg postgres.Versions, c api.Catalog) {

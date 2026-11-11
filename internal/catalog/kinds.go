@@ -46,7 +46,7 @@ func exe(goos, name string) string {
 
 func mysql(goos string) *Kind {
 	return &Kind{
-		ID: "mysql", Name: "MySQL", Category: "Database", DefaultPort: 3306, Line: majorMinor,
+		ID: "mysql", Name: "MySQL", Category: "Database", DefaultPort: 3306, Line: withCustom(majorMinor),
 		Description: "The world's most popular open-source database. User root, no password.",
 		Env: func(port int) string {
 			return fmt.Sprintf("DB_CONNECTION=mysql\nDB_HOST=127.0.0.1\nDB_PORT=%d\nDB_DATABASE=laravel\nDB_USERNAME=root\nDB_PASSWORD=", port)
@@ -186,7 +186,7 @@ func checkPersisted(data string) error {
 
 func mariadb(goos string) *Kind {
 	return &Kind{
-		ID: "mariadb", Name: "MariaDB", Category: "Database", DefaultPort: 3306, Line: majorMinor,
+		ID: "mariadb", Name: "MariaDB", Category: "Database", DefaultPort: 3306, Line: withCustom(majorMinor),
 		Description: "The community fork of MySQL, compatible with its clients. User root, no password.",
 		Env: func(port int) string {
 			return fmt.Sprintf("DB_CONNECTION=mariadb\nDB_HOST=127.0.0.1\nDB_PORT=%d\nDB_DATABASE=laravel\nDB_USERNAME=root\nDB_PASSWORD=", port)

@@ -1249,7 +1249,7 @@ func (d *daemon) Services() []api.Service {
 			s := api.Service{ID: k.ID, Name: k.Name, Category: k.Category, Description: k.Description, Log: k.ID}
 			s.Available, s.Unavailable = d.catalog.Available(k)
 			if x, ok := cfg.Services.Extra(k.ID); ok {
-				s.Version, s.Port, s.Installed, s.Stoppable = x.Version, x.Port, true, true
+				s.Version, s.Port, s.Installed, s.Stoppable = catalog.DisplayVersion(x.Version), x.Port, true, true
 				s.Enabled, s.Running, s.Problem = cfg.Services.Running(k.ID), d.procUp(k.ID), problems[k.ID]
 				s.Env = k.Env(x.Port)
 				if k.URL != nil {

@@ -60,11 +60,69 @@ internal sealed partial class ServicesPane
         {
             panel.Children.Add(CatalogLines(entry, row));
         }
+        if (entry.AcceptsExisting)
+        {
+            panel.Children.Add(ExistingVersionRow(entry));
+        }
         if (entry.HasRootUser && entry.IsInstalled)
         {
             panel.Children.Add(RootPasswordRow(entry, service));
         }
         panel.Children.Add(CheckFooter(service.Id, Model.ReleaseActions.Resolve(service.Id)));
+    }
+
+    /// <summary>Use a version the user already has (installed by another tool or by hand), from its own base and data directories.</summary>
+    private StackPanel ExistingVersionRow(CatalogService entry)
+    {
+        var add = Ui.Button("Add…", () => _ = AddExistingVersionAsync(entry),
+            tooltip: $"Run a {entry.Name} that is already on your computer, from its own folders.");
+        add.IsEnabled = !CatalogWorking(entry.Id);
+        return Ui.Column(6,
+            Ui.Spread(Ui.Text("Existing version", "BodyStrongTextBlockStyle"), add),
+            Ui.Caption($"Already have {entry.Name} on this computer? Choose its base directory and its data directory, and Flock runs it in place, without downloading anything."));
+    }
+
+    private async Task AddExistingVersionAsync(CatalogService entry)
+    {
+        var binary = new TextBox { Header = "Base directory (basedir)", PlaceholderText = $@"C:\path\to\{entry.Id}" };
+        var data = new TextBox { Header = "Data directory (datadir)", PlaceholderText = $@"C:\path\to\{entry.Id}\data" };
+        var dialog = new ContentDialog
+        {
+            Title = $"Add an existing {entry.Name}",
+            Content = Ui.Column(12,
+                Ui.Caption("The base directory is where the server is installed: it has a bin folder inside it. The data directory is where its databases are stored. Flock runs the server on that data in place, and never deletes either one. You can open both later from the version's ⋯ menu."),
+                FolderPickerRow(binary), FolderPickerRow(data),
+                Ui.Caption("Stop whatever else is using that data first. A newer server upgrades the data files on its first start, and an older program may not be able to read them afterwards, so back the data directory up if you need to go back.", Ui.Caution)),
+            PrimaryButtonText = "Add", CloseButtonText = "Cancel", DefaultButton = ContentDialogButton.Primary, IsPrimaryButtonEnabled = false, XamlRoot = Window.XamlRoot
+        };
+        void Changed(object sender, TextChangedEventArgs args) => dialog.IsPrimaryButtonEnabled = binary.Text.Trim().Length > 0 && data.Text.Trim().Length > 0;
+        binary.TextChanged += Changed;
+        data.TextChanged += Changed;
+        if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+        {
+            return;
+        }
+        await RunCatalogAsync(entry.Id, () => Model.Catalog.AddExistingVersionAsync(entry.Id, binary.Text.Trim(), data.Text.Trim()));
+    }
+
+    /// <summary>A path box with a Browse button next to it.</summary>
+    private Grid FolderPickerRow(TextBox box)
+    {
+        var browse = Ui.Button("Browse…", async () =>
+        {
+            if (await Window.PickFolder() is { Length: > 0 } picked)
+            {
+                box.Text = picked;
+            }
+        });
+        browse.VerticalAlignment = VerticalAlignment.Bottom;
+        var row = new Grid { ColumnSpacing = 8 };
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        Grid.SetColumn(browse, 1);
+        row.Children.Add(box);
+        row.Children.Add(browse);
+        return row;
     }
 
     /// <summary>The root user's password: none, as Flock sets it up, or the one the user chose.</summary>
@@ -212,9 +270,17 @@ internal sealed partial class ServicesPane
             {
                 actions.Children.Add(CatalogCommandButton(entry, source, line, command));
             }
-            if (line.MoreCommands.Count > 0 || source.RootPassword)
+            if (line.MoreCommands.Count > 0 || source.RootPassword || source.BaseDir.Length > 0 || source.DataDir.Length > 0)
             {
                 var more = new MenuFlyout();
+                if (source.BaseDir.Length > 0)
+                {
+                    more.Items.Add(Item("Open Base Directory", () => Model.Reveal(source.BaseDir)));
+                }
+                if (source.DataDir.Length > 0)
+                {
+                    more.Items.Add(Item("Open Data Directory", () => Model.Reveal(source.DataDir)));
+                }
                 if (source.RootPassword)
                 {
                     more.Items.Add(Item("Copy Root Password", () => _ = CopyRootPasswordAsync(entry, source.Id, null)));
@@ -292,6 +358,19 @@ internal sealed partial class ServicesPane
 
     private async Task UninstallCatalog(CatalogService entry, CatalogLine line, ServiceReleaseTarget releaseTarget)
     {
+        if (line.Custom)
+        {
+            var successor = entry.Lines.FirstOrDefault(l => l.Installed && l.Id != line.Id);
+            var effect = !line.Active ? ""
+                : successor is not null ? $"{entry.Name} {line.Label} stops and {entry.Name} {successor.Label} becomes the active version. "
+                : $"{entry.Name} {line.Label} stops; your sites can't use {entry.Name} until you start a version again. ";
+            if (await Window.Confirm($"Remove {entry.Name} {line.Label}?",
+                    effect + $"Flock stops using it. The base directory {line.BaseDir} and the data directory {line.DataDir} stay exactly as they are; Flock never deletes folders it didn't create.", "Remove", true))
+            {
+                await RunCatalogAsync(entry.Id, () => Model.ReleaseActions.RunAsync(releaseTarget, ServiceRowCommandKind.Uninstall, false));
+            }
+            return;
+        }
         var next = entry.Lines.FirstOrDefault(l => l.Installed && l.Id != line.Id);
         var details = !line.Active ? ""
             : next is not null ? $"{entry.Name} {line.Label} stops and {entry.Name} {next.Label} becomes the active version. "

@@ -74,6 +74,10 @@ type Services struct {
 	// RootPasswords are the root passwords the user set, by "<service>/<line>" (see RootPassword).
 	RootPasswords map[string]string `json:"root_passwords,omitempty"`
 
+	// Custom are the MySQL and MariaDB versions the user already had (installed by another tool or by hand) and
+	// told Flock to run in place from their own folders (see Custom).
+	Custom []Custom `json:"custom,omitempty"`
+
 	// Stopped lists installed services the user switched off ("postgres", "valkey", "mysql").
 	Stopped []string `json:"stopped,omitempty"`
 }

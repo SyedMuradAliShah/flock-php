@@ -81,6 +81,38 @@ Restart Flock (`flock restart`) to apply a change. Each version has its own data
 
 On MySQL, `SET PERSIST` also keeps a setting across restarts, in `mysqld-auto.cnf` next to `my.cnf`. MySQL doesn't persist the settings Flock manages. If one of them is added to that file by hand, Flock doesn't start the server, and names the file and setting to remove.
 
+## Using a MySQL or MariaDB you already have
+
+If MySQL or MariaDB is already on your computer, installed by another tool such as Laragon or XAMPP, or by hand, Flock can run it in place instead of downloading its own. This is also a way to move over from such a tool without exporting and importing your databases. You give Flock two folders:
+
+- the **base directory** (`basedir`): where the server is installed, the folder that has `bin` inside it, such as `C:\path\to\mysql`;
+- the **data directory** (`datadir`): where its databases are stored, such as `C:\path\to\mysql\data`.
+
+Flock runs that server on that data directory as it is. It adds the version next to the ones it installs, named `custom-<version>`, and you switch to it like any other version. Its root password is whatever it already has.
+
+:::app
+In **Settings → Services**, select MySQL or MariaDB. Under **Existing version**, click **Add…** and choose the two folders. Flock checks that the base directory holds the right server (a MariaDB folder is refused for MySQL and the other way round) and that the data directory is a data directory, or empty or new.
+
+On Windows, **Open Base Directory** and **Open Data Directory** in a version's **⋯** menu open its folders in Explorer. They're there for every installed version, not only your own.
+:::
+
+:::cli
+```bash
+flock services add-existing mariadb C:\path\to\mariadb C:\path\to\mariadb\data
+flock services list mariadb               # shows each version's basedir and datadir
+flock services use mariadb custom-10.11.2
+flock services uninstall mariadb custom-10.11.2
+```
+:::
+
+Things to know before you do this:
+
+- **Flock never deletes these folders.** Removing the version only makes Flock stop using it, and **Also delete its data** isn't offered for it.
+- **The data is used in place.** A server that is newer than the one that wrote the data upgrades its files on its first start, and an older program may not be able to read them afterwards. Back the data directory up first if you might go back.
+- **Stop whatever else is using that data first.** Two servers can't open the same data directory, and the one Flock starts will fail while the other runs.
+- Flock puts its own option file, `my.cnf`, in the data directory the first time it starts the server there, like it does for the versions it installs.
+- If a version's base directory is moved or deleted, Flock keeps listing it as "folder not found" so you can remove it.
+
 ## Root password
 
 MySQL and MariaDB start with the `root` user and no password. You can set one, and change or remove it later. Every version keeps its own data, so every version has its own root password: set `124` for one, nothing for another.

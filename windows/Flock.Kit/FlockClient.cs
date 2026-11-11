@@ -332,6 +332,13 @@ public sealed class FlockClient : IDisposable
     public Task<string> CatalogLogAsync(string id, CancellationToken cancellationToken = default) => Text(HttpMethod.Get, $"/v1/catalog/{Escape(id)}/log", cancellationToken);
 
     /// <summary>
+    /// Adds a MySQL or MariaDB the user already has (installed by another tool or by hand), run in place from its base directory (the one that
+    /// holds bin) and its data directory. Flock never deletes either folder.
+    /// </summary>
+    public Task<ServiceCatalog> AddExistingVersionAsync(string id, string baseDir, string dataDir, CancellationToken cancellationToken = default) =>
+        Send<ServiceCatalog>(HttpMethod.Post, $"/v1/catalog/{Escape(id)}/custom", new { basedir = baseDir, datadir = dataDir }, timeout: TimeSpan.FromMinutes(1), cancellationToken: cancellationToken);
+
+    /// <summary>
     /// Changes the root password of the running MySQL or MariaDB; an empty password removes it. Current is the one in use
     /// now when it isn't the one Flock set (empty: the one Flock knows).
     /// </summary>

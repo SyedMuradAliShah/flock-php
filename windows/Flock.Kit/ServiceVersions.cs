@@ -197,6 +197,10 @@ public sealed class CatalogService
     [JsonIgnore]
     public bool HasRootUser => Id is "mysql" or "mariadb";
 
+    /// <summary>MySQL and MariaDB can run a version the user already has, from its own folders.</summary>
+    [JsonIgnore]
+    public bool AcceptsExisting => HasRootUser;
+
     /// <summary>The active line, else the newest.</summary>
     [JsonIgnore]
     public CatalogLine? PreferredLine => Lines.FirstOrDefault(l => l.Active) ?? Lines.FirstOrDefault();
@@ -224,6 +228,16 @@ public sealed class CatalogLine
     public bool HasData { get; init; }
     /// <summary>A root password was set for this line's data (MySQL and MariaDB); each line has its own.</summary>
     public bool RootPassword { get; init; }
+    /// <summary>A version the user already had, run in place from their own folders; Flock never deletes them.</summary>
+    public bool Custom { get; init; }
+    /// <summary>A custom version whose base directory is gone: it is listed so it can be removed.</summary>
+    public bool Missing { get; init; }
+    /// <summary>The installed version's base directory (basedir): the folder that has bin inside it; empty when not installed.</summary>
+    [JsonPropertyName("basedir")]
+    public string BaseDir { get; init; } = "";
+    /// <summary>The line's data directory (datadir); empty when it has none.</summary>
+    [JsonPropertyName("datadir")]
+    public string DataDir { get; init; } = "";
 }
 
 /// <summary>An install of a catalog service, running or failed.</summary>

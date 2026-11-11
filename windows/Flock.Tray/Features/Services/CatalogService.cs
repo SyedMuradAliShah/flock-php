@@ -147,6 +147,11 @@ public sealed class CatalogService : IAsyncDisposable
         return MutateAsync(id, cancellation => client.UninstallCatalogServiceAsync(id, line, deleteData, cancellation), token);
     }
 
+    public Task<OperationOutcome> AddExistingVersionAsync(string id, string baseDir, string dataDir, CancellationToken token = default)
+    {
+        return MutateAsync(id, cancellation => client.AddExistingVersionAsync(id, baseDir, dataDir, cancellation), token);
+    }
+
     public Task<OperationOutcome> SetRootPasswordAsync(string id, string current, string password, CancellationToken token = default)
     {
         return MutateAsync(id, cancellation => client.SetRootPasswordAsync(id, current, password, cancellation), token);
@@ -305,7 +310,8 @@ public sealed class CatalogService : IAsyncDisposable
                        lines.First.Id == lines.Second.Id && lines.First.Label == lines.Second.Label && lines.First.Latest == lines.Second.Latest &&
                        lines.First.Installed == lines.Second.Installed && lines.First.Version == lines.Second.Version && lines.First.Active == lines.Second.Active &&
                        lines.First.Update == lines.Second.Update && lines.First.Yanked == lines.Second.Yanked && lines.First.HasData == lines.Second.HasData &&
-                       lines.First.RootPassword == lines.Second.RootPassword) &&
+                       lines.First.RootPassword == lines.Second.RootPassword && lines.First.Custom == lines.Second.Custom && lines.First.Missing == lines.Second.Missing &&
+                       lines.First.BaseDir == lines.Second.BaseDir && lines.First.DataDir == lines.Second.DataDir) &&
                    SameJob(pair.First.Job, pair.Second.Job));
     }
 

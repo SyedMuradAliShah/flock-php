@@ -318,7 +318,10 @@ public sealed class ServiceReleaseActions(PostgresService postgres, CatalogServi
                 {
                     more.Add(ServiceRowCommandKind.Activate);
                 }
-                more.Add(ServiceRowCommandKind.Reinstall);
+                if (!line.Custom)
+                {
+                    more.Add(ServiceRowCommandKind.Reinstall);
+                }
                 more.Add(ServiceRowCommandKind.ShowLog);
             }
         }
@@ -330,7 +333,7 @@ public sealed class ServiceReleaseActions(PostgresService postgres, CatalogServi
         }
         else if (line.Installed)
         {
-            facts.Add("up to date");
+            facts.Add(line.Missing ? "folder not found" : line.Custom ? "yours, run in place" : "up to date");
         }
         if (line.HasData)
         {

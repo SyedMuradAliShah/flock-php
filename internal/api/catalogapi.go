@@ -98,6 +98,23 @@ func registerCatalog(mux *http.ServeMux, b Backend) {
 		}
 		respond(w, m, m.SetRootPassword(r.Context(), r.PathValue("id"), body.Current, body.Password))
 	})
+	// Body: {"binary": "C:\\path\\to\\mariadb", "data": "C:\\path\\to\\mariadb-data"}; MySQL and MariaDB
+	// only. Adds a version the user already has, run in place from those folders.
+	mux.HandleFunc("POST /v1/catalog/{id}/custom", func(w http.ResponseWriter, r *http.Request) {
+		m := manager(w)
+		if m == nil {
+			return
+		}
+		var body struct {
+			BaseDir string `json:"basedir"`
+			DataDir string `json:"datadir"`
+		}
+		if err := decodeBody(r, &body); err != nil {
+			writeError(w, http.StatusBadRequest, err)
+			return
+		}
+		respond(w, m, m.AddCustom(r.Context(), r.PathValue("id"), body.BaseDir, body.DataDir))
+	})
 	// ?line=12.3 (else the running line): {"password": "..."}, for the apps to copy; "" when there is none.
 	mux.HandleFunc("GET /v1/catalog/{id}/root-password", func(w http.ResponseWriter, r *http.Request) {
 		m := manager(w)
@@ -195,6 +212,14 @@ func (c *Client) UninstallService(ctx context.Context, id, line string, deleteDa
 func (c *Client) SetRootPassword(ctx context.Context, id, current, password string) (Catalog, error) {
 	var out Catalog
 	err := c.slow().send(ctx, http.MethodPost, "/v1/catalog/"+url.PathEscape(id)+"/root-password", map[string]any{"current": current, "password": password}, &out)
+	return out, err
+}
+
+// AddExistingVersion adds a MySQL or MariaDB (id) the user already has, run in place from its base directory (the one
+// that holds bin/) and data directory.
+func (c *Client) AddExistingVersion(ctx context.Context, id, baseDir, dataDir string) (Catalog, error) {
+	var out Catalog
+	err := c.slow().send(ctx, http.MethodPost, "/v1/catalog/"+url.PathEscape(id)+"/custom", map[string]any{"basedir": baseDir, "datadir": dataDir}, &out)
 	return out, err
 }
 

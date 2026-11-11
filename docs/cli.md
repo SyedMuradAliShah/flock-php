@@ -80,7 +80,8 @@ This page lists the `flock` commands. The other pages show where to find each ac
 | `flock services uninstall <service> [version] [--delete-data]` | Remove a version of a service (the active one unless given) |
 | `flock services use <service> <version>` | Switch a service to another installed version |
 | `flock services update <service> [version]` | Update a version of a service to its newest release (the active one unless given) |
-| `flock services list <service>` | List the versions of a service with what is installed, updates and data sizes |
+| `flock services list <service>` | List the versions of a service with what is installed, updates and data sizes, and where each one's base and data directories are |
+| `flock services add-existing <mysql\|mariadb> <basedir> <datadir>` | Run a MySQL or MariaDB you already have, in place, from its own folders. Flock never deletes them; remove it with `flock services uninstall <service> custom-<version>`. See [Using a MySQL or MariaDB you already have](services.md#using-a-mysql-or-mariadb-you-already-have) |
 | `flock services create-db <service> <name>...` | Create one or more databases in PostgreSQL, MySQL or MariaDB (the service has to be running) |
 | `flock services root-password <mysql\|mariadb> [password] [--current old]` | Set the root password of the running MySQL or MariaDB version, or remove it without a password. See [Root password](services.md#root-password) |
 

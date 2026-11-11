@@ -108,10 +108,20 @@ func major(v string) string {
 }
 
 // Dir is where version of service id is installed.
-func Dir(root, id, version string) string { return filepath.Join(root, "services", id, version) }
+func Dir(root, id, version string) string {
+	if c, ok := customAt(root, id, version); ok {
+		return c.BaseDir
+	}
+	return filepath.Join(root, "services", id, version)
+}
 
 // DataDir is the data of a line of service id.
-func DataDir(root, id, line string) string { return filepath.Join(root, "services", id, "data", line) }
+func DataDir(root, id, line string) string {
+	if c, ok := customAt(root, id, line); ok {
+		return c.DataDir
+	}
+	return filepath.Join(root, "services", id, "data", line)
+}
 
 // LogFile is the log of service id.
 func LogFile(root, id string) string { return filepath.Join(root, "log", id+".log") }
@@ -178,6 +188,13 @@ type LineState struct {
 	HasData    bool   `json:"has_data"`
 	// RootPassword is true when the user set a root password for this line's data (MySQL and MariaDB); it isn't sent.
 	RootPassword bool `json:"root_password"`
+	// Custom is a version the user already had, run in place from its own folders (see Custom).
+	Custom bool `json:"custom"`
+	// Missing is true for a custom version whose base directory isn't there any more.
+	Missing bool `json:"missing"`
+	// BaseDir and DataDir are where the installed version's binaries and its data are, for the apps to open.
+	BaseDir string `json:"basedir"`
+	DataDir string `json:"datadir"`
 }
 
 // Job is a running or failed install.
@@ -313,7 +330,7 @@ func (m *Manager) entry(manifest *binaries.Manifest, k *Kind, cfg *config.Config
 		lines[line] = true
 	}
 	if x, ok := cfg.Services.Extra(k.ID); ok && installed(m.root, k.ID, x.Version) {
-		e.Installed, e.Line, e.Port = x.Version, k.LineOf(x.Version), x.Port
+		e.Installed, e.Line, e.Port = DisplayVersion(x.Version), k.LineOf(x.Version), x.Port
 		e.RootPassword = cfg.Services.RootPassword(k.ID, e.Line) != ""
 		versions[e.Line] = x.Version
 		lines[e.Line] = true
@@ -343,9 +360,19 @@ func (m *Manager) entry(manifest *binaries.Manifest, k *Kind, cfg *config.Config
 		offer := offers[line]
 		version := versions[line]
 		state := LineState{
-			ID: line, Label: line, Latest: offer.Version, Prerelease: offer.Prerelease, Installed: version != "", Version: version,
+			ID: line, Label: line, Latest: offer.Version, Prerelease: offer.Prerelease, Installed: version != "", Version: DisplayVersion(version),
 			Active: e.Installed != "" && e.Line == line, HasData: hasData(DataDir(m.root, k.ID, line)),
 			RootPassword: cfg.Services.RootPassword(k.ID, line) != "",
+		}
+		if _, custom := cfg.Services.FindCustom(k.ID, line); custom {
+			state.Custom, state.Label = true, DisplayVersion(line)+" (custom)"
+			state.Missing = !installed(m.root, k.ID, line)
+		}
+		if version != "" {
+			state.BaseDir = Dir(m.root, k.ID, version)
+		}
+		if version != "" || state.HasData {
+			state.DataDir = DataDir(m.root, k.ID, line)
 		}
 		if version != "" {
 			build := buildOf(m.root, k.ID, version, cfg)
@@ -423,6 +450,14 @@ func installedLines(root string, k *Kind) map[string]string {
 		}
 		if current, ok := out[line]; !ok || binaries.CompareVersions(version, current) > 0 {
 			out[line] = version
+		}
+	}
+	if cfg, err := config.Load(root); err == nil {
+		for _, c := range cfg.Services.Custom {
+			// Listed even when its folder is gone, so the user can see why it doesn't run and remove it.
+			if c.Service == k.ID {
+				out[c.Line] = c.Line
+			}
 		}
 	}
 	return out
@@ -819,9 +854,13 @@ func (m *Manager) Uninstall(id, line string, deleteData bool) error {
 	delete(m.jobs, id)
 	m.mu.Unlock()
 
+	if isCustom(line) {
+		return m.removeCustom(k, line, deleteData)
+	}
 	if line == "" {
 		if err := m.mutate(func(cfg *config.Config) error {
 			cfg.Services.RemoveExtra(id)
+			cfg.Services.RemoveCustom(id, "")
 			if deleteData {
 				cfg.Services.ForgetRootPasswords(id, "")
 			}
@@ -879,6 +918,9 @@ func (m *Manager) Wait() { m.wg.Wait() }
 // Spec describes the server of installed service id on its configured port.
 func Spec(root string, k *Kind, x config.Extra) (supervisor.Spec, error) {
 	if !installed(root, k.ID, x.Version) {
+		if c, ok := customAt(root, k.ID, x.Version); ok {
+			return supervisor.Spec{}, fmt.Errorf("%s %s can't start: its base directory %q was not found — move it back, or remove this version", k.Name, DisplayVersion(c.Line), c.BaseDir)
+		}
 		return supervisor.Spec{}, fmt.Errorf("version %s is not installed", x.Version)
 	}
 	p := PathsOf(root, k, x.Version)
