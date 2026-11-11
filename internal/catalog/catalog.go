@@ -154,6 +154,8 @@ type Entry struct {
 	Latest      string `json:"latest"`      // newest release of Line
 	Update      bool   `json:"update"`      // Latest (or a newer build of it) can be installed
 	Yanked      string `json:"yanked"`      // why the active build was withdrawn, "" when it wasn't
+	// RootPassword is true when the user set a root password in Flock (MySQL and MariaDB only); it isn't sent.
+	RootPassword bool `json:"root_password"`
 	// Port is the configured port, or for a service that isn't installed the one Flock suggests:
 	// the default unless another service has it.
 	Port        int         `json:"port"`
@@ -174,6 +176,8 @@ type LineState struct {
 	Update     bool   `json:"update"`  // Latest (or a newer build of it) can replace Version
 	Yanked     string `json:"yanked"`  // why the installed build was withdrawn, "" when it wasn't
 	HasData    bool   `json:"has_data"`
+	// RootPassword is true when the user set a root password for this line's data (MySQL and MariaDB); it isn't sent.
+	RootPassword bool `json:"root_password"`
 }
 
 // Job is a running or failed install.
@@ -310,6 +314,7 @@ func (m *Manager) entry(manifest *binaries.Manifest, k *Kind, cfg *config.Config
 	}
 	if x, ok := cfg.Services.Extra(k.ID); ok && installed(m.root, k.ID, x.Version) {
 		e.Installed, e.Line, e.Port = x.Version, k.LineOf(x.Version), x.Port
+		e.RootPassword = cfg.Services.RootPassword(k.ID, e.Line) != ""
 		versions[e.Line] = x.Version
 		lines[e.Line] = true
 		build := buildOf(m.root, k.ID, x.Version, cfg)
@@ -340,6 +345,7 @@ func (m *Manager) entry(manifest *binaries.Manifest, k *Kind, cfg *config.Config
 		state := LineState{
 			ID: line, Label: line, Latest: offer.Version, Prerelease: offer.Prerelease, Installed: version != "", Version: version,
 			Active: e.Installed != "" && e.Line == line, HasData: hasData(DataDir(m.root, k.ID, line)),
+			RootPassword: cfg.Services.RootPassword(k.ID, line) != "",
 		}
 		if version != "" {
 			build := buildOf(m.root, k.ID, version, cfg)
@@ -814,7 +820,13 @@ func (m *Manager) Uninstall(id, line string, deleteData bool) error {
 	m.mu.Unlock()
 
 	if line == "" {
-		if err := m.mutate(func(cfg *config.Config) error { cfg.Services.RemoveExtra(id); return nil }); err != nil {
+		if err := m.mutate(func(cfg *config.Config) error {
+			cfg.Services.RemoveExtra(id)
+			if deleteData {
+				cfg.Services.ForgetRootPasswords(id, "")
+			}
+			return nil
+		}); err != nil {
 			return err
 		}
 		if deleteData {
@@ -853,6 +865,9 @@ func (m *Manager) Uninstall(id, line string, deleteData bool) error {
 		return err
 	}
 	if deleteData {
+		if err := m.mutate(func(cfg *config.Config) error { cfg.Services.ForgetRootPasswords(id, line); return nil }); err != nil {
+			return err
+		}
 		return os.RemoveAll(DataDir(m.root, id, line))
 	}
 	return nil

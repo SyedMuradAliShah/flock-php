@@ -71,6 +71,9 @@ type Services struct {
 	// be installed next to it (see internal/catalog).
 	Extras map[string]Extra `json:"extras,omitempty"`
 
+	// RootPasswords are the root passwords the user set, by "<service>/<line>" (see RootPassword).
+	RootPasswords map[string]string `json:"root_passwords,omitempty"`
+
 	// Stopped lists installed services the user switched off ("postgres", "valkey", "mysql").
 	Stopped []string `json:"stopped,omitempty"`
 }
@@ -80,6 +83,40 @@ type Extra struct {
 	Version string `json:"version"`         // e.g. "8.4.6"
 	Build   int    `json:"build,omitempty"` // the manifest build installed (0 when unknown)
 	Port    int    `json:"port"`
+}
+
+// RootPassword is the password of the root user of the data of a line of MySQL or MariaDB (id
+// "mariadb", line "12.3"), when the user set one in Flock; "" means none. Every line has its own
+// data, so its own password. Flock needs it to stop the server and create databases.
+func (s Services) RootPassword(id, line string) string {
+	return s.RootPasswords[id+"/"+line]
+}
+
+// SetRootPassword records the root password of a line; "" forgets it.
+func (s *Services) SetRootPassword(id, line, password string) {
+	if password == "" {
+		delete(s.RootPasswords, id+"/"+line)
+		if len(s.RootPasswords) == 0 {
+			s.RootPasswords = nil
+		}
+		return
+	}
+	if s.RootPasswords == nil {
+		s.RootPasswords = map[string]string{}
+	}
+	s.RootPasswords[id+"/"+line] = password
+}
+
+// ForgetRootPasswords forgets the passwords of a line of service id ("" for every line), when its data goes.
+func (s *Services) ForgetRootPasswords(id, line string) {
+	for key := range s.RootPasswords {
+		if line == "" && strings.HasPrefix(key, id+"/") || key == id+"/"+line {
+			delete(s.RootPasswords, key)
+		}
+	}
+	if len(s.RootPasswords) == 0 {
+		s.RootPasswords = nil
+	}
 }
 
 // Extra returns the installed catalog service id.

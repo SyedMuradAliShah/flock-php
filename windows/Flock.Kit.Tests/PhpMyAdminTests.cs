@@ -48,3 +48,39 @@ public class PhpMyAdminTests
         Assert.True(new Service { Id = "mysql" }.IsCatalog);
     }
 }
+
+public class RootPasswordTests
+{
+    [Fact]
+    public void ACatalogEntryKnowsWhetherRootHasAPassword()
+    {
+        var catalog = FlockJson.Decode<ServiceCatalog>("""
+            {"services":[{"id":"mariadb","name":"MariaDB","installed":"12.3.3","root_password":true},
+                         {"id":"mysql","name":"MySQL","installed":"8.4.1"},
+                         {"id":"valkey","name":"Valkey","installed":"9.1.3"}]}
+            """);
+
+        Assert.True(catalog["mariadb"]!.RootPassword);
+        Assert.False(catalog["mysql"]!.RootPassword);
+        Assert.True(catalog["mariadb"]!.HasRootUser);
+        Assert.True(catalog["mysql"]!.HasRootUser);
+        Assert.False(catalog["valkey"]!.HasRootUser);
+    }
+}
+
+public class RootPasswordPerLineTests
+{
+    [Fact]
+    public void EveryLineSaysWhetherItHasItsOwnRootPassword()
+    {
+        var entry = FlockJson.Decode<ServiceCatalog>("""
+            {"services":[{"id":"mariadb","name":"MariaDB","installed":"12.3.3","line":"12.3","root_password":true,
+              "lines":[{"id":"12.3","installed":true,"active":true,"root_password":true},
+                       {"id":"11.8","installed":true,"root_password":false},
+                       {"id":"10.11","installed":true,"root_password":true}]}]}
+            """)["mariadb"]!;
+
+        Assert.Equal([true, false, true], entry.Lines.Select(l => l.RootPassword));
+        Assert.Equal(3, entry.Lines.Count(l => l.Installed));
+    }
+}

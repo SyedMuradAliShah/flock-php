@@ -28,7 +28,7 @@ phpMyAdmin 5.2 supports PHP versions up to 8.3. Flock runs it on your default PH
 
 ## Signing in
 
-While the `root` user has no password, which is how Flock sets up MySQL and MariaDB, phpMyAdmin signs you in by itself. Once `root` has a password, phpMyAdmin shows its login form and asks for it.
+While the `root` user has no password, which is how Flock sets up MySQL and MariaDB, phpMyAdmin signs you in by itself. Once you give `root` a password (see [Root password](services.md#root-password)), phpMyAdmin shows its login form and asks for it.
 
 Flock decides this each time a page loads, so it also follows a password you changed with another tool. If you have several MySQL or MariaDB services, each is listed in phpMyAdmin's server list.
 

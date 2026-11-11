@@ -140,6 +140,7 @@ func (s mysqlServer) Copy(ctx context.Context, from, to string, log io.Writer) e
 	conn := catalog.Connect(s.port)
 	dump := exec.CommandContext(ctx, dumpTool, append(conn, "--single-transaction", "--routines", "--triggers", "--events", from)...)
 	restore := exec.CommandContext(ctx, client, append(conn, to)...)
+	dump.Env, restore.Env = catalog.ClientEnv(s.root, s.id), catalog.ClientEnv(s.root, s.id)
 	if err := pipe(dump, restore, log); err != nil {
 		_ = s.Drop(context.WithoutCancel(ctx), to)
 		return err

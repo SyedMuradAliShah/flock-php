@@ -314,7 +314,42 @@ Laravel app to it (env).`,
 		},
 	}
 
-	cmd.AddCommand(install, update, uninstall, use, list, createDB, extensions)
+	var currentPassword string
+	rootPassword := &cobra.Command{
+		Use:   "root-password <mysql|mariadb> [new password]",
+		Short: "Change the root password of MySQL or MariaDB (without a new password: remove it)",
+		Long: `Changes the password of every root account of the running MySQL or MariaDB. Without a new password, root
+has none, which is how Flock sets it up: phpMyAdmin then signs in by itself. Flock keeps the password so it can
+still stop the server and create databases, and your .env snippet shows it. A password given here stays in
+your shell history.`,
+		Args: cobra.RangeArgs(1, 2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			s, err := load()
+			if err != nil {
+				return err
+			}
+			id := strings.ToLower(args[0])
+			if id != "mysql" && id != "mariadb" {
+				return fmt.Errorf("%s has no root password: use mysql or mariadb", args[0])
+			}
+			password := ""
+			if len(args) > 1 {
+				password = args[1]
+			}
+			if _, err := s.client().SetRootPassword(cmd.Context(), id, currentPassword, password); err != nil {
+				return err
+			}
+			if password == "" {
+				cmd.Printf("%s root has no password now\n", id)
+			} else {
+				cmd.Printf("%s root password changed\n", id)
+			}
+			return nil
+		},
+	}
+	rootPassword.Flags().StringVar(&currentPassword, "current", "", "the password in use now, when it isn't the one Flock set")
+
+	cmd.AddCommand(install, update, uninstall, use, list, createDB, rootPassword, extensions)
 	return cmd
 }
 

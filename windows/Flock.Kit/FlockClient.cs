@@ -331,6 +331,22 @@ public sealed class FlockClient : IDisposable
     /// <summary>The end of the current or last install's output; 404 (FlockServerException) when there is none.</summary>
     public Task<string> CatalogLogAsync(string id, CancellationToken cancellationToken = default) => Text(HttpMethod.Get, $"/v1/catalog/{Escape(id)}/log", cancellationToken);
 
+    /// <summary>
+    /// Changes the root password of the running MySQL or MariaDB; an empty password removes it. Current is the one in use
+    /// now when it isn't the one Flock set (empty: the one Flock knows).
+    /// </summary>
+    public Task<ServiceCatalog> SetRootPasswordAsync(string id, string current, string password, CancellationToken cancellationToken = default) =>
+        Send<ServiceCatalog>(HttpMethod.Post, $"/v1/catalog/{Escape(id)}/root-password", new { current, password }, timeout: TimeSpan.FromMinutes(1), cancellationToken: cancellationToken);
+
+    /// <summary>The root password Flock has for a line of MySQL or MariaDB ("" for none; null line: the running one), to copy it.</summary>
+    public async Task<string> RootPasswordAsync(string id, string? line = null, CancellationToken cancellationToken = default)
+    {
+        var path = $"/v1/catalog/{Escape(id)}/root-password" + (string.IsNullOrEmpty(line) ? "" : "?line=" + Escape(line));
+        return (await Get<RootPasswordReply>(path, cancellationToken)).Password;
+    }
+
+    private sealed record RootPasswordReply(string Password = "");
+
     /// <summary>Runs an installed line of a catalog service instead of the active one, on the service's port.</summary>
     public Task<ServiceCatalog> ActivateCatalogServiceAsync(string id, string line, CancellationToken cancellationToken = default) =>
         Send<ServiceCatalog>(HttpMethod.Post, $"/v1/catalog/{Escape(id)}/activate", new { line }, timeout: TimeSpan.FromMinutes(1), cancellationToken: cancellationToken);

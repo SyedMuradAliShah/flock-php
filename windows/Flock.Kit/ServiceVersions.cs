@@ -185,11 +185,17 @@ public sealed class CatalogService
     /// <summary>The configured port, or the one Flock suggests when not installed.</summary>
     public int Port { get; init; }
     public int DefaultPort { get; init; }
+    /// <summary>A root password was set in Flock (MySQL and MariaDB); without one root has none.</summary>
+    public bool RootPassword { get; init; }
     public List<CatalogLine> Lines { get; init; } = [];
     public CatalogJob? Job { get; init; }
 
     [JsonIgnore]
     public bool IsInstalled => Installed.Length > 0;
+
+    /// <summary>MySQL and MariaDB have a root user whose password can be changed.</summary>
+    [JsonIgnore]
+    public bool HasRootUser => Id is "mysql" or "mariadb";
 
     /// <summary>The active line, else the newest.</summary>
     [JsonIgnore]
@@ -216,6 +222,8 @@ public sealed class CatalogLine
     public string Yanked { get; init; } = "";
     /// <summary>The line has data (each line keeps its own).</summary>
     public bool HasData { get; init; }
+    /// <summary>A root password was set for this line's data (MySQL and MariaDB); each line has its own.</summary>
+    public bool RootPassword { get; init; }
 }
 
 /// <summary>An install of a catalog service, running or failed.</summary>

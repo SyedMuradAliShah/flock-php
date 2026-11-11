@@ -82,6 +82,7 @@ This page lists the `flock` commands. The other pages show where to find each ac
 | `flock services update <service> [version]` | Update a version of a service to its newest release (the active one unless given) |
 | `flock services list <service>` | List the versions of a service with what is installed, updates and data sizes |
 | `flock services create-db <service> <name>...` | Create one or more databases in PostgreSQL, MySQL or MariaDB (the service has to be running) |
+| `flock services root-password <mysql\|mariadb> [password] [--current old]` | Set the root password of the running MySQL or MariaDB version, or remove it without a password. See [Root password](services.md#root-password) |
 
 ## phpMyAdmin
 

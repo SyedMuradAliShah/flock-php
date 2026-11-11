@@ -81,6 +81,36 @@ func registerCatalog(mux *http.ServeMux, b Backend) {
 		}
 		respond(w, m, m.Activate(r.PathValue("id"), body.Line))
 	})
+	// Body: {"current": "...", "password": "..."}; MySQL and MariaDB only. An empty password means none, an empty
+	// current password the one Flock knows.
+	mux.HandleFunc("POST /v1/catalog/{id}/root-password", func(w http.ResponseWriter, r *http.Request) {
+		m := manager(w)
+		if m == nil {
+			return
+		}
+		var body struct {
+			Current  string `json:"current"`
+			Password string `json:"password"`
+		}
+		if err := decodeBody(r, &body); err != nil {
+			writeError(w, http.StatusBadRequest, err)
+			return
+		}
+		respond(w, m, m.SetRootPassword(r.Context(), r.PathValue("id"), body.Current, body.Password))
+	})
+	// ?line=12.3 (else the running line): {"password": "..."}, for the apps to copy; "" when there is none.
+	mux.HandleFunc("GET /v1/catalog/{id}/root-password", func(w http.ResponseWriter, r *http.Request) {
+		m := manager(w)
+		if m == nil {
+			return
+		}
+		password, err := m.RootPasswordOf(r.PathValue("id"), r.URL.Query().Get("line"))
+		if err != nil {
+			writeError(w, catalogStatus(err), err)
+			return
+		}
+		writeJSON(w, http.StatusOK, map[string]string{"password": password})
+	})
 	mux.HandleFunc("POST /v1/catalog/{id}/cancel", action(func(m *catalog.Manager, r *http.Request) error { return m.Cancel(r.PathValue("id")) }))
 	mux.HandleFunc("DELETE /v1/catalog/{id}/job", action(func(m *catalog.Manager, r *http.Request) error { return m.Dismiss(r.PathValue("id")) }))
 	// ?line=8.4 removes one line (else every line); ?delete_data=1 also deletes its data.
@@ -158,6 +188,28 @@ func (c *Client) UninstallService(ctx context.Context, id, line string, deleteDa
 	var out Catalog
 	err := c.slow().do(ctx, http.MethodDelete, path, &out)
 	return out, err
+}
+
+// SetRootPassword changes the root password of MySQL or MariaDB (id) to password ("" for none). current is the
+// password in use now, "" for the one Flock knows.
+func (c *Client) SetRootPassword(ctx context.Context, id, current, password string) (Catalog, error) {
+	var out Catalog
+	err := c.slow().send(ctx, http.MethodPost, "/v1/catalog/"+url.PathEscape(id)+"/root-password", map[string]any{"current": current, "password": password}, &out)
+	return out, err
+}
+
+// RootPassword is the root password of a line of MySQL or MariaDB (id) that Flock has ("" for none); line ""
+// is the running one.
+func (c *Client) RootPassword(ctx context.Context, id, line string) (string, error) {
+	var out struct {
+		Password string `json:"password"`
+	}
+	path := "/v1/catalog/" + url.PathEscape(id) + "/root-password"
+	if line != "" {
+		path += "?line=" + url.QueryEscape(line)
+	}
+	err := c.get(ctx, path, &out)
+	return out.Password, err
 }
 
 // CancelService stops a running install of a catalog service.

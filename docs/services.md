@@ -81,6 +81,26 @@ Restart Flock (`flock restart`) to apply a change. Each version has its own data
 
 On MySQL, `SET PERSIST` also keeps a setting across restarts, in `mysqld-auto.cnf` next to `my.cnf`. MySQL doesn't persist the settings Flock manages. If one of them is added to that file by hand, Flock doesn't start the server, and names the file and setting to remove.
 
+## Root password
+
+MySQL and MariaDB start with the `root` user and no password. You can set one, and change or remove it later. Every version keeps its own data, so every version has its own root password: set `124` for one, nothing for another.
+
+:::app
+In **Settings → Services**, select MySQL or MariaDB. **Root password** has **Change…**, which applies to the version that is running, so start it first. Leave the password empty for none. The copy button next to it copies the root password of the running version, and **Copy Root Password** in a version's **⋯** menu copies that version's, in case you forget which is which.
+:::
+
+:::cli
+```bash
+flock services root-password mariadb secret                    # set it
+flock services root-password mariadb                           # remove it
+flock services root-password mariadb new --current old         # when the current one isn't the one Flock set
+```
+:::
+
+Flock keeps the password so it can still stop the server and create databases, and shows it in the service's **Environment Variables** and connection URL. A password given on the command line stays in your shell history. It is stored in [Flock's configuration](configuration.md), so treat it like the rest of your development data, not like a production secret.
+
+With no password, [phpMyAdmin](phpmyadmin.md) signs you in by itself; with one, it asks. Uninstalling a version and deleting its data forgets its password; uninstalling it and keeping the data keeps the password along with the data.
+
 ## Connecting from Laravel
 
 :::app
@@ -104,7 +124,7 @@ DB_PASSWORD=
 
 ### MySQL / MariaDB
 
-User `root`, no password. MariaDB uses `DB_CONNECTION=mariadb`.
+User `root`, no password unless you set a [root password](#root-password). MariaDB uses `DB_CONNECTION=mariadb`.
 
 ```bash
 DB_CONNECTION=mysql

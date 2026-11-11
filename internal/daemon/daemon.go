@@ -1255,6 +1255,7 @@ func (d *daemon) Services() []api.Service {
 				if k.URL != nil {
 					s.URL = k.URL(x.Port)
 				}
+				s.Env, s.URL = catalog.WithRootPassword(k.ID, cfg.Services.RootPassword(k.ID, k.LineOf(x.Version)), s.Env, s.URL)
 			} else {
 				s.Port = k.DefaultPort
 			}

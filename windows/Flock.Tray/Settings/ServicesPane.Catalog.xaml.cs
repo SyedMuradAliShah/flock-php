@@ -60,7 +60,88 @@ internal sealed partial class ServicesPane
         {
             panel.Children.Add(CatalogLines(entry, row));
         }
+        if (entry.HasRootUser && entry.IsInstalled)
+        {
+            panel.Children.Add(RootPasswordRow(entry, service));
+        }
         panel.Children.Add(CheckFooter(service.Id, Model.ReleaseActions.Resolve(service.Id)));
+    }
+
+    /// <summary>The root user's password: none, as Flock sets it up, or the one the user chose.</summary>
+    private StackPanel RootPasswordRow(CatalogService entry, Service service)
+    {
+        var note = Ui.Caption(entry.RootPassword
+            ? "Set. phpMyAdmin asks for it when you sign in."
+            : "None. The root user signs in without one, so phpMyAdmin signs in by itself.");
+        var copy = Ui.IconButton(Ui.GlyphCopy, "Copy the root password", () => _ = CopyRootPasswordAsync(entry, null, note));
+        copy.IsEnabled = entry.RootPassword;
+        if (!entry.RootPassword)
+        {
+            ToolTipService.SetToolTip(copy, "There is no password to copy.");
+        }
+        var change = Ui.Button("Change…", () => _ = ChangeRootPasswordAsync(entry),
+            tooltip: service.Running ? "Set any password, or leave it empty for none." : $"Start {entry.Name} first.");
+        change.IsEnabled = service.Running && !CatalogWorking(entry.Id);
+        var row = Ui.Column(6, Ui.Spread(Ui.Text($"Root password · {entry.Name} {entry.Line}", "BodyStrongTextBlockStyle", wrap: false), Ui.Row(8, copy, change)), note);
+        if (entry.Lines.Count(l => l.Installed) > 1)
+        {
+            row.Children.Add(Ui.Caption("Every installed version has its own root password. Change another one after switching to it; copy any version's from its ⋯ menu."));
+        }
+        return row;
+    }
+
+    /// <summary>Copies the root password Flock has for a version (null: the running one).</summary>
+    private async Task CopyRootPasswordAsync(CatalogService entry, string? line, TextBlock? note)
+    {
+        try
+        {
+            var password = await Model.Catalog.ReadRootPasswordAsync(entry.Id, line);
+            if (password.Length == 0)
+            {
+                await Ui.Inform(Window.XamlRoot, "No root password", $"{entry.Name} {line ?? entry.Line} has no root password to copy.");
+                return;
+            }
+            Ui.Copy(password);
+            if (note is not null)
+            {
+                note.Text = "Copied to the clipboard.";
+            }
+        }
+        catch (Exception error)
+        {
+            App.Log(error);
+            await Ui.Inform(Window.XamlRoot, "Couldn't copy the password", error.Message);
+        }
+    }
+
+    private async Task ChangeRootPasswordAsync(CatalogService entry)
+    {
+        var password = new PasswordBox { Header = "New password", PlaceholderText = "Leave empty for no password" };
+        var repeat = new PasswordBox { Header = "Repeat the new password" };
+        var current = new PasswordBox { Header = "Current password", PlaceholderText = "Only if it isn't the one Flock set" };
+        var mismatch = Ui.Caption("The two passwords differ.", Ui.Critical);
+        mismatch.Visibility = Visibility.Collapsed;
+        var dialog = new ContentDialog
+        {
+            Title = $"{entry.Name} root password",
+            Content = Ui.Column(12,
+                Ui.Caption("Applies to the root user of this server. Update the password in your projects' .env files too; with none, phpMyAdmin signs in by itself."),
+                password, repeat, mismatch, current),
+            PrimaryButtonText = "Change", CloseButtonText = "Cancel", DefaultButton = ContentDialogButton.Primary, XamlRoot = Window.XamlRoot
+        };
+        dialog.PrimaryButtonClick += (_, args) =>
+        {
+            if (password.Password != repeat.Password)
+            {
+                mismatch.Visibility = Visibility.Visible;
+                args.Cancel = true;
+            }
+        };
+        if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+        {
+            return;
+        }
+        await RunCatalogAsync(entry.Id, () => Model.Catalog.SetRootPasswordAsync(entry.Id, current.Password, password.Password));
     }
 
     /// <summary>What it is, the version line and port, and Install (see InstallCard).</summary>
@@ -131,9 +212,13 @@ internal sealed partial class ServicesPane
             {
                 actions.Children.Add(CatalogCommandButton(entry, source, line, command));
             }
-            if (line.MoreCommands.Count > 0)
+            if (line.MoreCommands.Count > 0 || source.RootPassword)
             {
                 var more = new MenuFlyout();
+                if (source.RootPassword)
+                {
+                    more.Items.Add(Item("Copy Root Password", () => _ = CopyRootPasswordAsync(entry, source.Id, null)));
+                }
                 foreach (var command in line.MoreCommands)
                 {
                     switch (command)

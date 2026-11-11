@@ -108,8 +108,14 @@ func sqlSpec(goos string, p Paths, port int, server, admin string, initialise fu
 	}
 	if goos == "windows" {
 		tool := filepath.Join(p.Dir, "bin", exe(goos, admin))
+		id := "mysql"
+		if server == "mariadbd" {
+			id = "mariadb"
+		}
 		spec.Stop = func() error {
-			return exec.Command(tool, "-uroot", "-h127.0.0.1", fmt.Sprintf("-P%d", port), "shutdown").Start()
+			cmd := exec.Command(tool, "-uroot", "-h127.0.0.1", fmt.Sprintf("-P%d", port), "shutdown")
+			cmd.Env = ClientEnv(p.Root, id)
+			return cmd.Start()
 		}
 	}
 	return spec, nil

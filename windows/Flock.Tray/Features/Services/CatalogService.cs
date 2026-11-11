@@ -147,6 +147,16 @@ public sealed class CatalogService : IAsyncDisposable
         return MutateAsync(id, cancellation => client.UninstallCatalogServiceAsync(id, line, deleteData, cancellation), token);
     }
 
+    public Task<OperationOutcome> SetRootPasswordAsync(string id, string current, string password, CancellationToken token = default)
+    {
+        return MutateAsync(id, cancellation => client.SetRootPasswordAsync(id, current, password, cancellation), token);
+    }
+
+    public Task<string> ReadRootPasswordAsync(string id, string? line, CancellationToken token = default)
+    {
+        return client.RootPasswordAsync(id, line, token);
+    }
+
     public Task<OperationOutcome> CheckAsync(CancellationToken token = default)
     {
         return MutateAsync(CheckKey, cancellation => client.CheckCatalogAsync(cancellation), token);
@@ -290,11 +300,12 @@ public sealed class CatalogService : IAsyncDisposable
                    pair.First.Unavailable == pair.Second.Unavailable &&
                    pair.First.Estimate == pair.Second.Estimate && pair.First.Installed == pair.Second.Installed && pair.First.Line == pair.Second.Line &&
                    pair.First.Latest == pair.Second.Latest && pair.First.Update == pair.Second.Update && pair.First.Yanked == pair.Second.Yanked &&
-                   pair.First.Port == pair.Second.Port && pair.First.DefaultPort == pair.Second.DefaultPort &&
+                   pair.First.Port == pair.Second.Port && pair.First.DefaultPort == pair.Second.DefaultPort && pair.First.RootPassword == pair.Second.RootPassword &&
                    pair.First.Lines.Count == pair.Second.Lines.Count && pair.First.Lines.Zip(pair.Second.Lines).All(lines =>
                        lines.First.Id == lines.Second.Id && lines.First.Label == lines.Second.Label && lines.First.Latest == lines.Second.Latest &&
                        lines.First.Installed == lines.Second.Installed && lines.First.Version == lines.Second.Version && lines.First.Active == lines.Second.Active &&
-                       lines.First.Update == lines.Second.Update && lines.First.Yanked == lines.Second.Yanked && lines.First.HasData == lines.Second.HasData) &&
+                       lines.First.Update == lines.Second.Update && lines.First.Yanked == lines.Second.Yanked && lines.First.HasData == lines.Second.HasData &&
+                       lines.First.RootPassword == lines.Second.RootPassword) &&
                    SameJob(pair.First.Job, pair.Second.Job));
     }
 

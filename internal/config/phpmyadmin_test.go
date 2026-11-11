@@ -113,3 +113,30 @@ func TestRenameReservedSiteOnInstall(t *testing.T) {
 		t.Errorf("sites: %+v", got)
 	}
 }
+
+func TestRootPasswordsAreKeptPerLine(t *testing.T) {
+	var s Services
+	s.SetRootPassword("mariadb", "12.3", "124")
+	s.SetRootPassword("mariadb", "11.8", "0065")
+	s.SetRootPassword("mysql", "8.4", "x")
+	if s.RootPassword("mariadb", "12.3") != "124" || s.RootPassword("mariadb", "11.8") != "0065" || s.RootPassword("mariadb", "10.11") != "" {
+		t.Errorf("%v", s.RootPasswords)
+	}
+	s.SetRootPassword("mariadb", "11.8", "")
+	if s.RootPassword("mariadb", "11.8") != "" || s.RootPassword("mariadb", "12.3") != "124" {
+		t.Errorf("clearing one line leaves the others: %v", s.RootPasswords)
+	}
+	s.ForgetRootPasswords("mariadb", "12.3")
+	if s.RootPassword("mariadb", "12.3") != "" || s.RootPassword("mysql", "8.4") != "x" {
+		t.Errorf("forgetting a line: %v", s.RootPasswords)
+	}
+	s.SetRootPassword("mariadb", "11.8", "a")
+	s.ForgetRootPasswords("mariadb", "")
+	if s.RootPassword("mariadb", "11.8") != "" || s.RootPassword("mysql", "8.4") != "x" {
+		t.Errorf("forgetting a service: %v", s.RootPasswords)
+	}
+	s.ForgetRootPasswords("mysql", "")
+	if s.RootPasswords != nil {
+		t.Errorf("an empty map should be dropped from config.json: %v", s.RootPasswords)
+	}
+}
